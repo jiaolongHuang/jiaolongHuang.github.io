@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name=viewport content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="format-detection" content="telephone=no">
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			html,body
+			{
+				font-size:100%;
+				height:100%;
+			}
+			body{
+				background-color:#f4f5f6;
+				color:#333;
+				font-family:'Microsoft YaHei',Hei,arial,sans-serif;
+			}
+			body a{
+				color:#333;
+				text-decoration: none;
+			}
+			li{
+				list-style: none;
+			}
+			.gclearfix:after{
+				clear: both;
+				content: '';
+				display: block;
+				height: 0;
+				visibility: hidden
+			}
+
+			/* 
+				1. 利用限制高度来做到底部卡片展开收起的效果
+				2. 利用text-indent来控制标题文字距离左边框的距离。而没有用margin-left
+				3. text-indent: 规定文本块中首行文本的缩进
+				4. 利用absolute和overflow:hidden，来控制图片的移进和移出。
+			 */
+			.card-wrap{
+				margin-top: 30px;
+				margin-left: 30px;
+				width: 280px;
+				background: #fff;
+				overflow: hidden;
+				height: 37px;
+				transition: height .2s ease-in;
+			}
+			.card-wrap h3{
+				position: relative;
+				height: 37px;
+				line-height: 37px;
+				text-indent: 15px;
+				border-left: 4px #3388fb solid;
+				overflow: hidden;
+				transition: text-indent .4s ease-out .2s;
+			}
+			h3 img{
+				position: absolute;
+				top: 2px;
+				left: -37px;
+				border-radius: 50%;
+				transition: left .4s ease-out .2s;
+				
+			}
+			h3 span{
+				font-weight: normal;
+				font-size: 16px;
+			}
+			.close{
+				position: absolute;
+				right: 10px;
+				top: 10px;
+				display: block;
+				width: 19px;
+				height: 19px;
+				cursor: pointer;
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAIAAAD9MqGbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0Y2IxMjQ0ZS0zNjIzLTQ3MzEtOTVkNC05NGUxYWFlZmE3ZDkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QzhDOUUzNDU1QjMyMTFFNDhGNDg5QUFCREE4QUVCQ0MiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QzhDOUUzNDQ1QjMyMTFFNDhGNDg5QUFCREE4QUVCQ0MiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6YjgzMTM2MjUtY2QwNi00OGYxLTllZTctZWU4MjdhNDI3MDI0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjRjYjEyNDRlLTM2MjMtNDczMS05NWQ0LTk0ZTFhYWVmYTdkOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PiV18cUAAAFvSURBVHjajJRLy4JAFECd6aFB0UICHxnt+gn9/11BO2nhTtIsahUGvbPzYfSVTuTdNDbn3Dsz3lFkWaa9xfl83m63u93ueDwybjabhmF0u91er8f4nRQvk0EURev12rZtUARQZFKQaLVaWZbleZ4Q4sO8XC5BELTbbeZqtZpWitvtRt79fj8ajRqNxrPU/X73fZ+J7FfAQMIz/qu5WCx4GA6HWoUIw1BKORgMJDthDyxSqxaQ8KfTSW42G9d1lXubTqflPyHhOX/JuXGSSm08HitleCxtNpux4MJJTCYT5TgPeCx5vV7r9Xq52uuxXBkeS+Y/3zSl/Cw2n89Z9LeFKbcAjyWWyyU5eD9a5eD9U1Oapsn7obkqapDwWFLXdVqctqpoQsJjybwtaOU4jn9qMJB5w33clU6n0+/3v90VtDRNX3fl/37S9MyxB8dx6JJWqwVBxsPhwGEmScIiyUu7F2924ZuAgIZMCuU34SHAAAUThaGCQPbtAAAAAElFTkSuQmCC) no-repeat 0 0;
+				transition: transform .1s ease-out;
+			}
+			.close:hover{
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAIAAAD9MqGbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3NpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0Y2IxMjQ0ZS0zNjIzLTQ3MzEtOTVkNC05NGUxYWFlZmE3ZDkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QzhGOUZDQjY1QjMyMTFFNDhGNDg5QUFCREE4QUVCQ0MiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QzhGOUZDQjU1QjMyMTFFNDhGNDg5QUFCREE4QUVCQ0MiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6YjgzMTM2MjUtY2QwNi00OGYxLTllZTctZWU4MjdhNDI3MDI0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjRjYjEyNDRlLTM2MjMtNDczMS05NWQ0LTk0ZTFhYWVmYTdkOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pr7trqwAAAGGSURBVHjanJS9L0NhFMafW4Sk6qshXUiZdZEoIoTE7B9oRCwSkdgsdiIYRIJJGhGjSKw6SCU+aiHdaRh8tmh7k5ZyPG/ro66rbjzTzXl/z5sn7znnaiKCPN0ksBXG/inO7+Uqobkc0lCtdTSh34M6Rz4I7dP5/ILFINaPMNgGovVVCuVFFw/qotVD+Fox2o2Sog+rZBXTxeeXmW3R02Iq1nlKhmROyvmUUaWloPwpMiTJUyrtwg7SGYz3wYpmAygtxlgPcB2XlmlJpMSiSJK/fBTbxjGGO1FeanK9Z8qkSJL85glsoQi8bnNbeMLcTJ4u9M6/3iWNkZonzb9zIk8XGDr3VgVQQ4U8XbbKMomnjCENMsQmT5et0alFYoVsP83k6dJW9iSZzvbHsth/1Qt2hqF/GzrTMXzvp6sCA1416xZFkjxd/5/bb7syFyi0KzzN35Wv/eTQL+9iLYShdrWf7ho47Yjq6iW5n/4DFXKkS427cbMN/4SzqNzqWq1d2ADTf8KbAAMAvoQY+jFjK6wAAAAASUVORK5CYII=) no-repeat 0 0;
+			}
+			.unfold-card h3{
+				text-indent: 57px;
+			}
+			.unfold-card img{
+				left: 10px;
+			}
+			.unfold-card .close{
+				transform: rotateZ(180deg);
+			}
+			.unfold-card{
+				height: 235px;
+			}
+			.card-cont{
+				border-top: 1px #eee dotted;
+				padding: 15px;
+			}
+			.baike-img{
+				float: left;
+				width: 125px;
+				margin-right: 15px;
+			}
+			.btn-baike{
+				display: block;
+				margin-top: 10px;
+				width: 123px;
+				height: 26px;
+				line-height: 26px;
+				border: 1px solid #3388fb;
+				border-radius:2px;
+				color: #3388fb;
+				text-align: center;
+				transition: all .2s ease-out;
+			}
+			.btn-baike:hover{
+				background: #3388fb;
+				color: #fff;
+			}
+			.baike-detail{
+				float: left;
+			}
+			.baike-detail h4{
+				font-weight: normal;
+				margin-bottom: 5px;
+			}
+			.baike-detail p{
+				font-size: 12px;
+				line-height: 20px;
+			}
+			.baike-detail label{
+				color: #999;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="card-wrap">
+			<h3>
+				<img src="http://www.mf06.com/e/pic/201008/20100806070238362.jpg" width="34" height="34"/>
+				<span>人物百科</span>
+				<i class="close js-close"></i>
+			</h3>
+			<div class="card-cont gclearfix">
+				<div class="baike-img">
+					<a href="http://so.com">
+						<img src="http://www.mf06.com/e/pic/201008/20100806070238362.jpg" width="125" height="125" />
+					</a>
+					<a href="http://so.com" class="btn-baike">进入百科</a>
+				</div>
+				<div class="baike-detail">
+					<h4>刘亦菲</h4>
+					<p><label>国籍：</label><span>中国</span></p>
+					<p><label>职业：</label><span>演员、职业</span></p>
+					<p><label>代表作品：</label><span>中国</span></p>
+				</div>
+			</div>
+		</div>
+	</body>
+
+	<script src="http://s2.qhimg.com/!827a72ed/_360so_ob_loader.js"></script>
+	<script>
+	_loader.use('jquery',function(){
+
+		$('.js-close').on('click',function(){
+			var wrap = $('.card-wrap');
+			wrap.toggleClass('unfold-card');
+		
+		});
+	});
+	</script>
+</html>

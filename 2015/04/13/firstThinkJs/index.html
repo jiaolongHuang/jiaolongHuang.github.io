@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 《众筹翻译》(20150420更新) · 小路口</title><meta name="description" content="《众筹翻译》(20150420更新) - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">《众筹翻译》(20150420更新)</h1><div class="post-info">Apr 13, 2015</div><div class="post-content"><p>这是一个小而传统的管理系统，但这不是一个生来就是作为玩具的系统，这是一个需要投入使用的真实系统。<br><a id="more"></a><br>正因为如此，一直怀着小心翼翼的心态写下第一行代码到现在。</p>
+<p>##背景</p>
+<ol>
+<li>项目背景。内部小的管理系统。传统的增改查，权限管理。难点在于，数据之间的同步以及多个action对同一张表的操作。</li>
+<li>技术背景。thinkJs, MySQL, artTemplate, jQuery Validate, jQuery, Materialize</li>
+</ol>
+<p>##难点(挑战)</p>
+<ol>
+<li>没有设计图，只有需求。</li>
+<li>对技术中使用的框架不熟悉。</li>
+<li>之前业务中大多是在前人的基础上，针对页面局部进行实现，而缺乏全局统筹的实践能力（比如与提出一些通用方法，通用结构）。</li>
+<li>工作量较大（加班解决@@）。涉及到的逻辑比较复杂。可能到后面为了完成功能而完成功能，忽略了代码了重用性，健壮性等等。</li>
+</ol>
+<p>##收获</p>
+<ol>
+<li>用心做一件事，总是会做好的。（前期的UI设计与框架应用，毕竟自己的审美观一再受到质疑。。）</li>
+<li>熟悉了thinkJs的用法和Promise的一些特性。deferred，终了还是没用上。</li>
+<li>对于一个管理系统中权限的管理（通常是判断当前用户能否访问某个url路径），可以采用白名单的方式。所谓的白名单，就是一个对象列表，在访问这个url时，就判断访问的url是否在这个列表里，如果在，那么就允许通过，否则就提示没有权限。</li>
+<li>对SQL语句的温习：多表查询，内联，左联，右联；日期格式化；null的用法</li>
+<li>数据库中码表的使用，就是先将一些固定的状态码写死，比如用户类型，积分值与类型对应等，再次查询时只需联表查询。比如要存积分，如果直接存积分金额会不安全，容易被篡改。但若改为获得积分类型，再通过联表获得积分值，这样虽然也存在被篡改的风险，但是范围已缩小，安全点。</li>
+<li>翻页与瀑布流。瀑布流处理列表中有状态个改变的不太方便（下面有介绍）。但是翻页，会存在用户视线上下跳跃的情况，体验不太好。</li>
+<li>如果逻辑较复杂，流程状态较多的，可以先画流程图，捋清楚了再写。这次就是返工了好几遍。</li>
+</ol>
+<p>##值得记录的<br>为了满足需求，同一种分页展示，背后采用了3种不同的方法，（如果展示了2+页数据，其中一条数据状态改变了，也要保持2+页的原有顺序，除非是刷新页面，重新获取一遍数据。）</p>
+<ol>
+<li>可以改变数据的状态，取出全部数据，前端做分页</li>
+<li>可以改变数据的状态，一页一页的从数据库里取，将已改变状态的数据放在一个缓存中，下一次也还取出这些数据。</li>
+<li>不可以改变数据的状态，一页一页的从数据库里取。</li>
+</ol>
+<p>##令我感动的<br>在整个过程中，FM小盆友一直鼓励我。在技术上给予帮助，在心理上给予鼓励。给自己继续把’代码积木’搭下去的信心。</p>
+<p>##欠缺</p>
+<ol>
+<li>异常处理</li>
+<li>代码健壮性</li>
+<li>怎么写的优雅点啊。T_T</li>
+<li>也正是以上3点的不足，让自己对自己的代码没有信心。不过正如FM小盆友所讲’好代码都是改出来的’。所以希望待系统上线之时，再来完善这边文章时，可以多一份信心。</li>
+</ol>
+<p>##’感悟’</p>
+<ol>
+<li>先说thinkjs<br>用过的都说它和thinkphp很像，我没用过thinkphp，但用过也同样是MVC模式的CI框架。所以在了解thinkjs的大体框架后，对它的使用思路并不陌生。不同点大概也只是，controller和model的语法不同，一个php一个js。</li>
+<li>再说前端模板artTemplate</li>
+</ol>
+<ul>
+<li><p>artTemplate，体积小，最大的特点是采用了预编译的方式，使得解析速度很快；其次还可以定位模板渲染错误的位置（虽然自认为没太多帮助到我）。但是使用过程中发现其功能很单薄，不像smarty那样有丰富的全局函数。</p>
+</li>
+<li><p>首先thinkjs里默认的view层使用的是ejs模板，那么为什么还要引入一个新的模板artTemplate呢。<br>如果view里的页面没有需要’二次请求’才能获取数据的片段，那么只使用一种前端模板同一种界定符是没有问题的。但是如果有，那么该如何处理呢？</p>
+<ul>
+<li>同一种模板，不区分界定符<br>  这里面使用模板，如果不区分界定符号，那么在view渲染时不知道是首次就应该解析渲染了还是等‘二次请求’时再渲染。</li>
+<li>不同的前端模板<br>  本身界定符就不同，解析时会被分开</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>Materialize的UI框架，与bootstrap差不多，响应式，网格结构。符合谷歌全新设计理念Material design。<br>用过之后自我感觉，如果要实现某种样式，类名会比较臃肿。form表单元素表现不是很好，有一些问题作者没有考虑到。比如selection里获取option的值，没有去除option里value的空格（这个比较坑）。但是，整体UI风格尊滴很舒服，漂亮。</li>
+</ol>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/05/11/tableSpan/" class="prev">PREV</a><a href="/2015/03/12/shiqu/" class="next">NEXT</a></div><div data-thread-key="2015/04/13/firstThinkJs/" data-title="《众筹翻译》(20150420更新)" data-url="http://jiaolongHuang.github.io/2015/04/13/firstThinkJs/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

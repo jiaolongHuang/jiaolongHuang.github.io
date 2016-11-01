@@ -1,0 +1,34 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 【Node.js】环境配置及调试方法 · 小路口</title><meta name="description" content="【Node.js】环境配置及调试方法 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">【Node.js】环境配置及调试方法</h1><div class="post-info">May 17, 2013</div><div class="post-content"><p>Node.js可以在不同的操作系统下运行。这里先简单介绍下在windows下的环境配置。</p>
+<p>1.首先，下载安装包并安装。在<a href="http://nodejs.org，点击download连接，选择windows" target="_blank" rel="external">http://nodejs.org，点击download连接，选择windows</a> instraller。</p>
+<p>  Node.js会被自动安装在C:\Program Files\nodejs中，并会在系统的PATH环境变量中增加了该目录。同时还自动附带了npm(Node包管理器)。此时，可以通过cmd，直接输入node，就会进入Node.js交互模式。</p>
+<p>2.运行一个简单的js文件</p>
+<p>首先在E盘下建立一个Nodejs文件夹，在这个文件夹下在新建一个文本，保存格式为.js文件。这里我命名为HelloWorld.js。</p>
+<p>然后在HelloWorld.js中只有一句简单的代码， console.log(‘hello world’);</p>
+<p>接着，在cmd中，进入到Nodejs文件夹下。输入命令：node HelloWorld.js(不区分大小写).此时就可以在控制台中看到输出的结果。</p>
+<p>3.基于Chrome浏览器的Node.js的调试方法</p>
+<p>首先使用Node Inspector ，它是一个可在webkit内核浏览器下进行nodejs调试的工具，因此只能用在Chrome浏览器中。</p>
+<p>先通过npm来安装node-inspector</p>
+<p>在cmd打开的命令行中输入</p>
+<pre>npm install -g node-inspector </pre>
+
+<p>安装好了之后呢，同样的就在Nodejs文件目录下，以debug的方式打开需要调试的文件，在出现了监听端口的信息后。</p>
+<p>重新打开一个命令行窗口，输入</p>
+<pre>node-inspector</pre>
+
+<p>这个时候呢，就可以打开chrome浏览器，然后输入<a href="http://127.0.0.1:8080/debug?port=5858，就会出现这样一个调试窗口" target="_blank" rel="external">http://127.0.0.1:8080/debug?port=5858，就会出现这样一个调试窗口</a></p>
+<p>4.基于Nodejs内建的调试器</p>
+<p>在代码中需要断点的地方手动添加一句</p>
+<p>debugger；</p>
+<p>然后同样地以debug的方式打开文件，node –debug app.js</p>
+<p>版权声明：本文为博主原创文章，未经博主允许不得转载。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2013/06/07/15/" class="prev">PREV</a><a href="/2013/05/08/17/" class="next">NEXT</a></div><div data-thread-key="2013/05/17/16/" data-title="【Node.js】环境配置及调试方法" data-url="http://jiaolongHuang.github.io/2013/05/17/16/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

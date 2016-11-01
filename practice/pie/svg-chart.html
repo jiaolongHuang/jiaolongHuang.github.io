@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>svg-chart</title>
+	<style type="text/css">
+		div{
+			padding: 10px;
+			margin-bottom: 20px;
+		}
+		svg{
+			display: block;
+			width: 100px;
+			height: 100px;
+			transform: rotate(-90deg);
+			border-radius: 100%;
+		}
+		circle{
+			fill: #eeae8a;
+			stroke: #90b390;
+			stroke-width: 32;/*变得比直径小就会变成一个圈，进度条状*/
+		}
+		.circle-infinite{
+			stroke-dasharray: 0 100;
+			animation: fillup 5s linear infinite;
+		}
+		@keyframes fillup{
+			to{
+				stroke-dasharray: 100 100; /*前面的100，表示100%*/
+			}
+		}
+		
+	</style>
+</head>
+<body>
+	<div>
+		<svg viewBox="0 0 32 32">
+			<circle class="circle-infinite" r="16" cx="16" cy="16" />
+		</svg>
+	</div>
+	<div class="chart-svg">
+		25%
+	</div>
+</body>
+
+<script type="text/javascript" src="http://s0.qhimg.com/lib/jquery/183.js"></script>
+<script type="text/javascript">
+(function(){
+
+	$('.chart-svg').each(function(index, pie){
+		var p = parseFloat(pie.textContent);
+		var NS = "http://www.w3.org/2000/svg";
+		var svg = document.createElementNS( NS, 'svg');
+		var circle = document.createElementNS( NS, 'circle');
+		circle.setAttribute('r', 16);
+		circle.setAttribute('cx', 16);
+		circle.setAttribute('cy', 16);
+		circle.setAttribute('stroke-dasharray', p+" 100");// 100是圆的周长，注意100之前的空格
+		svg.setAttribute('viewBox', '0 0 32 32');
+		svg.appendChild(circle);
+		pie.appendChild( svg );
+	});
+})();
+</script>
+</html>

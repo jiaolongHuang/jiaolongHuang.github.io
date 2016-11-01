@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 关于canvas的几个XX像素 · 小路口</title><meta name="description" content="关于canvas的几个XX像素 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">关于canvas的几个XX像素</h1><div class="post-info">Nov 19, 2015</div><div class="post-content"><p>这几个概念实在是太绕了，光想理顺它，就拖了好久才下笔整理下来<a id="more"></a></p>
+<h2 id="设备像素"><a href="#设备像素" class="headerlink" title="设备像素"></a>设备像素</h2><ul>
+<li>真实像素</li>
+<li>物理像素</li>
+<li>设备会有几个物理像素来表示一个css像素</li>
+<li>canvas.width/height</li>
+</ul>
+<h2 id="设备独立像素-dip"><a href="#设备独立像素-dip" class="headerlink" title="设备独立像素(dip)"></a>设备独立像素(dip)</h2><ul>
+<li>与屏幕密度相关，与设备无关</li>
+<li>是计算机坐标系中的一点，是程序可用的虚拟像素</li>
+<li>逻辑像素</li>
+<li>比如CSS像素</li>
+<li><code>canvas.style.width</code>以及<code>screen.width</code></li>
+</ul>
+<h2 id="设备像素比-devicePixelRatio"><a href="#设备像素比-devicePixelRatio" class="headerlink" title="设备像素比(devicePixelRatio)"></a>设备像素比(devicePixelRatio)</h2><ul>
+<li><code>设备像素比 ＝ 物理像素 / 设备独立像素</code></li>
+<li><code>设备像素比 ＝ 设备像素 / CSS像素</code></li>
+<li>在非retina屏幕上，屏幕物理像素是320，独立像素也是320;在retina上，屏幕物理像素640，独立像素还是320，因此设备像素比为2</li>
+<li>可通过<code>window.devicePixelRatio</code>查看</li>
+<li>当它不等于1时，说明会用大于1个的物理像素以填充的方式来渲染1个逻辑像素，这样就出现了图片模糊的情况。</li>
+<li><code>&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;</code>的时候，其视区宽度并不是640像素，而是320像素，是独立像素值。</li>
+<li><p>并不是所有看上去清晰的手机屏幕都是2被devicePixelRatio的。有些不清晰的屏幕，还有可能是3倍的，比如酷派8675.<br>0中的webkitBackingStorePixelRatio是2.<br><img src="/img/canvas/devicePixelRatio.png"><br><img src="/img/canvas/img-retina.png"></p>
+</li>
+<li><p>webkitBackingStorePixelRatio<br>它只有在safari和chrome中才有的属性。它决定了浏览器在渲染一个图片的时候用几个像素来存储画布信息。比如，safari 6.0中，它的值为2，当要渲染<code>100px*100px</code>的图片时，它首先在内存中生成一个<code>200*200</code>的图片，当在retina屏下，devicePixelRatio=2时，屏幕本身会按照<code>200*200</code>来渲染图片，这时<strong>所需</strong>的大小正好与内存中<strong>一致</strong>，直接拿出来用就好，此时显示出来的图片就不会失真。否则若devicePixelRatio=1，那么图片就会被放大1倍来显示，就会变模糊了。</p>
+</li>
+</ul>
+<p><strong>(小图变大会模糊，大图变小会更清晰)</strong></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://jeffdeng.me/js/2015/07/06/canvas-resolution/" target="_blank" rel="external">canvas分辨率问题</a></li>
+<li><a href="https://github.com/amfe/article/issues/17" target="_blank" rel="external">使用Flexible实现手淘H5页面的终端适配</a></li>
+<li><a href="设备像素比devicePixelRatio简单介绍">设备像素比devicePixelRatio简单介绍</a></li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/12/07/thinkjs2/" class="prev">PREV</a><a href="/2015/11/16/bug-canvas/" class="next">NEXT</a></div><div data-thread-key="2015/11/19/canvas-devicePixelRatio/" data-title="关于canvas的几个XX像素" data-url="http://jiaolongHuang.github.io/2015/11/19/canvas-devicePixelRatio/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

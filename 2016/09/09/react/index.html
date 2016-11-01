@@ -1,0 +1,61 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> React系列之-开始使用React+Redux · 小路口</title><meta name="description" content="React系列之-开始使用React+Redux - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">React系列之-开始使用React+Redux</h1><div class="post-info">Sep 9, 2016</div><div class="post-content"><p>React是一个让人使用后就想忘却jQuery的工具。<a id="more"></a>得益于最近一个新项目的开发，可以实践一下ReactJs。这里暂且先只讨论开始搭建一个应用的框架，不去过多介绍React背景，也不去对比React与其他框架，因为这样的文章随便一找就有很多写的很好的文章，关于开发过程中踩到的坑会另开一篇总结。</p>
+<h2 id="框架选取与资源推荐"><a href="#框架选取与资源推荐" class="headerlink" title="框架选取与资源推荐"></a>框架选取与资源推荐</h2><ul>
+<li>ReactJs: V15+</li>
+<li>状态管理: redux, react-redux</li>
+<li>Redux中间件: redux-thunk(让action支持异步)</li>
+<li>路由管理: react-router, react-router-redux</li>
+<li>html类名: classnames</li>
+<li>HTTP客户端: axios</li>
+<li>webpack: 静态资源管理</li>
+<li>webpack-loader: babel, postcss, jsx</li>
+<li>其他库: react-bootstrap, antd, redux-form</li>
+<li>Debug: <a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi" target="_blank" rel="external">React Developer Tools</a>, <a href="https://github.com/zalmoxisus/redux-devtools-extension" target="_blank" rel="external">Redux DevTools</a></li>
+</ul>
+<h2 id="Redux简单介绍"><a href="#Redux简单介绍" class="headerlink" title="Redux简单介绍"></a>Redux简单介绍</h2><p>数据驱动是与之前基于jQuery的过程化开发最大的不同。而Redux是目前为止公认的对Flux思想(单向数据流管理)比较好的实现。对它理解的如何，可以说在一定程度上决定了开发的难易程度。<br>它是独立的，起源于React，但不止于支持React、Angular、Ember…,甚至是jQuery。但是显然更适用于状态驱动的框架。其基本架构如下图:<br><img src="/img/react-intro/redux.png" alt="" width="500px"></p>
+<p>其核心可以理解为由3部分组成，aciton，reducer，store</p>
+<ul>
+<li><p>action：用来描述需要进行一个怎样的行为。<br>比如添加电影A和添加电影B，但这是两个不同的action。我们可以使用action creator叫做添加电影来创造之前的两个actioin。</p>
+</li>
+<li><p>reducer：每一个行为具体需要做什么才能改变state。<br>可以理解为是数据库中的每一张表。最后通过Redux提供的combinReducers({})来组合所有的reducer并挂在到store树上。<br>一个action可以对应多个不同的reducer，一个reducer也可以处理不同action。是多对多的关系。<br>接收旧的state，并返回一个新的state。需要注意，不能返回之前state的引用。会用到Object.assign({}, state), […state]。</p>
+</li>
+<li><p>store: 是一个对象，维护一个全局的，唯一的state。并且提供dispatch, subscribe, getState的方法。</p>
+</li>
+</ul>
+<p><strong>Redux与React的结合：redux-react</strong><br>Redux通过Redux组件的Provider为整个react注入store。这个Provider组件也是继承了React.Component.</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="xml"><span class="tag">&lt;<span class="name">Provider</span> <span class="attr">store</span>=</span></span><span class="template-variable">&#123;store&#125;</span><span class="xml"><span class="tag">&gt;</span></span></div><div class="line">		<span class="tag">&lt;<span class="name">Router</span> <span class="attr">history</span>=</span><span class="template-variable">&#123;history&#125;</span><span class="xml"><span class="tag">&gt;</span></span></div><div class="line">      <span class="template-variable">&#123;routes&#125;</span><span class="xml"></span></div><div class="line">    <span class="tag">&lt;/<span class="name">Router</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">Provider</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>Connect方法为React组件提供stroe中的state和dispatch方法。简单来说，connect()可以把普通的react组件包装成Redux组件。<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">const mapStateToProps = (<span class="keyword">state</span>) =&gt; &#123;</div><div class="line">  return &#123;</div><div class="line">    services: getVisibleServices(<span class="keyword">state</span>.services),</div><div class="line">    panelList: <span class="keyword">state</span>.panelList</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">const mapDispatchToProps = (dispatch) =&gt; &#123;</div><div class="line">  return &#123;</div><div class="line">    actions: bindActionCreators(Object.assign(&#123;&#125;, ServerActions, ServiceActions), dispatch)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">ServiceList.propTypes = &#123;</div><div class="line">  services: PropTypes.array.isRequired,</div><div class="line">  actions: PropTypes.object.isRequired</div><div class="line">&#125;</div><div class="line"></div><div class="line">export <span class="keyword">default</span> connect(</div><div class="line">  mapStateToProps,</div><div class="line">  mapDispatchToProps</div><div class="line">)(ServiceList)</div></pre></td></tr></table></figure></p>
+<ul>
+<li>bindActionCreators: 对 store.dispatch(actionCreator(…args))的再次封装。直接写actions.xxx即可。</li>
+</ul>
+<p>参考：<a href="https://github.com/joeyguo/blog/issues/3" target="_blank" rel="external">React 数据流管理架构之 Redux 介绍</a></p>
+<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><p>因为react推崇的是组件化开发，因此代码组织上也是按照组件，将每个组件相关的资源放在一起管理起来更方便(之前自己还是按照传统多页开发的结构搭建，后来证明很不方便)<br>(这图截出来真是虚。。。)<br><img src="/img/react-intro/floder.png" alt=""></p>
+<h2 id="React-Redux适用的场景"><a href="#React-Redux适用的场景" class="headerlink" title="React+Redux适用的场景"></a>React+Redux适用的场景</h2><p>可以从上面的目录图中看出，整个目录结构还是挺复杂的。所以在使用这套搭配之前，我们需要提前评估我们的应用这样去构建是否是性价比合理的。一般来说，这样的搭配适用于这样的场景：<br><img src="/img/react-intro/react-sence.png" alt="" width="350px"></p>
+<p>否则，就有些得不偿失，反而增加了开发成本。</p>
+<h2 id="使用之后"><a href="#使用之后" class="headerlink" title="使用之后"></a>使用之后</h2><ul>
+<li><p>在整个应用中，我们只需要关注数据状态的变化，使得我们开发时更加专注。什么样的界面对应什么样的状态，什么样的操作会引起什么样状态的变化，从而呈现什么样的界面。我们不再需要像jQuery那样去关注，都是哪些DOM的操作会影响本DOM的变化。<br><img src="/img/react-intro/jquery.png" alt="" width="500px"></p>
+</li>
+<li><p>整个html几乎全部由js生成（在不使用服务端渲染的前提下）。</p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/build/index.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<ul>
+<li><p>服务端渲染只适用于由NodeJs做开发语言的框架，像PHP, JAVA这类的是无法提供服务端渲染的。</p>
+</li>
+<li><p>在后端不提供渲染模板的情况下，基本上只是把后端当做是异步接口的提供方。</p>
+</li>
+<li><p>当redux+react更新state时，与这个state相关的组件都会被重新渲染。所以如果不需要，做shouldComponetUpdate()判断很重要。</p>
+</li>
+<li><p>最后附上之前分享时的<a href="http://jiaolonghuang.github.io/img/react-intro/reactjs.pdf">PPT</a></p>
+</li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2016/09/09/linux-cmd/" class="prev">PREV</a><a href="/2016/04/21/item2/" class="next">NEXT</a></div><div data-thread-key="2016/09/09/react/" data-title="React系列之-开始使用React+Redux" data-url="http://jiaolongHuang.github.io/2016/09/09/react/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

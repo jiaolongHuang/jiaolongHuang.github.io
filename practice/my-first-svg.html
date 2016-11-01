@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		body {padding:0;margin: 0; }
+		h1{
+			text-align: center;
+		}
+		svg{
+			display: block;
+		}
+		.btn{
+			padding: 3px 5px;
+			border-radius: 5px;
+			background-color: #009D81;
+			color: #fff;
+			font-size: 14px;
+			font-weight: normal;
+			cursor: pointer;
+		}
+		.chart,
+		.chart1,
+		.chart2{
+			height: 180px;
+			width: 900px;
+			padding: 20px;
+			margin: 20px;
+			background-color: #009D81;
+		}
+		.chart path {
+			stroke-dasharray: 1000;
+			stroke-dashoffset: 1000;
+			animation: dash 1.5s linear forwards;
+		}
+
+		@keyframes dash {
+			to {
+				stroke-dashoffset: 10;
+			}
+		}
+		.circle2,
+		.circle3,
+		.circle4{
+			opacity: 0;
+			animation-name: show;
+			
+			animation-timing-function: linear;
+			animation-delay: .3s;
+			animation-fill-mode: forwards;
+		}
+		.circle3{
+			animation-delay: .6s;
+		}
+		.circle4{
+			animation-delay: 1s;
+		}
+		@keyframes show {
+			from {
+				opacity: 0;
+			}
+			to {
+				opacity: 1;
+			}
+		}
+	</style>
+</head>
+<body>
+
+	<h1>My first SVG <span class="btn">重新观看</span></h1>
+	<div class="chart-wrap">
+		<svg class="chart">
+			<text x="20" y="20" fill="#fff">利用css3 animation,stroke-dasharray和stroke-dashoffset来自动画出路径(IE10-,animation中不支持stroke相关属性的动画)</text>
+			
+			<path d="M20 40 L220 100 L420 180 L620 140 " fill="none" stroke="#fff" stroke-width="2">
+			</path>
+			<circle class="circle1" cx="20" cy="40" r="5" fill="#FF8400" stroke="none"/>
+			<circle class="circle2" cx="220" cy="100" r="5" fill="#FF8400" stroke="none"/>
+			<circle class="circle3" cx="420" cy="180" r="5" fill="#FF8400" stroke="none"/>
+			<circle class="circle4" cx="620" cy="140" r="5" fill="#FF8400" stroke="none"/>
+		</svg>
+
+		<svg class="chart1">
+			<text x="20" y="20" fill="#fff">利用js改变svg容器的宽度（兼容性好）</text>
+			<path d="M20 40 L220 100 L420 180 L620 140 " fill="none" stroke="#fff" stroke-width="2">
+			</path>
+		</svg>
+
+		<svg class="chart2">
+			<text x="20" y="20" fill="#fff">利用animate标签（效果怪怪的，IE不支持animation标签）</text>
+			<path d="M20 40 L220 100 L420 180 L620 140 " fill="none" stroke="#fff" stroke-width="2">
+				<animateTransform attributeName="transform" attributeType="XML"
+								  type="translateX"
+								  from="-580" to="20"
+								  begin="0s" dur="1.5s"
+						/>
+			</path>
+		</svg>
+
+		<svg class="chart2">
+			<text x="20" y="10" fill="#fff">stroke-dasharray与stroke-dashoffset说明</text>
+			<path d="M20 30 L100 30" stroke-dasharray="10" stroke="#fff" stroke-width="2"></path>
+			<path d="M20 40 L100 40" stroke-dasharray="10" stroke-dashoffset="5" stroke="#fff" stroke-width="2"></path>
+			<path d="M20 50 L100 50" stroke-dasharray="10" stroke-dashoffset="10" stroke="#fff" stroke-width="2"></path>
+		</svg>
+	</div>
+</body>
+
+<script type="text/javascript" src="http://s0.qhimg.com/lib/jquery/183.js"></script>
+<script type="text/javascript">
+(function(){
+	var arr = [ [20, 40], [220, 100], [420, 180], [620, 140] ];
+	var width = 0;
+	var st = setInterval(function(){
+		if( width > 900){
+			clearInterval( st );
+		}
+		$('.chart1').css('width', width);
+		width += 5;
+	}, .1);
+
+	$('.btn').click(function(){
+		window.location.reload();
+	});
+})();
+</script>
+</html>

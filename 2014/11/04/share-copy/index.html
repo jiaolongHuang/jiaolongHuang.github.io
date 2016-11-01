@@ -1,0 +1,219 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 一周培训总结 · 小路口</title><meta name="description" content="一周培训总结 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">一周培训总结</h1><div class="post-info">Nov 4, 2014</div><div class="post-content"><blockquote>
+<p>庆幸当初的选择，珍惜现在的好机会，持之以恒，坚持~干巴爹<br>电子版培训笔记，未展开赘述..<br><a id="more"></a></p>
+</blockquote>
+<p>##20141104</p>
+<p>###大话重构 - by小强</p>
+<p>要看的几篇内容</p>
+<ul>
+<li>HTML5设计原理</li>
+<li>面向对象的css</li>
+<li>打败ie的葵花宝典</li>
+</ul>
+<p>嵌套规则：块级可嵌套所有行内元素，除了<code>a标签</code>之外的所有行内元素，不可嵌套块元素</p>
+<p>不要给id，class指定标签名</p>
+<p>只有在必要时才将class限制在<strong>最近</strong>的父元素内？？(如何理解)</p>
+<p>基于web标准的网站：</p>
+<ul>
+<li>语义化</li>
+<li>结构，界面，行为相分离</li>
+</ul>
+<p>层叠：</p>
+<ul>
+<li>一层套一层的样式</li>
+<li>优先级</li>
+</ul>
+<p>高性能HTML：</p>
+<ul>
+<li>指定文档字符集</li>
+<li>避免空链接属性</li>
+<li>避免嵌套层次过深</li>
+</ul>
+<p><a href="http://yunpan.cn/csUVqd4yAmKd2" target="_blank" rel="external">分享PPT,7969</a></p>
+<h3 id="编写可阅读的代码-by-LC"><a href="#编写可阅读的代码-by-LC" class="headerlink" title="编写可阅读的代码 - by LC"></a>编写可阅读的代码 - by LC</h3><ul>
+<li>《人月神话》</li>
+<li>《大教堂与集市》</li>
+<li>奥卡姆剃刀，不要过度设计 -&gt; 原则上的取舍平衡</li>
+<li>德摩根定理</li>
+<li>边米特法则，最少知识法则，LKP</li>
+<li>别人理解所需时间最小化</li>
+</ul>
+<p><a href="http://www.slideshare.net/LC2009/ss-41099384" target="_blank" rel="external">分享PPT</a></p>
+<p>##20141105</p>
+<p>###Jquery开发- by岳文</p>
+<p>选择器</p>
+<ul>
+<li>jquery是用的选择器引擎是<strong>Sizzle</strong>，Sizzle的流程是，分隔表达式-&gt;查找元素-&gt;过滤元素；Sizzle总是选择先尽可能利用原生方法来查询选择来缩小待选范围，然后才会在待查找范围筛选元素。</li>
+<li>jquery中css选择器总是从左向右查找，但是如果最右边的第一个选择器中有id，那么就先找第一个，缩小范围后再继续从左向右找。</li>
+<li>查找原则就是尽可能的缩小检索范围（特异性越高，检索范围就越小）。一般情况下，ID数量小于NAME数量,NAME数量又小于TAG数量。因此判断顺序就是[‘ID’,’NAME’,’TAG’]。</li>
+<li>$( “:radio” ) == $( “[type=radio]” );在实际应用中，$( “:radio” ) == $( “*:radio” ); 所以建议，$( “input:radio” )这样更好。但是$( “:radio” )是jquery字定义的的，而[type=”radio”]是采用了原生的querySelectorAll()实现，所以在现代浏览器中，建议使用[type=”radio”]。</li>
+<li>自定义的选择器比原生的慢</li>
+<li>querySelector 最慢，字符串-&gt;选择器</li>
+<li>find(),filter()的区别<br>$(‘div’).find(‘.rain’),在所有div元素内部查找class为rain的元素，组成一个集合。等同于$(‘div .rain’)<br>$(‘div’).filter(‘.rain’),筛选出class为rain的所有div，组成一个集合。</li>
+</ul>
+<p>属性</p>
+<ul>
+<li>attr()与prop()的区别,<a href="http://www.cnblogs.com/dolphinx/p/3348582.html" target="_blank" rel="external">可以参考这个</a></li>
+<li>以<code>checked=&quot;checked&quot;</code>为例，attr(“checked”)与prop(“checked”)返回的值是？<br>简单说，对于值是true/false的property，如checked等可以动态改变，attr得到的是<strong>checked</strong>，而prop得到的是<strong>true</strong>；prop的改变不会 影响attr，但attr改变会影响prop<br>并且以版本1.6为界限，1.6之前，attr得到的是布尔值，并随着checkbox状态的变化而变化；1.6时，始终取得的是最开始checkbox的值，不会动态变化，并且为“checked”这样的字符串；1.6+，会随着checkbox状态的变化而变化，但是返回的是“checked”这样的字符串。<br><strong>所以，浏览器兼容的判断checkebox是否被选中应该使用property</strong></li>
+</ul>
+<p>事件</p>
+<ul>
+<li>js事件执行的过程，捕获阶段-&gt;目标阶段-&gt;冒泡阶段</li>
+<li>attachEvent，addEventListener</li>
+<li>bind/unbind, live/die, delegate/undelegate,<strong>on/off</strong><br>live其最终实现也是用的on</li>
+</ul>
+<p>延迟对象</p>
+<ul>
+<li>分别异步A与B，拼装返回显示在页面？？延迟加载</li>
+<li>deffered对象</li>
+</ul>
+<p><a href="http://www.slideshare.net/chevionlu/j-query-41184509" target="_blank" rel="external">分享PPT</a></p>
+<p>###HTTP- by屈屈</p>
+<p>消息推送的方法</p>
+<ul>
+<li>轮询，浪费</li>
+<li>长轮询，服务端不处理，不返回，等着，挂着。facebook</li>
+<li>webSocket, 双向通信</li>
+</ul>
+<p>跳转</p>
+<ul>
+<li>301，永久重定向，客户端直接访问了B域</li>
+<li>302，临时重定向</li>
+<li>304</li>
+</ul>
+<p>502，网关，服务端错误日志</p>
+<p>代理，浏览器代替人手工发请求</p>
+<p>X-*,自定义的属性</p>
+<p>显示文档</p>
+<ul>
+<li>判断类型</li>
+<li>调用不同引擎</li>
+<li>img，图片引擎</li>
+</ul>
+<p>GET</p>
+<ul>
+<li>没有实体</li>
+</ul>
+<p>POST</p>
+<ul>
+<li>有实体</li>
+<li>带content-length，如果最终的content的内容长度对不上会报错。</li>
+</ul>
+<p>cookie</p>
+<ul>
+<li>服务端告诉客户端，下次发请求时要带的</li>
+<li>session，是一个以key当索引，具体的东西放在缓存中，存放的位置：<br>内存-&gt;对象，重启会丢失<br>memery cache, 不利于分布式<br>数据库</li>
+</ul>
+<p><strong>domain，浏览器自己解决的？？？？这是啥</strong></p>
+<p>几个与缓存相关的字段：</p>
+<ul>
+<li>expires，绝对时间。如果客户端与服务器时间不准。</li>
+<li>max-age，为了改进上面的问题，存的是相对时间</li>
+<li>ETag，md5(文件内容)，其值与时间无关 ，具体实现方式有不同，没有具体规定</li>
+<li>expires，在这时间之间啊，浏览器都不应发请求</li>
+<li><strong>优先用与时间无关的，或关系小的</strong></li>
+</ul>
+<p>gzip</p>
+<ul>
+<li>压缩传输内容，但是不会压缩图片，因为图片本身就是压缩过的。</li>
+<li>比如原图4.8K，传的实际大小是5.6k，多出的0.8k，是请求头的大小。</li>
+</ul>
+<p>长连接</p>
+<ul>
+<li>HTTP/1.1，默认支持长连接</li>
+<li>connection: keep-alive</li>
+<li>如果有connection：close，则不会有content-length，因为不需要判断内容是多长，读完即可关闭</li>
+</ul>
+<p>.php文件大小 ，是它能输出内容的大小。因为php是动态语言<br>.js文件大小，因为是静态文件，它的大小就是其本身的大小。</p>
+<ul>
+<li>分块传输<br>Transfer-Encodeing:chunked<br>长度-&gt;内容-&gt;长度-&gt;内容….直到最后为长度为0时，标志着整个文件传输完成</li>
+</ul>
+<p>几个问题？</p>
+<ul>
+<li><p>复用TCP时，如何知道每个文件的大小？<br>根据所读的content-length的值来判断，如果gzip了，那么就是gzip之后的大小。</p>
+</li>
+<li><p>如果一个文件大小未知，又要保持长连接，如何做到？<br>分块传输，在正文中告诉长度</p>
+</li>
+<li><p>能否做到构造IP？<br>不能，会把东西发到别人那儿。</p>
+</li>
+<li><p>POST是否真的是安全的？<br>NO，内容都在正文里。抓包可获得<br><strong>如何做到安全？</strong><br>https，在http之上，加了一层<br>VPN,整个网络<br>加token等等</p>
+</li>
+</ul>
+<p><a href="http://jiaolonghuang.github.io/sharing/HTTP.pdf">PPT看这里看这里</a></p>
+<p>##20141107</p>
+<p>###移动webapp开发- by代平</p>
+<p>web应用开发</p>
+<ul>
+<li>分辨率</li>
+<li>CPU/GPU</li>
+<li>传感设备</li>
+</ul>
+<p><strong>尽量用css3还原设计图，而不是用图</strong></p>
+<p>click的300ms延时，原因？</p>
+<ul>
+<li>click-&gt;touch，touched后才出发click，系统需要确认确实是click事件</li>
+</ul>
+<p>mobile开发时,jquery动画效率不高，因为底层没有用transform来实现，zepto好点</p>
+<p>单页，多页复杂</p>
+<p>###XSS- by成银</p>
+<p>先来一个问题：</p>
+<ul>
+<li>转义？when？how？</li>
+<li>过滤？when？how？</li>
+</ul>
+<p>XSS的分类</p>
+<ul>
+<li>反射，提前闭合标签，执行恶意js</li>
+<li>存储</li>
+<li>dom，setTimeout，setInterval，可以传string，如果string里有标签</li>
+</ul>
+<blockquote>
+<p>不要轻信用户的任何输入！！<br>尽量还原用户输入</p>
+</blockquote>
+<p>使用模板时，进行校验：</p>
+<ul>
+<li>入库不做处理</li>
+<li>逻辑层不做处理</li>
+<li>所有过滤，转义都应在模板里进行-&gt;FE</li>
+<li>因为逻辑层无法知道变量在模板里的环境（属性？js变量？标签？）</li>
+</ul>
+<p>tips：js里的‘/’需要转义，为了防止在正则里，页面不可用</p>
+<p><a href="http://360.75team.com/~lichengyin/ppt/XSS/#/" target="_blank" rel="external">分享PPT</a></p>
+<p>##20141108</p>
+<p>###构建可复用的组件- by瓜瓜</p>
+<p>一个好组件的特性</p>
+<p><a href="http://melonhuang.github.io/sharing/" target="_blank" rel="external">这次先看PPT</a></p>
+<ul>
+<li>易用</li>
+<li>一致：代码风格</li>
+<li>灵活: 可扩展</li>
+<li>可读：逻辑清晰</li>
+</ul>
+<p>可扩展性<br><strong>css,js，都不要太具体，只有必须的才写上</strong></p>
+<p>比如一个轮播图</p>
+<ul>
+<li>基础的只有切换</li>
+<li>怎样的切换效果，通过继承来使用</li>
+</ul>
+<p>###各种好用的开发工具- by文博</p>
+<p><strong>todo：</strong><br>好多需要实践的，待实践后补充</p>
+<p>调试</p>
+<ul>
+<li>$ in console,$ 代表 document.querySelector(css选择器)</li>
+<li>$$,document.querySelectorAll(css选择器)</li>
+<li>先选中元素，再console，$0=选中的这个元素</li>
+</ul>
+<p><a href="http://360.75team.com/~zhaowenbo/sharing/" target="_blank" rel="external">分享PPT</a></p>
+<blockquote>
+<p>写在最后的话：<br>这里只记录了分享时的点，并没有详细解释很多，每一个点都可以展开深入了解很多。<br>分享者所分享的内容，都是经过自己沉淀积累得来的，可能有些地方也未必就是真理，但是至少，给我们提供了一个大方向和可以借鉴的学习方法论<br>总之，还是那句话，我们要形成自己的见解和看法，别人的经验未必适用于自己</p>
+</blockquote>
+</div></article></div></section><footer><div class="paginator"><a href="/2014/12/13/clock/" class="prev">PREV</a><a href="/2014/11/03/css-practice/" class="next">NEXT</a></div><div data-thread-key="2014/11/04/share-copy/" data-title="一周培训总结" data-url="http://jiaolongHuang.github.io/2014/11/04/share-copy/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

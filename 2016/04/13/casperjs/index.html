@@ -1,0 +1,51 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Casperjs简介 · 小路口</title><meta name="description" content="Casperjs简介 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">Casperjs简介</h1><div class="post-info">Apr 13, 2016</div><div class="post-content"><p>Casperjs系列之理论介绍。这一篇我们先来认识一下Casperjs是什么，以及它的一些基本理论知识。<a id="more"></a></p>
+<h2 id="是什么？"><a href="#是什么？" class="headerlink" title="是什么？"></a>是什么？</h2><blockquote>
+<p><a href="http://Casperjs.org/" target="_blank" rel="external">Casperjs</a>是一个开源的导航脚本处理和测试工具，基于Phantomjs和SlimerJS。它简化了页面间导航的定义过程，提供了处理常见任务的实用的高级函数、方法和语法糖。</p>
+</blockquote>
+<p>上面这段是从官网上摘取翻译的，可以看出Casperjs是在Phantomjs和Selemjs基础上的再一次更好的封装，有更简单的api，使用起来会更简单，同时它还有自己的测试框架(Phantomjs则没有）。</p>
+<p>我们知道Phantomjs就是一个基于webkit内核的无头浏览器（没有界面的浏览器）,它可以完全模拟webkit内核浏览器的行为。因此借助于Casperjs我们可以模拟真实用户正常打开浏览器浏览网页的行为。同时，因为它还是一个测试工具，我们可以借助它完成前端自动化测试（端到端）的测试。</p>
+<h2 id="能干什么？"><a href="#能干什么？" class="headerlink" title="能干什么？"></a>能干什么？</h2><ul>
+<li>定义、排列页面间导航的步骤(先打开页面A，再打开页面B，open, thenOpen)</li>
+<li>表单的填充、提交(fill)</li>
+<li>点击、跟踪超链接(click a)<br><code>以上三点其实就是模拟用户的浏览网页时的行为</code></li>
+<li>区域、页面截图<br>  <code>最重要也是最常用的功能之一</code></li>
+<li>测试远程DOM(有自己的断言语法)<br>  <code>最重要也是最常用的功能之一</code></li>
+<li>记录日志(不同级别的，包括debug，info，warning，error;Casperjs默认在标准输出不输出log信息)</li>
+<li>资源下载，包括二进制资源</li>
+<li>编写功能测试套件，可以将结果以JUnit XML形式导出</li>
+<li>抓取网页内容</li>
+</ul>
+<p>今天在这里我们对Casperjs的测试工具的功能先不做讨论，主要介绍和讨论Casperjs的<strong>页面导航截图</strong>的功能。</p>
+<h2 id="如何安装？"><a href="#如何安装？" class="headerlink" title="如何安装？"></a>如何安装？</h2><ul>
+<li>首先需要装Phantomjs, &gt;= 1.9.1；python, &gt;= 2.6；mac中默认安装了python，<code>python --version</code>可以查看python的版本</li>
+<li>再装Casperjs, 多种安装方式，比如mac, 可以从homebrew, git, npm等等。这里以npm安装举例：<code>npm install -g Casperjs</code></li>
+<li>虽然Casperjs可以通过npm来安装，但是Casperjs和Phantomjs都是独立于node系统的。它不是nodejs的一个库或是包，可以通过node的exec方法来执行Casperjs命令。或者使用<a href="https://github.com/SpookyJS/SpookyJS" target="_blank" rel="external">SpookyJS</a>来是的node可以驱动Casperjs。</li>
+<li>spookyJS是将Casperjs作为nodejs的一个子进程来执行。</li>
+<li>当然了，在其他语言中也可以直接调用它们，比如java，php，shell等等。</li>
+</ul>
+<h2 id="是如何工作的？"><a href="#是如何工作的？" class="headerlink" title="是如何工作的？"></a>是如何工作的？</h2><ul>
+<li>首先它是基于消息驱动的。有then,wait字样的操作都是异步的行为。需要注意的是exit()也是异步的。也就是说，step1中调用exit,step2也有可能执行。</li>
+<li>同时，它是基于step栈的。只有当执行run()命令时这些步骤才会被真正开始执行。一个step是这样的一个js方法：等待前一个step正在执行时处于等待状态；在请求一个链接和页面加载未完成时处于等待状态。典型的一个方法是<code>then()</code>方法。</li>
+<li>当完成一个step时，casperjs会去检查三个状态标识<code>pendingWait, loadInProgress, and navigationRequested</code>，当这三个标识只有任意一个为true时，就会挂起等待，直到全部为false时才会进行下一个step。</li>
+</ul>
+<p>casperjs也提供了查看具体step的方法：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'utils'</span>).dump(casper.steps.map(<span class="function"><span class="keyword">function</span>(<span class="params">step</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> step.toString();</div><div class="line">&#125;));</div></pre></td></tr></table></figure></p>
+<p>在控制台看到的打印的栈信息如下，其中有一个_step()，这个是CasperJs自动帮我们加的。<br><img src="/img/casperjs-test.png" alt=""></p>
+<h2 id="更多疑问，参考这里"><a href="#更多疑问，参考这里" class="headerlink" title="更多疑问，参考这里"></a>更多疑问，参考<a href="http://docs.casperjs.org/en/latest/faq.html" target="_blank" rel="external">这里</a></h2><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://casperjs.org/" target="_blank" rel="external">Casperjs官网</a></li>
+<li><a href="http://html-js.com/article/CasperJS-based-frontend-automation-testing-road" target="_blank" rel="external">CasperJS 基础</a></li>
+<li><a href="http://group.jobbole.com/12782/" target="_blank" rel="external">使用phantomJS 、casperjs 一个月小感受</a></li>
+<li><a href="http://sudodev.cn/tag/casperjs-phantomjs/" target="_blank" rel="external">别的人遇到的相关问题</a></li>
+<li><a href="http://thejsguy.com/2015/02/28/end-to-end-testing-with-phantomsjs-and-casperjs.html" target="_blank" rel="external">End To End Testing with PhantomJS and CasperJS</a></li>
+<li><a href="http://my.oschina.net/leejun2005/blog/407043?fromerr=2nf4tBuT" target="_blank" rel="external">Web 自动化测试与智能爬虫利器：PhantomJS 简介与实战</a></li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2016/04/17/casperjs-example/" class="prev">PREV</a><a href="/2015/12/08/async-fy/" class="next">NEXT</a></div><div data-thread-key="2016/04/13/casperjs/" data-title="Casperjs简介" data-url="http://jiaolongHuang.github.io/2016/04/13/casperjs/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

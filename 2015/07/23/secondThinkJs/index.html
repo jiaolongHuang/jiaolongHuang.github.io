@@ -1,0 +1,71 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 如何使用thinkjs开发一个小系统 · 小路口</title><meta name="description" content="如何使用thinkjs开发一个小系统 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">如何使用thinkjs开发一个小系统</h1><div class="post-info">Jul 23, 2015</div><div class="post-content"><p>thinkjs是一个简单易用，上手迅速的node.js MVC框架。方便的api, 开发起来简单又好用。<br><a id="more"></a></p>
+<p>##安装thinkjs<br>npm install thinkjs<br>更详细信息见<a href="http://thinkjs.org/doc.html" title="thinkjs官网" target="_blank" rel="external">thinkjs官网</a></p>
+<p>##修改配置</p>
+<ul>
+<li><p>数据库配置：<br>  修改文件： Conf/config.js</p>
+<p>   windows下如果使用mysql数据库，推荐使用navicat,可视化数据管理工具</p>
+</li>
+<li>引入其他模块，如q框架<br>  www目录下的index.js文件中，require(‘q’);</li>
+</ul>
+<h2 id="创建文件夹"><a href="#创建文件夹" class="headerlink" title="创建文件夹"></a>创建文件夹</h2><p>Lib下创建：Controller,Model, Service, Dao; View文件夹与Lib并列</p>
+<ul>
+<li>创建Controller文件夹，Model文件夹，View文件（php常用）</li>
+<li>创建Controller文件夹，Service文件夹，Dao文件夹（java常用）</li>
+</ul>
+<h2 id="全局变量，通用函数"><a href="#全局变量，通用函数" class="headerlink" title="全局变量，通用函数"></a>全局变量，通用函数</h2><p>修改文件：App/Common/common.js</p>
+<p>变量和函数都挂在global下，如<code>global.strTonJson = function(list){};</code>， 或者某个对象的原型下，如<code>Date.prototype.format = function(format){};</code></p>
+<p>##注意事项</p>
+<ul>
+<li><p>文件夹名的大小写<br>windows下不区分文件夹名的大小写，linux下严格区分.</p>
+<p>比如在controller里有这样一个引用<code>var accService = require(&#39;../../service/AccService&#39;);</code>, 如果service文件夹的命名是<code>Service</code>，那么在windows下并不会报错，但是在linux环境中会找不到AccService这个文件</p>
+</li>
+</ul>
+<h2 id="部署上线"><a href="#部署上线" class="headerlink" title="部署上线"></a>部署上线</h2><ul>
+<li>更改配置<ul>
+<li>关闭debug，在www/index.js中（很耗内存，导致app卡死，再重启）</li>
+</ul>
+</li>
+<li>连接数据库<ul>
+<li>在Conf/config.js中，将 数据库配置改为线上配置</li>
+</ul>
+</li>
+<li>涉及到session，多个服务器之间的一致性</li>
+</ul>
+<p>##调试代码</p>
+<ul>
+<li>安装inspector:     <code>npm install node-inspector -g</code></li>
+<li>之后输入命令：<code>node-debug index.js</code>，系统会自动打开浏览器，并且到达断点时屏幕右下方会弹出提示，在使用thinkjs时，刚刚启动程序时也会断点一次。<br><img src="/img/node-debug/start.png" alt="" height="300px" width="600px"><br><img src="/img/node-debug/end.png" alt="" height="300px" width="600px"></li>
+</ul>
+<h2 id="关于Promise"><a href="#关于Promise" class="headerlink" title="关于Promise"></a>关于Promise</h2><ol>
+<li><p>使用promise.all<br>当需要提前完成二个已上异步操作之后再进行下一步操作时，并且这几个操作之间又无顺序可言，此时，就可以用promise.all来管理。</p>
+</li>
+<li><p>事务，startTrans，commit，rollback<br>比如需要同时向两张关联表插入数据，如组件表和组件版本表，为了保持数据的一致性，任意一张表插入失败都应判定这次操作是失败的。所以应回滚操作。而用事务就可以很好的解决。</p>
+</li>
+<li><p>api不能满足需求时，自己写sql</p>
+</li>
+<li><p>要return，就需要从最外层就开始return<br>否则，拿到的最外层的promise得到的是<code>undefined</code></p>
+</li>
+<li><p>可以将经常使用到的一类方法（但不是Action），写在一个类中，之后有需要用到的就继承它即可。</p>
+</li>
+<li><p>给promise的function一个返回值，reject或resolve的</p>
+</li>
+<li><p>使用catche捕捉错误。</p>
+</li>
+<li><p>无论是正确还是错误都给一个返回值，用来提示用户或为下一步的处理程序提供方便</p>
+</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="http://thinkjs.org/doc.html" title="thinkjs官网" target="_blank" rel="external">thinkjs官网</a></li>
+<li><a href="http://fex.baidu.com/blog/2015/07/we-have-a-problem-with-promises/" title="We have a problem with promises" target="_blank" rel="external">We have a problem with promises</a></li>
+</ol>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/08/05/svg-chart/" class="prev">PREV</a><a href="/2015/05/11/tableSpan/" class="next">NEXT</a></div><div data-thread-key="2015/07/23/secondThinkJs/" data-title="如何使用thinkjs开发一个小系统" data-url="http://jiaolongHuang.github.io/2015/07/23/secondThinkJs/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

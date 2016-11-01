@@ -1,0 +1,48 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 熟悉而又陌生的table · 小路口</title><meta name="description" content="熟悉而又陌生的table - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">熟悉而又陌生的table</h1><div class="post-info">Jul 17, 2014</div><div class="post-content"><p>在处处大谈语义化的今天，人们谈起table时心里大多都是很复杂的，一方面是因为使用table确实在布局上能给我们带来很大的方便，避免很多意外的情况和兼容性的问题；另一方面则是不太清楚什么时候该用table，什么时候不该用。下面我们就一起聊一聊关于table的事情二三。（如果有不对的或是不足的地方还请大家指出来和补充^_^）。</p>
+<h2 id="1-什么时候使用table"><a href="#1-什么时候使用table" class="headerlink" title="1. 什么时候使用table"></a>1. 什么时候使用table</h2><p>在前一混乱的布局时代，人们为了方便布局而泛滥使用table，大约看中的大概是table的这两个好处：同行等高和宽度自动调节。而忽略了标签其自有的语义信息。   当然，也不是说table是完全不好。当我们面对这样一些结构的数据时就可以使用table，如：一个计划、一组规则、一些属性的比较、球赛的比分、日历、财政的数据或员工信息等。所谓当用则用嘛。</p>
+<h2 id="2-Table-layout"><a href="#2-Table-layout" class="headerlink" title="2.Table-layout"></a>2.Table-layout</h2><p>它定义了如何布局一张表的行、列和单元格。</p>
+<p>Value：auto，fixed Auto：每列的宽度由其里面的内容决定； Fixed：表格和列的宽度由table, col的宽度或者是第一行每个单元格的宽度决定。第一行之后每行里的单元格不会影响这一列的宽度。说明第一行每列的单元格宽度是起决定性作用的。</p>
+<p>据说Fixed之后的表格布局加载会更快，因为每个列的宽度是固定了的了，而不会通过计算表格的内容来决定列的宽度。（还没有数据证实）。 但是，有可能其后单元格中的内容可能与其被设定的宽度并不符合，需要使用overflow来决定溢出的内容是否被clip掉。</p>
+<p>2.1如何设定单元格宽度后，让其里面的内容不溢出？</p>
+<p>(1)设定table为固定布局：</p>
+<pre>table-layout: fixed;
+width:100%;/* must have this set */</pre>
+
+<p>(2)设定每列的宽度，可用<col>或者设定class类的方式</p>
+<p>(3)为tr，td进行如下样式设定</p>
+<pre>th td{
+    white-space: nowrap;(必须要有)
+    overflow: hidden(必须要有);
+    text-overflow:ellipsis;
+}</pre>
+
+<p>2.2 Overflow和text-overflow都是不可被继承的</p>
+<p>Text-overflow，可取的值有： clip :不显示省略标记（…），而是简单的裁切 ellipsis :当对象内文本溢出时显示省略标记（…），省略标记插入的位置是最后一个字符。 ellipsis-word :当对象内文本溢出时显示省略标记（…），省略标记插入的位置是最后一个词（word）。</p>
+<p>2.3 需要注意的问题         如果某行中的某个单元格中的内容为空，在套模板时，我们有时会通过判断后将整个<td>都不显示，那么就会出现第二幅图的情况，table的结构被打乱了。比较好的做法是，保留</td><td>结构，而让其内容为空就可以了。</td></p>
+<h2 id="3-table中常用的标签"><a href="#3-table中常用的标签" class="headerlink" title="3. table中常用的标签"></a>3. table中常用的标签</h2><p>大多数的标签大家都比较熟悉，其中有几个是值得注意的：</p>
+<p>(1) tfoot。 我们基本较少使用，该标签书写的顺序不是在tbody之后，而是在thead和tbody之间，但却是在呈现在表格的底部，像下面这样，</p>
+<p>它的使用场景是，通过重复表头的内容使得，在一个内容很长的表，也容易让人们看到每一列对应的标题是什么。</p>
+<p>(2) col,colgroup         这两个标签一般是配合使用的,<colgroup><col>…..</colgroup>,即使源码里不用colgroup包裹col，页面加载的时候也会被自动包裹上。这个主要是通<col>影响第一行，而第一行又会影响表格其他的行。         有时我们需要保持表格每一列的样式基本统一，就可以将共同的样式都放在对应的col上，而不用给th，td加上相同的类名，这样不仅语义上更好，代码结构上也会更清晰。</p>
+<h2 id="4-常用到的css属性"><a href="#4-常用到的css属性" class="headerlink" title="4.常用到的css属性"></a>4.常用到的css属性</h2><p>(1)border-collapse 可取的值separated(默认的)，Collapsed Separated：每个单元格之间都是分开的，之间的距离由border-spacing来决定。 Collapsed：这种模式下，合并边框；如果左右两个单元格边框都有颜色，则上面单元格的下边框压了下面单元格的上边框，左面压了右面的。         *只有在sepatrated模式下border-spacing才有用。可用来设定垂直与水平之间不同的间隔。         当然了，你必须要显示的设置th或者td的border,如border:1px solid black;这样才会看到边框线的出现。再给table设置border-spacing: 2px 5px;，就可以看到如下的效果了</p>
+<h2 id="5-不怎么常用但有时很有用的标签属性"><a href="#5-不怎么常用但有时很有用的标签属性" class="headerlink" title="5.不怎么常用但有时很有用的标签属性"></a>5.不怎么常用但有时很有用的标签属性</h2><p>(1) *span(这个有时会用到)。主要是合并单元格时有用途。 (2) scope Headers和scope都是主要是起到一个关联的作用，对屏幕阅读器用途较大。 由于不会在普通浏览器中产生任何视觉效果，很难判断浏览器是否支持 headers 属性。</p>
+<h2 id="6-如何将任何元素变成与table有关的布局？"><a href="#6-如何将任何元素变成与table有关的布局？" class="headerlink" title="6.如何将任何元素变成与table有关的布局？"></a>6.如何将任何元素变成与table有关的布局？</h2><p>可以通过对元素的display进行设置。</p>
+<p>这里没有display:table-th，是因为th仅仅是语义上的作用，其根本表现与td是一样的。 * Display:table-cell;（ie8+） (1)大小不固定元素的垂直居中布局（还有多行文本垂直居中） (2)左固定右自适应布局：左边float右边table-cell</p>
+<h2 id="7-小tips-待补充"><a href="#7-小tips-待补充" class="headerlink" title="7. 小tips(待补充)"></a>7. 小tips(待补充)</h2><p>(1) 对整个table设定text-align：left； Chrome下thead和tbody都会有效； Ie下th依然是居中对齐，td有效.</p>
+<p>啰啰嗦嗦的说了这么多，目前本人感觉第2.1,3.2以及第4点最有用的，其余的了解就好。关于第6点，若是能更深入的了解，可能还可以更方便的做很多事。了解了Table的基本用法后再结合js就可以做出很多很酷炫的效果了~</p>
+<p>参考文章：</p>
+<p><a href="http://css-tricks.com/complete-guide-table-element/#not-use" target="_blank" rel="external">http://css-tricks.com/complete-guide-table-element/#not-use</a></p>
+<p><a href="http://www.w3school.com.cn/cssref/pr_tab_table-layout.asp" target="_blank" rel="external">http://www.w3school.com.cn/cssref/pr_tab_table-layout.asp</a></p>
+<p><a href="http://www.cnblogs.com/StormSpirit/archive/2012/10/24/2736453.html" target="_blank" rel="external">http://www.cnblogs.com/StormSpirit/archive/2012/10/24/2736453.html</a></p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/table-layout" target="_blank" rel="external">https://developer.mozilla.org/en-US/docs/Web/CSS/table-layout</a></p>
+<p>版权声明：本文为博主原创文章，未经博主允许不得转载。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2014/07/18/3/" class="prev">PREV</a><a href="/2013/10/03/5/" class="next">NEXT</a></div><div data-thread-key="2014/07/17/4/" data-title="熟悉而又陌生的table" data-url="http://jiaolongHuang.github.io/2014/07/17/4/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

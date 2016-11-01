@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> UTC,GMT等时间概念 · 小路口</title><meta name="description" content="UTC,GMT等时间概念 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">UTC,GMT等时间概念</h1><div class="post-info">Mar 12, 2015</div><div class="post-content"><p><strong>备忘</strong>。这业务中涉及到需要计算世界时间时，往往会因为时区的关系而有点晕头转向。这里就简单的介绍一下几个关于时间的概念和在前端中与之相关的方法。<br><a id="more"></a></p>
+<p>##UTC,GMT和CST是什么关系？</p>
+<ul>
+<li>先来说下GMT是什么。是格林威治(在英国)平均时间。</li>
+<li>UTC，几乎可以等同于GMT，只是比GMT更严格。</li>
+<li><p>时区。全球24个时区，把以伦敦为中心的世界地图展开，UTC和GMT的伦敦是0区，伦敦的右边直到新西兰的东部不远的斐济为东区，而左边到太平洋中间为西区。一般用5位时区差来表示与UTC相差的小时数，东区为正，西区为负。如北京时区是东八区，领先UTC八个小时，记为+0800；纽约的时区是西五区，比UTC落后五个小时，记为 -0500。<strong>UTC + 时区差 ＝ 本地时间</strong></p>
+</li>
+<li><p>CST，可以同时表示美国，澳大利亚，中国，古巴四个国家的标准时间：</p>
+<ul>
+<li>Central Standard Time (USA) UT-6:00</li>
+<li>Central Standard Time (Australia) UT+9:30</li>
+<li>China Standard Time UT+8:00</li>
+<li>Cuba Standard Time UT-4:00</li>
+</ul>
+</li>
+</ul>
+<h2 id="前端中与时间相关的方法"><a href="#前端中与时间相关的方法" class="headerlink" title="前端中与时间相关的方法"></a>前端中与时间相关的方法</h2><p>需要注意的是：<br>在前端中，无论是php还是js中，有格式显示出来的时间，都是与本地相关，即与本地系统设置(或系统默认)的时区相关。<br>如果对方法进行不带时区传参，那就是取的默认。</p>
+<p><strong>php中：</strong></p>
+<ul>
+<li>time(),从 Unix 纪元（January 1 1970 00:00:00 <strong>GMT</strong>）到当前时间的<strong>秒</strong>。比如如果系统时间分别设置为<code>Thu Mar 12 2015 07:52:53 GMT+0800 (China Standard Time)</code>和<code>Wed Mar 11 2015 20:52:53 GMT-0300 (Local Standard Time)</code>，通过time()获取到的值是相同的。</li>
+<li>date_default_timezone_set()设置时区。之后date()格式化之后的时间都是根据设置的时区来显示。</li>
+</ul>
+<p><strong>JS中：</strong></p>
+<ul>
+<li>new Date(timestamp)，相同的timestamp，在不同时区，new Date()之后的值不同(也就是显示，与本地相关)。但是，如果不带时区直接进行设置，new Date(‘Thu Mar 12 2015 07:52:53’),如果是在GMT+0800就是相对于GMT+0800将时间设置为Thu Mar 12 2015 07:52:53，如果是在GMT-0300，就是相对于<br>GMT-0300将时间设置为Thu Mar 12 2015 07:52:53。设置之后再次分别获取它们的时间戳，getTime()是不同的，因为相同时间，不同时区，相对于格林威治时间的差值不同。</li>
+<li>getTime()，是获取距1970 年 1 月 1 日之间的<strong>毫秒数</strong></li>
+<li>getTimezoneOffset()，获取格林威治时间与本地时间之间的时差，<strong>分钟数</strong>。<code>UTC时间 + 时区差 = 本地时间</code>。&lt;0，表示早于UTC时间。比如：</li>
+</ul>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">北京所在的东八区时区差记为<span class="number">+0800</span>，纽约所在的西五区时区差记为<span class="number">-0500</span>。</div><div class="line">假设现在是北京时间<span class="number">2015</span>年<span class="number">3</span>月<span class="number">12</span>日，<span class="number">12</span>:<span class="number">35</span>,那么UTC时间和纽约时间可以分别计算为：</div><div class="line"><span class="comment">(1)</span> UTC时间 + 时区差<span class="comment">(北京)</span> = 本地时间<span class="comment">(北京)</span> =&gt; UTC时间 = <span class="number">1235</span> - <span class="comment">(+0800)</span> = <span class="number">0435</span>,就是<span class="number">2015</span>年<span class="number">3</span>月<span class="number">12</span>日，凌晨<span class="number">4</span>:<span class="number">35</span></div><div class="line"><span class="comment">(2)</span> UTC时间 + 时区差<span class="comment">(纽约)</span> = 本地时间<span class="comment">(纽约)</span> =&gt; 本地时间<span class="comment">(纽约)</span> = 本地时间<span class="comment">(北京)</span> - 时区差<span class="comment">(北京)</span> + 时区差<span class="comment">(纽约)</span> = <span class="number">1235</span> - <span class="comment">(+0800)</span> + <span class="comment">(-0500)</span> = <span class="number">-0065</span>。</div><div class="line"><span class="comment">(3)</span> **如果出现负数，说明提前一天，需要加上<span class="number">2400</span>**。本地时间<span class="comment">(纽约)</span> = <span class="number">-0065</span> + <span class="number">2400</span> = <span class="number">2335</span>，说明是<span class="number">2015</span>年<span class="number">3</span>月<span class="number">11</span>日，<span class="number">23</span>:<span class="number">35</span> </div><div class="line"></div><div class="line">注，如果地区又使用夏时令时间，又还会做相应的加减。</div></pre></td></tr></table></figure>
+<ul>
+<li>Date.UTC函数采用UTC，返回指定的时间距GMT时间1970年1月1日午夜的毫秒数;而Date对象构造函数采用当地时间。</li>
+</ul>
+<h2 id="业务中的应用场景"><a href="#业务中的应用场景" class="headerlink" title="业务中的应用场景"></a>业务中的应用场景</h2><p>正确显示世界各地时间。显然，正常的逻辑是，无论我们是在北京还是在纽约搜索伦敦时间的时候都应该显示的是伦敦当地的时间，而与用户所在地区的时区无关。<br>之前用了new Date()和绝对的时间戳，导致在不同时区，用户搜到的城市时间不同。业务逻辑如下图：<br><img src="/img/shiqu/3.png" alt="" height="400px"><br>图2：(其实看到的也是假象)<br><img src="/img/shiqu/2.png" alt="" width="500px"><br>图3：(带时区进行时间设置)<br><img src="/img/shiqu/1.png" alt="" width="500px"></p>
+<p>##参考的文章</p>
+<ul>
+<li><a href="http://blog.csdn.net/iamtrooper/article/details/3900321" target="_blank" rel="external">UTC GMT 时区 时间戳</a></li>
+<li><a href="http://www.php100.com/manual/Javascript/html/jsobjdate.htm" target="_blank" rel="external">php100里关于Date对象</a></li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/04/13/firstThinkJs/" class="prev">PREV</a><a href="/2015/01/28/margin/" class="next">NEXT</a></div><div data-thread-key="2015/03/12/shiqu/" data-title="UTC,GMT等时间概念" data-url="http://jiaolongHuang.github.io/2015/03/12/shiqu/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

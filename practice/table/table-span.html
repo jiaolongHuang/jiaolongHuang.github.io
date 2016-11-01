@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		table{
+			width: 400px;
+		}
+		th, td{
+			width: 33%;
+			height: 30px;
+			line-height: 30px;
+			background-color: indianred;
+		}
+	</style>
+</head>
+<body>
+	<table>
+		<thead>
+			<tr>
+				<th colspan="2"></th>
+					<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>1</td>
+				<td>2</td>
+				<td>3</td>
+			</tr>
+			<tr>
+				<td colspan="3">4</td>
+			</tr>
+			<tr>
+				<td>5</td>
+				<td colspan="2">6</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<table>
+		<tbody>
+			<tr>
+				<td rowspan="3">1</td>
+				<td>2</td>
+				<td>3</td>
+			</tr>
+			<tr>
+				<td>4</td>
+				<td rowspan="2">5</td>
+			</tr>
+			<tr>
+				<td>6</td>
+			</tr>
+		</tbody>
+		
+	</table>
+		<table>
+		<tbody>
+			<tr>
+				<td rowspan="3">1</td>
+				<td rowspan="2">2</td>
+				<td>3</td>
+			</tr>
+			<tr>
+				<td>4</td>
+			</tr>
+			<tr>
+				<td colspan="2">5</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

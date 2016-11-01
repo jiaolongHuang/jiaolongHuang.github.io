@@ -1,0 +1,67 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> React系列之-使用React+Redux中遇到的坑 · 小路口</title><meta name="description" content="React系列之-使用React+Redux中遇到的坑 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">React系列之-使用React+Redux中遇到的坑</h1><div class="post-info">Sep 10, 2016</div><div class="post-content"><p>初次相遇总是美好的，相识久了总是会遇到很多问题。<a id="more"></a>随着开发的不断深入，也逐渐遇到了很多问题，并预计还在不断更新中，因为项目还未完成。</p>
+<h2 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h2><ul>
+<li><p>onEnter中的callback(), 当获取判断状态是异步操作时，特别有用。react-router文档中这么写到：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">on</span>Enter(nextState, replaceState, callback?)</div><div class="line">当 route 即将进入时调用。它提供了下一个路由的 <span class="keyword">state</span>，一个函数重定向到另一个路径。this 会触发钩子去创建 route 实例。</div><div class="line">当 callback 作为函数的第三个参数传入时，这个钩子将是异步执行的，并且跳转会阻塞直到 callback 被调用。</div></pre></td></tr></table></figure>
+</li>
+<li><p>onEnter往往用来做权限验证，登录验证</p>
+</li>
+<li>需要注意的是，dispatch是异步的，等待获取结果需要在之后的<code>then()</code>里使用</li>
+</ul>
+<h2 id="redux中的state和react内部的state"><a href="#redux中的state和react内部的state" class="headerlink" title="redux中的state和react内部的state"></a>redux中的state和react内部的state</h2><ul>
+<li>这两者之间没什么关系。各干各的事。</li>
+<li>redux中的state实际上也就是通过reducer处理之后挂在store树上一个状态。</li>
+<li>通过redux的connect()方法可以将这个state值变成组件的props，供组件使用。</li>
+</ul>
+<h2 id="reducer返回的state"><a href="#reducer返回的state" class="headerlink" title="reducer返回的state"></a>reducer返回的state</h2><ul>
+<li>一个reducer文件中可能会有多个子reducer，每个一个子reducer中的state参数对应自己那部分的state数据，不是全局state本身。</li>
+<li>Redux提供了<code>combineReducers()</code>来管理各个子reducer </li>
+<li>不能修改state, 需要返回一个新的state。这样便于做到“回退/撤销”，追踪全局状态。<br>另外在react的components里往往还需要通过<code>shouldComponentUpdate(nextProps, nextState)</code>函数来进行性能优化</li>
+<li>并且需要有default的处理，即遇到未知actioin时，一定要返回旧的state</li>
+</ul>
+<h2 id="关于reducer的划分"><a href="#关于reducer的划分" class="headerlink" title="关于reducer的划分"></a>关于reducer的划分</h2><p>依据对state对象的设计。可以理解为数据库中的一张表；关于层级保持多深，还没有很好的实践</p>
+<h2 id="多个异步的action-creator"><a href="#多个异步的action-creator" class="headerlink" title="多个异步的action creator"></a>多个异步的action creator</h2><ul>
+<li>在进行某些操作的时候，我们可能需要触发好几个action来完成这个操作。同时呢这些action或者有先后依赖顺序，或许需要一起完成才可能拿到最终的值。这时我们就需要用promise来帮助我们。</li>
+<li>在redux中我们可以用redux-thunk中间件来构建异步action。（还可以dispatch函数或者Promise, 比如从异步接口取到数据）</li>
+<li>对于同步的action我们可以使用<code>Promise.resolve()</code>来包装下。</li>
+<li>需要记得每一层都要return， 否则最外层被调用之后是undefined的</li>
+</ul>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">return</span> (dispatch, getStore) =&gt; &#123;</div><div class="line">	<span class="keyword">return</span> api.login(data).<span class="keyword">then</span>(res =&gt; &#123;</div><div class="line">		<span class="keyword">if</span>(res.code == <span class="number">1</span>)&#123;</div><div class="line">			<span class="keyword">return</span> Promise.resolve( dispatch(loginSuccess(res.data)) )</div><div class="line">							.<span class="keyword">then</span>( <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">								<span class="keyword">return</span> <span class="literal">true</span></div><div class="line">							&#125;)</div><div class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(res.code == <span class="number">-1</span>)&#123;</div><div class="line">			<span class="keyword">return</span> Promise.resolve( dispatch(loginError(res.message)) )</div><div class="line">							.<span class="keyword">then</span>( <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">								<span class="keyword">return</span> Promise.resolve(</div><div class="line">									dispatch(showDialog(<span class="string">'登录失败'</span>)).<span class="keyword">then</span>( <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">									<span class="keyword">return</span> <span class="literal">false</span></div><div class="line">								&#125;)	</div><div class="line">							&#125;)</div><div class="line">		&#125;</div><div class="line">	&#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="redux-form"><a href="#redux-form" class="headerlink" title="redux-form"></a>redux-form</h2><ul>
+<li>组件更新很多，但是小问题也很多。</li>
+<li>建议是，如果表单中的标准控件很多，适合使用。</li>
+<li><p>但如果控件个数不多，但是里面自定义的控件又居多，那么建议还是不用。因为可能需要单独处理自定义控件的状态，反而增加了工作量。</p>
+</li>
+<li><p>设置初始值，<code>enableReinitialize: true</code>,<code>initialValues</code>是一个对象，它的key值与组件里的”name”对应;</p>
+</li>
+<li><code>SubmissionError</code>触发后，store树上form的<code>submitFailed</code>变成<code>true</code>, 且目前找不到重新设置为false的方法</li>
+<li>reset, 不能自动重置自定义组件的值，可能需要手动重置(一般通过内部state的方法来解决);</li>
+<li><code>sync error + field array</code>, field 被移除但是values里保存的依然是initvalue，没有改变。原因是渲染field array的值是从store树上拿的，改为initialValues初始化后解决。</li>
+</ul>
+<h2 id="直接使用了数组的引用-改变了原数组"><a href="#直接使用了数组的引用-改变了原数组" class="headerlink" title="直接使用了数组的引用, 改变了原数组"></a>直接使用了数组的引用, 改变了原数组</h2><p>在组件内部使用了一个变量，这个变量指向了store树上的一个状态，在没有使用immutable的前提下，改变这个变量，实际上也把store树上的状态改变了。这种情况是一个双刃剑，有利有弊。使用时要比较明确可能会发生的后果。</p>
+<h2 id="无状态component"><a href="#无状态component" class="headerlink" title="无状态component"></a>无状态component</h2><ul>
+<li>一般的组件有有完整的生命周期。无状态组件，则更像是一个函数返回一段html片段，只有render方法。</li>
+<li>它没有实例化的过程，不需要被分配多余的内存，可以提高整体渲染性能。</li>
+<li>它只涉及到props，而不涉及到state的操作。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> HelloComponent = <span class="function">(<span class="params">props</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>Hello &#123;props.name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="axios的Content-Type"><a href="#axios的Content-Type" class="headerlink" title="axios的Content-Type"></a>axios的Content-Type</h2><ul>
+<li>默认是<code>&#39;application/json&#39;</code>。</li>
+<li>这种情况下PHP无法直接从 $_POST 对象从上面的请求中获得内容。</li>
+<li>解决办法：</li>
+</ul>
+<ol>
+<li>设置axios<code>Content-Type:application/x-www-form-urlencode</code>, <a href="https://github.com/Gozala/querystring" target="_blank" rel="external">querystring</a>转换要传参数的格式。</li>
+<li>php从<code>php://input</code>里获得原始输入流, 再<code>json_decode</code>成对象。具体见<a href="https://imququ.com/post/four-ways-to-post-data-in-http.html" target="_blank" rel="external">四种常见的 POST 提交数据方式</a></li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://cn.redux.js.org/" target="_blank" rel="external">Redux中文文档</a><br><a href="http://div.io/topic/1309" target="_blank" rel="external">深入到源码：解读 redux 的设计思路与用法</a></p>
+</div></article></div></section><footer><div class="paginator"><a href="/2016/09/11/range/" class="prev">PREV</a><a href="/2016/09/09/linux-cmd/" class="next">NEXT</a></div><div data-thread-key="2016/09/10/react-summary/" data-title="React系列之-使用React+Redux中遇到的坑" data-url="http://jiaolongHuang.github.io/2016/09/10/react-summary/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

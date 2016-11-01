@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>prograssbar</title>
+	<style type="text/css">
+	.wrap{
+		width: 400px;
+		height: 200px;
+		background-color: #26a9df;
+		overflow: hidden;
+	}
+	.bar,.bar2{
+		width: 60px;
+		height: 10px;
+		border: 1px solid #fff;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 10px;
+	}
+	.bar:after{
+		display: block;
+		content: "";
+		height: 100%;
+		background-color: #fff;
+		-webkit-animation: change 4s linear infinite;
+	}
+	@-webkit-keyframes change{
+		0%{
+			width: 0;
+		}
+		100%{
+			width: 100%;
+		}
+	}
+	.bar2{
+		box-shadow: inset 6px 4px #fff;
+	}
+	.des-wrap{
+			width: 600px;
+			padding: 10px;
+			margin-top: 60px;
+			border: 1px solid #eaeaea;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<div class="bar">
+		</div>
+		<div class="bar2">
+		</div>
+	</div>
+	<div class="des-wrap">
+	<p>1. 技术点：没有什么难点，主要是利用animation的keyframes，其中规定初始状态0%，和终止状态100%，以及动画持续的时间，中间过程就会按照animation-function来过渡</p>
+	<p>2. 需要注意的点：中间的进度条，除了可以用首先想到的两个元素的background来实现，还可以用一个元素＋box-shadow(inset)来实现，自己动手调一下吧～</p>
+	<p>3. 同理效果，比如转圈圈(用border),时钟指针等，具体可见<a href="http://viduthalai1947.github.io/loaderskit/" target="_blank">如此cute的进度条们</a>，但是圆圈的进度条(从0-100%)，用CSS很难实现，但可借助于SVG</p>
+</div>
+</body>
+</html>

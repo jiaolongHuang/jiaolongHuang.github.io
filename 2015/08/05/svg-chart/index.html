@@ -1,0 +1,48 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 如何使用svg画出具有动画效果的趋势线 · 小路口</title><meta name="description" content="如何使用svg画出具有动画效果的趋势线 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">如何使用svg画出具有动画效果的趋势线</h1><div class="post-info">Aug 5, 2015</div><div class="post-content"><p>svg和canvas都是我们平时常用的html5图形开发技术。一般情况下常见的图形和图表使用它们来完成都没有太大的问题。但是两者在使用场景上还有一些差别。<br><a id="more"></a></p>
+<h2 id="Canvas-VS-SVG"><a href="#Canvas-VS-SVG" class="headerlink" title="Canvas VS SVG"></a>Canvas VS SVG</h2><ul>
+<li>canvas是基于位图的。<ul>
+<li>适合动态渲染和对象数据量大的绘制。</li>
+<li>但是canvas只能采用js驱动，不提供图形元素的标签，只有一个<code>&lt;canvas&gt;</code>标签，像圆呀，矩形呀等等基本图形都得使用js来实现。</li>
+<li>再者，与用户交互的单位是像素点。并且绘制完成后，不能进行修改，只能擦除画布后重新绘制。</li>
+</ul>
+</li>
+<li>svg是矢量图形，基于图形元素。<ul>
+<li>除了<code>&lt;svg&gt;</code>标签之外，还提供<code>&lt;circle&gt;,&lt;path&gt;</code>等元素。更适合静态图形，对象数据量小，面积大的动画。</li>
+<li>可以修改svg中的dom，更容易编辑。所以，更适合做动态交互。</li>
+<li>同时，某些场景下，我们可以缓存svg中的dom结构，会比canvas的重绘减少工作量。</li>
+</ul>
+</li>
+</ul>
+<h2 id="怎么让趋势线动起来"><a href="#怎么让趋势线动起来" class="headerlink" title="怎么让趋势线动起来"></a>怎么让趋势线动起来</h2><p>这里默认我们已经有了一定的svg基础，就是知道如何绘制基本图形。让趋势线动起来，方法大致可以有3种，<a href="http://jiaolonghuang.github.io/practice/my-first-svg.html">demo</a>，分别有各自的优缺点。</p>
+<p><strong>首先第一种</strong>，是利用stroke-dasharray和stroke-dashoffset + css3的animation</p>
+<ul>
+<li><p>stroke-dasharray: x, y<br>线长x-空隙长y-线长x-…..<br>x = y时：stcok-dasharray: x, y的效果与stock-dasharray: x的相同</p>
+</li>
+<li><p>stroke-dashoffset: x<br>决定stock-dasharray从x处开始。蓝色的是stock-dash的线，dashoffset决定了整条线向左移动多远<br><img src="http://p0.qhimg.com/d/inn/5d9d8f95/1.png"></p>
+</li>
+</ul>
+<p>这三条线中stroke-dasharray: 10，stroke-dashoffset分别为0, 5, 10<br><img src="http://p9.qhimg.com/d/inn/8d901cf0/2.png"></p>
+<p>这样呢，我们就可以现将趋势图path的stroke-dasharray，stroke-dashoffset都设置的非常大，然后最终stroke-dashoffset减少到0，这样趋势图就会有逐渐出现的效果。关键代码如下：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="selector-class">.chart</span> <span class="selector-tag">path</span> &#123;</div><div class="line">	<span class="attribute">stroke-dasharray</span>: <span class="number">1000</span>;</div><div class="line">	<span class="attribute">stroke-dashoffset</span>: <span class="number">1000</span>;</div><div class="line">	<span class="attribute">animation</span>: dash <span class="number">1.5s</span> linear forwards;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@<span class="keyword">keyframes</span> dash &#123;</div><div class="line">	<span class="selector-tag">to</span> &#123;</div><div class="line">		<span class="attribute">stroke-dashoffset</span>: <span class="number">10</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>还有2行可能会用到的代码：<br><figure class="highlight dart"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> path = <span class="built_in">document</span>.<span class="built_in">querySelector</span>(<span class="string">'path'</span>); <span class="comment">// 准确路径</span></div><div class="line"><span class="keyword">var</span> length = path.getTotalLength(); <span class="comment">//线条长度</span></div></pre></td></tr></table></figure></p>
+<p>这种方式不仅可以针对规则图形来做动画，也可以针对任意不规则的图形。<br>不过若图形是一个组合图形，想要有逐渐出现的效果就稍微麻烦些，需要对变化项不是stroke的元素，单独设置动画，比如demo中几个拐点的圆圈。<br>兼容性: IE10-不支持, 主要是animation中不支持stroke相关属性的动画</p>
+<p><strong>第二种方法</strong>是，利用js来动态改变趋势图容器的宽度</p>
+<p>这种方法就可以较好的解决组合图形的问题；同时兼容性也比较好。主要是利用定时器来逐渐增大容器的宽度。关键代码如下：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">var width = <span class="number">0</span><span class="comment">;</span></div><div class="line">var st = setInterval(<span class="name">function</span>()&#123;</div><div class="line">	if( <span class="name">width</span> &gt; <span class="number">900</span>)&#123;</div><div class="line">		clearInterval( <span class="name">st</span> )<span class="comment">;</span></div><div class="line">	&#125;</div><div class="line">	$('.chart1').css('width', width)<span class="comment">;</span></div><div class="line">	width += <span class="number">5</span><span class="comment">;</span></div><div class="line">&#125;, .<span class="number">1</span>)<span class="comment">;</span></div></pre></td></tr></table></figure></p>
+<p><strong>第三种方法</strong>是，利用animateTransform标签<br>虽然有进入的效果，但是确是将整个path作为一个整体进行移入的，没有逐渐显示的效果；同时，IE下不支持svg的<code>&lt;animate&gt;</code>标签。<br>这里提到这种方法，主要是想说明svg也可以利用标签完成css3中的animation动画效果。</p>
+<p>##参考的文章</p>
+<ul>
+<li><a href="http://tutorials.jenkov.com/svg/index.html" target="_blank" rel="external">SVG API</a></li>
+<li><a href="http://www.zhangxinxu.com/wordpress/2014/04/animateion-line-drawing-svg-path-%E5%8A%A8%E7%94%BB-%E8%B7%AF%E5%BE%84/" target="_blank" rel="external">纯CSS实现帅气的SVG路径描边动画效果</a></li>
+<li><a href="http://www.zhangxinxu.com/wordpress/2014/08/so-powerful-svg-smil-animation/" target="_blank" rel="external">超级强大的SVG SMIL animation动画详解</a></li>
+<li><a href="https://jakearchibald.com/2013/animated-line-drawing-svg/" target="_blank" rel="external">Animated line drawing in SVG</a></li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/08/14/chart-pie/" class="prev">PREV</a><a href="/2015/07/23/secondThinkJs/" class="next">NEXT</a></div><div data-thread-key="2015/08/05/svg-chart/" data-title="如何使用svg画出具有动画效果的趋势线" data-url="http://jiaolongHuang.github.io/2015/08/05/svg-chart/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

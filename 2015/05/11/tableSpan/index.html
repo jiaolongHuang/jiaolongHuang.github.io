@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 关于table中合并单元格的显示 · 小路口</title><meta name="description" content="关于table中合并单元格的显示 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">关于table中合并单元格的显示</h1><div class="post-info">May 11, 2015</div><div class="post-content"><p>最近遇到都一个需求是需要显示一个行合并的列表。知识点比较简单，但是在用的时候容易乱，这里记载下。<br><a id="more"></a></p>
+<h3 id="rowspan-colspan"><a href="#rowspan-colspan" class="headerlink" title="rowspan, colspan"></a>rowspan, colspan</h3><p>这两个属性是用在td和tr标签上的。其中<strong>rowspan</strong>表示合并几行，从表现上来看是，单元格变高了。<strong>colspan</strong>表示合并几列，从表现上看是变宽了。<br>使用时：</p>
+<ol>
+<li>rowspan=3表示，这个单元格将占3行，其中自己一行，另外还要再占2行。那么在计算这两个被占的行的单元格时，就需要少算1个，因为已经被第一行的占去了一个。</li>
+<li>同理，colspan=2, 表示，这个单元格将占去2列的位置，其中自己一列，还有它旁边的1列。</li>
+<li>需要注意的是，每一行中，原子单元格的个数是一样的，<code>自己这一行中的单元格＋被其他行占的单元格＝固定每行单元格</code></li>
+<li>可以动手画草图，有利于我们计算正确的单元格。</li>
+</ol>
+<h3 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h3><p><a href="http://jiaolongHuang.github.io/practice/table/table-span.html">源码在这里</a><br><img src="http://p9.qhimg.com/d/inn/92db269a/table.png" width="60%"></p>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/07/23/secondThinkJs/" class="prev">PREV</a><a href="/2015/04/13/firstThinkJs/" class="next">NEXT</a></div><div data-thread-key="2015/05/11/tableSpan/" data-title="关于table中合并单元格的显示" data-url="http://jiaolongHuang.github.io/2015/05/11/tableSpan/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

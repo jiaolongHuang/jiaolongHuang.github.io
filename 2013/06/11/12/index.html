@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> FF、IE6-常见问题大不同 · 小路口</title><meta name="description" content="FF、IE6-常见问题大不同 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">FF、IE6-常见问题大不同</h1><div class="post-info">Jun 11, 2013</div><div class="post-content"><ol>
+<li><p>PNG透明度 IE6中支持PNG透明度的方法，AlphaImageLoader过滤器 filter:progid:DXImageTransform.Microsoft.AlphaImageLoader (src=’/img/my-image.png’,sizingMethod=’crop’); background:none; IE PNG fix:使用Microsoft专有的CSS扩展-行为(behavior)，下载合适的.htc文件并在IE6专有的样式表中引用。img, div{behavior:url(iepngfix.htc);}</p>
+</li>
+<li><p>列表项上下的额外空间<br>ul中的li在IE6-会添加额外的空间。需要将列表项li上的display属性设置为inline。ul li{display:inline;}</p>
+</li>
+<li><p>IE早期版本和Opera使用margin-left控制列表缩进，Safari和FF等大多选择padding-left控制。所以先要初始ul{margin:0;padding:0;list-style-type:none;} </p>
+</li>
+<li><p>button IE6，IE7处理button提交元素本身的内容，其他浏览器提交value属性的内容。如果页面上有多个button，IE6提交所有按钮的内容。如果希望在一个页面上使用多个按钮，就需要保证它们的功能相同，因为IE老版本中无法判断点击了哪个按钮。 </p>
+</li>
+<li><p>盒模型和元素大小 IE考虑元素内容的大小，而不是元素本身（整体）的大小。在符合标准的浏览器中，如果元素的内容太大，只会超出框外，而在IE下，整个元素会扩展。 </p>
+</li>
+<li><p>双外边距浮动bug IE6-,使任何浮动元素上的外边距加倍，仅仅是水平方向的。 display:inline; </p>
+</li>
+<li><p>3像素文本偏移 文本与一个浮动元素相邻时会出现这问题。 不希望文本环绕浮动元素，会在段落加一个margin-left，并使它的值等于浮动元素的宽度。 修复：给包含文本的元素设置任意高度，<em>height：1%。然后外边距重新设置为0，</em>margin-left：0；如果浮动元素不是图像，那么，给浮动元素加一个负的右外边距：margin-right：-3px。 如果浮动元素是图像，那么在IE5.X下，图像的左右都出现了-3px的间距，所以最后一步:margin:0,3px; 而IE6下的图像外边距没改变。所以，margin：0；</p>
+</li>
+<li><p>重复字符 在某些情况下，一系列浮动元素的最后一个元素中的最后几个字符会在浮动元素下面重复出现。<br>当在一系列浮动元素的第一个和最后一个元素之间有多个注释时，出现。 解决办法，在HTML代码中删除注释 </p>
+</li>
+<li><p>藏猫猫BUG 一个浮动元素后面跟着一些不浮动的元素，然后又跟着一个清理元素，并且这些所有元素都包含在一个设置了背景色或图像，没有设置宽度或高度的父元素中。 如果清理元素碰到了浮动元素，中间的非浮动元素隐藏到了父元素的背景色或图像后。 解决办法：避免清理元素和浮动元素接触；给容器设置尺寸；给容器指定line-height </p>
+</li>
+<li><p>相对容器中的绝对定位 IE6-，相对定位的容易没有获得layout，绝对定位的元素相对于窗口进行定位了。<br>解决办法：给相对定位的容器设定width或height；给容器设定任意高度，height：1%</p>
+</li>
+<li><p>让IE6支持min-width和max-width属性<br>min-width:200px;<br>max-width:400px;<br>_width:expression(this.scrollWidth&gt;400？”400px”：this.scrollWidth &lt; 200?”200px”:”auto”;</p>
+</li>
+<li><p>IE6/7，border:none边框依然存在<br>border:none;浏览器对border-width和border-color没有渲染，不占内存；而border:0，占用了内存值。</p>
+</li>
+</ol>
+<p>版权声明：本文为博主原创文章，未经博主允许不得转载。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2013/07/11/11/" class="prev">PREV</a><a href="/2013/06/07/13/" class="next">NEXT</a></div><div data-thread-key="2013/06/11/12/" data-title="FF、IE6-常见问题大不同" data-url="http://jiaolongHuang.github.io/2013/06/11/12/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

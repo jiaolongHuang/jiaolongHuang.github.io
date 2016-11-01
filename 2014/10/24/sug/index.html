@@ -1,0 +1,139 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> JS学习1：如何写出一个suggest组件 · 小路口</title><meta name="description" content="JS学习1：如何写出一个suggest组件 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">JS学习1：如何写出一个suggest组件</h1><div class="post-info">Oct 24, 2014</div><div class="post-content"><p>##| suggest是什么？</p>
+<ul>
+<li>suggest(后文统一简称为sug)的中文意思是，’建议，提议;暗示;使想起;启示’。经常被用做用户的输入提示。<a id="more"></a></li>
+<li>也就是说sug的主要功能是提示用户输入，而不是一个结果的展示框，更不是一个实时的下拉列表。（为什么要这样区别，后面会娓娓道来~）</li>
+<li>当然，用sug来做数据的校验更是不合适的。</li>
+</ul>
+<hr>
+<p>##| sug的逻辑及会涉及的事件？</p>
+<p>好的，我们先来梳理一下当我们使用sug时自己的操作习惯和流程。</p>
+<ol>
+<li>首先我们期望，sug可以根据自己在输入框中<strong>输入</strong>或<strong>删除</strong>字符，而给出不同的提示。也就是说这是一个实时动态变化的。</li>
+<li>当我们可以根据键盘的上、下键来选择自己本来想要输入的内容，这样自己可以节省很多时间和体力嘛（其实就是懒）</li>
+<li>当使用键盘选中后，敲回车时，sug中被选中的内容会自动跑到input输入框里。</li>
+<li>除了使用上下键，我们可能还期望使用鼠标点击某个内容，就可以让被选中的内容跑到输入框里。</li>
+<li>为了满足第3点，就需要当鼠标移上某个内容时，这个内容必须要与其他未选中的内容区分，否则我们也不知道是选的哪一个啊。</li>
+<li>另外呢，我们当然还期望有比较好的用户体验啦。<ul>
+<li>点击除了sug列表的其他位置时，sug会消失</li>
+<li>sug列表中默认就选中第一条数据，而不是需要按一下神马键再选中第一条，多此一举。</li>
+<li>按上、下键来选择内容时，如果列表中只有1条数据，那无论怎么按上下键，就保持原状啊；如果有多条，那可以循环去按呀，从头-&gt;尾，从尾-&gt;头。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>那么按照上述的逻辑，映射到代码层面上，我们会需要监听和涉及到哪些事件呢？</p>
+<p>####|| input</p>
+<ul>
+<li>与ie兼容，同时监听<code>propertychange</code>(IE专有，好牛气的赶脚)</li>
+<li>为啥不用onchange事件呢？oninput，onpropertychange，onchange究竟有啥区别呢？<ul>
+<li>onpropertychange, IE专有，当前对象的属性(<code>checked,value,selectedIndex</code>)发生变化时，都会触发这个事件</li>
+<li>oninput, 现代浏览器可用，只有当前对象的value值发生变化时，才会触发该事件</li>
+<li>onchange, value值发生了变化，并且失去焦点时才会触发；并且是由鼠标或键盘改变，如果是脚本改变的值，那也不能触发该事件。</li>
+<li>还有一个onkeyup事件，这个能用来监听用户通过键盘输入的value值变化，但是如果是复制粘贴来的值，就无法检测到。</li>
+</ul>
+</li>
+</ul>
+<p><strong>所以，综上选择oninput &amp; onpropertychange 为监听输入框值变化的方案</strong></p>
+<hr>
+<p>####|| click</p>
+<ul>
+<li>被选中li节点<ul>
+<li>将对应的数据添加到input中</li>
+</ul>
+</li>
+<li>sug范围外的区域<ul>
+<li>remove所有的sug列表</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>####|| keydown</p>
+<p>在这里，值得注意的是，我们需要设置一个sug类的私有变量selectedNode，用来保存当前被选中的节点。这样在之后通过enter或click才能将被选中的值放入input中。</p>
+<ul>
+<li>up, down, enter对应的<code>e.keycode</code>分别是<code>38</code>,<code>40</code>,<code>13</code></li>
+<li>up,down<br>在这儿，需要完成两件事，(1)删除上一次selectedNode的背景，(2)保存当前被选中的节点为selectedNode。<br>当然，还需要注意，如果sug列表中节点的数量<strong>大于1</strong>时，才需要完成上面2件事。否则保持现状即可。</li>
+<li>enter<br>在改写<strong>@小生爱</strong> 的源码中，有这样一个小bug，如果sug中有值，而sug列表自身被隐藏，enter会把默认选中的第一条选到input中。<br>为了解决这个问题，在enter时间中，我首先检测当前的sug列表是否是隐藏着的，如果是，那么就不执行enter事件。也就避免了将本来默认选中的第1条数据误添加到input中。</li>
+</ul>
+<hr>
+<p>####|| mouseover</p>
+<p>鼠标滑过li节点时，对应的节点变为选中状态，增强用户体验。</p>
+<hr>
+<p>####|| 确定sug的位置</p>
+<p>一般我们期望的sug位置是在input输入框的正下方，所以可以确定：</p>
+<ul>
+<li><code>sug的top = input输入框距当前视口顶部的距离 + input输入框本身的高度</code></li>
+<li><code>sug的left = input输入框距当前视口左边的距离</code> </li>
+<li>获得input输入框距当前视口的距离，<code>$(input).offset()</code></li>
+<li>input输入框本身的高度,<code>$(input).offsetHeight</code></li>
+</ul>
+<hr>
+<p>最后，<a href="http://jiaolonghuang.github.io/jsme/sug.js">附上sug列表的js代码</a>.</p>
+<hr>
+<p>##| 可改进的点</p>
+<p>目前这样做完，在体验上还是有可改进点的(目前只想到了这一个- -.等以后想到了随时补充)。</p>
+<ul>
+<li>blur: blur时，检测数据，并remove sug.</li>
+</ul>
+<hr>
+<p>##| 具体写码时的坑</p>
+<ul>
+<li><p>placeholder兼容<br>检测如果文档创建一个新的input，其中是否具有placeholder属性</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> placeholder = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;</div><div class="line">    <span class="comment">// 判断是否支持placeholder</span></div><div class="line">    <span class="keyword">if</span>(<span class="string">'placeholder'</span> <span class="keyword">in</span> <span class="built_in">document</span>.createElement(<span class="string">'input'</span>)) <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">	<span class="comment">// 要添加holder的表单节点</span></div><div class="line">	<span class="keyword">var</span> elInputs = $(<span class="string">'.js-placeholder'</span>, root);</div><div class="line">	<span class="comment">// 初始化表单</span></div><div class="line">	$.each(elInputs, <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;</div><div class="line">		$(<span class="keyword">this</span>).val($(<span class="keyword">this</span>).attr(<span class="string">'placeholder'</span>));</div><div class="line">	&#125;);</div><div class="line">	<span class="comment">// 添加事件</span></div><div class="line">	elInputs.on(<span class="string">'focus blur'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>)</span>&#123;</div><div class="line">		<span class="keyword">var</span> type = e.type;</div><div class="line">		<span class="keyword">var</span> elInput = $(<span class="keyword">this</span>);</div><div class="line">		<span class="comment">// 表单默认值</span></div><div class="line">		<span class="keyword">var</span> initInput = elInput.attr(<span class="string">'placeholder'</span>);</div><div class="line">		<span class="keyword">if</span>(type == <span class="string">'focus'</span> &amp;&amp; elInput.val() == initInput)&#123;</div><div class="line">			<span class="comment">// 获取焦点 表单置空</span></div><div class="line">			elInput.val(<span class="string">''</span>);</div><div class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(type==<span class="string">'blur'</span> &amp;&amp; elInput.val()==<span class="string">''</span>)&#123;</div><div class="line">			elInput.val(initInput);</div><div class="line">		&#125;</div><div class="line">	&#125;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+<li><p>纳尼？ie6/7下,背景消失了！！！</p>
+<ul>
+<li><p>这种现象一般是由于代码里同时包含这两句，<code>display:inline-block;text-indent: -999em</code></p>
+</li>
+<li><p>原因：ie6/7并未实现真的的<code>inline-block</code>，它只所有具有<code>inline-block</code>的某些特征，是因为元素触发了<code>hasLayout</code>，而因此让元素拥有了<code>inline-block</code>的表症。</p>
+</li>
+<li><strong>如何解决呢？</strong> 无非两种，从<strong><code>display</code></strong>来考虑，从<strong>与字体相关的</strong>考虑</li>
+<li>方案一：display：block</li>
+<li>方案二：font-size:0;line-height:0</li>
+<li>方案三：line-height:900px；overflow：hidden</li>
+</ul>
+</li>
+<li><p>ie7,<code>width: 100%</code>,没宽度了？</p>
+</li>
+<li><p><a href="http://qianduanblog.com/post/css-learning-21-using-html-css-write-an-input-box.html" target="_blank" rel="external">如何写出一个合适的input</a></p>
+<ul>
+<li>不要给input设置固定高度</li>
+<li>用padding撑开input的高度</li>
+<li>不要给input设置行高</li>
+<li>如果需要改变光标的高度，改变font-size的值</li>
+</ul>
+</li>
+<li><p>如何弥补把sug当作查询结果集的缺点？</p>
+<ul>
+<li>查询已知的现有数据集，再做一次验证。</li>
+</ul>
+</li>
+<li><p>pm想用sug当结果显示框，结果呢？</p>
+<ul>
+<li>之前说到过sug本质上一个提示功能，为用户的输入起到一定的辅助功能。当遇到这样的场景时，就显得特别不合适了。</li>
+<li>背景：<br>(1)input中的内容来源有两个，从sug中选中的，用户自己输入的；<br>(2)当用户输入一个百分百匹配的词时，sug并不会给出提示(你都知道要输入啥了，就没有提示的必要了呀)</li>
+<li>场景：<br>将用户输入框内的正确内容做为参数传给后端。我们知道sug里的内容，肯定是百分之百正确的，所以根据sug得到的内容可以直接发到后端。但是当用户输入‘望京西’时，这是一个百分百匹配的词，sug中返回的结果是空。<br>这时，我们如果分辨不是从sug中得来的input内容是正确的还是错误的呢？<br>也就是说，没有直接的办法可以判断‘望京西’和‘望京西乱七八糟’哪个是正确的。<br>这时，使用sug作为结果显示框是不妥的，应当像上一条提到的一样，再次查询已知的现有结果集，来做验证。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>##| 小技巧</p>
+<ul>
+<li><p><code>flag &amp;&amp; a = b</code><br>其实这样等同于,不仅代码变得简洁了，而且更有效率了。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="title">if</span><span class="params">(flag)</span></span>&#123;</div><div class="line">	<span class="selector-tag">a</span> =<span class="selector-tag">b</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>验证是否包含在某个数据集中？<strong>Hash，对象</strong><br><code>obj[&#39;key&#39;] == 1</code>，不用循环遍历</p>
+</li>
+<li>指定异步回调函数名<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">dataType: jsonp,</div><div class="line">jsonpCallback: 回调函数名,</div><div class="line">data:&#123;</div><div class="line">	<span class="selector-tag">a</span> : <span class="selector-tag">a</span>,</div><div class="line">	<span class="selector-tag">b</span> : <span class="selector-tag">b</span></div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2014/10/28/css-study/" class="prev">PREV</a><a href="/2014/09/28/0/" class="next">NEXT</a></div><div data-thread-key="2014/10/24/sug/" data-title="JS学习1：如何写出一个suggest组件" data-url="http://jiaolongHuang.github.io/2014/10/24/sug/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

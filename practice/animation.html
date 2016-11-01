@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+	/* 
+		*animation-name
+		*animation-duration
+		animation-timing-funciton: linear
+									ease
+									ease-in
+									ease-out
+									ease-in-out;
+		animation-delay
+		animation-iteration-count
+		animation-direction: normal, alternate: 基数次正向，偶数次逆向,当interation-	count=1时，alternate无效
+		animation-fill-mode: none 默认
+								forwards: 保持动画结束时的最终效果;
+								 backwords: 回到动画前的状态,感觉和none有点类似？？？？;
+								  both，同时执行forwards和backwords两种规则，感觉和forwards效果一样呢？？;
+		animation-play-state
+
+		reset transform的方法
+		transform: none;
+
+		目前只有webkit和w3c的支持tarnsform中的3d效果，比如translate3d，scale3d
+		兼容的写法：
+		-webkit-transform: translate3d(0, -50%, 0);
+			   -moz-transform: translate(0, -50%);
+				-ms-transform: translate(0,- 50%);
+				 -o-transform: translate(0, -50%);
+				transform: translate3d(0, -50%, 0);
+	 */
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		.wrap{
+			width: 100%;
+			height: 600px;
+			position: relative;
+		}
+		@-webkit-keyframes pulse{
+			0%{
+				-webkit-transform:scale3d(0.6,0.6,0.6);
+			}
+			50%{
+				-webkit-transform:scale3d(1.3,1.3,1.3);
+				opacity:1;
+			}
+			100%{
+				-webkit-transform:scale3d(0.6,0.6,0.6);
+				transform:scale3d(0.6,0.6,0.6);
+				opacity:.8;
+			}
+		}
+		.cir{
+			-webkit-animation-name: pulse;
+			-webkit-animation-duration: 10s;
+			-webkit-animation-iteration-count: infinite;
+		}
+		.cir-orange{
+			width: 100px;
+			height: 100px;
+			background: url('http://p7.qhimg.com/d/inn/28b0d2da/img/circle-2.png') no-repeat 0 0;
+			-webkit-animation-delay: .6s;
+		}
+		.cir-blue{
+			position: absolute;
+			left: 50px;
+			top: 80px;
+			width: 181px;
+			height: 181px;
+			background: url('http://p3.qhimg.com/d/inn/28b0d2da/img/circle-3.png') no-repeat 0 0;
+			-webkit-animation-delay: 1.2s;
+		}
+		.cont{
+			position: absolute;
+			left: 280px;
+			top: 0;
+			width: 1260px;
+			height: 600px;
+			background: url('http://p3.qhimg.com/d/inn/28b0d2da/img/circle-lg-1.png') no-repeat center center;
+		}
+		@-webkit-keyframes dropdown{
+			0%{
+				opacity: 0;
+				-webkit-transform: translate3d(0,-400px,0);
+			}
+			60%{
+				opacity: 1;
+				-webkit-transform: translate3d(0 ,25px,0);
+			}
+			75%{
+				-webkit-transform: translate3d(0 ,-10px,0);
+			}
+			90%{
+				-webkit-transform: translate3d(0,5px,0);
+			}
+			100%{
+				-webkit-transform: none;
+			}
+		}
+		.mobile{
+			position: absolute;
+			top: 70px;
+			left: 135px;
+			-webkit-animation-name: dropdown;
+			-webkit-animation-duration: 2s;
+			-webkit-animation-timing-funcion: ease-out;
+			/* -webkit-animation-iteration-count: infinite; */
+		}
+		@-webkit-keyframes fromright{
+			0%{
+				opacity: 0;
+				-webkit-transform: translate3d(400px,0,0);
+			}
+			100%{
+				opacity: 1;
+				-webkit-transform: none;
+			}
+		}
+		.boy{
+			position: absolute;
+			bottom: -36px;
+			left: 185px;
+			-webkit-animation-name: fromright;
+			-webkit-animation-duration: 2s;
+			-webkit-animation-timing-function: ease-in-out;
+			-webkit-animation-fill-mode: none;
+			/* -webkit-animation-iteration-count: infinite; */
+		}
+		/* 按钮 */
+		.mh-btn{
+			height: 30px;
+			line-height: 30px;
+			
+			border: 1px solid #ccc;
+			border-radius: 2px;
+			outline: none;
+
+			background: #fff;
+			padding: 0 10px;
+			font-size: 12px;
+			cursor: pointer;
+
+			display: inline-block;
+			text-decoration: none;
+		}
+		.mh-btn:hover{
+			border-color: #aaa;
+			background: #eee;
+		}
+		.mh-btn:active{
+			border-color: #000;
+			background: #ccc;
+		}
+		.mh-success{
+			border-color: #5bba32;
+			background: #65c33d;
+			color: #fff;
+			margin: 50px 0 0 10px;
+		}
+		.mh-success:hover{
+			border-color: #329209;
+			background: #3eaf0e;
+			color: #fff;
+		}
+		.mh-success:active{
+			border-color: #329209;
+			background: #3eaf0e;
+			background: -moz-linear-gradient(#39a10d,#3eaf0e 25%,#3eaf0e);
+			background: -webkit-gradient(linear,center top,center bottom,from(#39a10d),color-stop(.5,#3eaf0e),to(#3eaf0e))
+			background: -webkit-linear-gradient(#39a10d,#3eaf0e 25%,#3eaf0e);
+			background: -o-linear-gradient(#39a10d,#3eaf0e 25%,#3eaf0e);
+			background: -ms-linear-gradient(#39a10d,#3eaf0e 25%,#3eaf0e);
+			background: linear-gradient(#39a10d,#3eaf0e 25%,#3eaf0e);
+			color: #fff;
+		}
+		.tips{
+			color: red;
+			margin: 10px 0 0 10px;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<div class="cir cir-orange"></div>
+		<div class="cir cir-blue"></div>
+		<div class="cont">
+			<img src="http://p1.qhimg.com/d/inn/28b0d2da/img/cover-1.png" class="mobile" />
+			<img src="http://p4.qhimg.com/d/360browser/20140930/cartoon-333.png" class="boy" />
+		</div>
+	</div>
+	<button class="mh-btn mh-success js-btn">快来点我</button>  
+	<p class="tips">*点击按钮可重新观看动画效果</p>
+</body>
+<script src="http://s2.qhimg.com/!827a72ed/_360so_ob_loader.js"></script>
+<script type="text/javascript">
+_loader.use('jquery',function(){
+	$('.js-btn').on('click',function(){
+		location.reload();
+	});
+
+});	
+</script>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="http://s4.qhimg.com/static/ec1b63ca70c2d43f.css" />
+	<script src="http://s2.qhimg.com/!827a72ed/_360so_ob_loader.js"></script>
+	<style type="text/css">
+		#main{
+			width: 100%;
+		}
+		a{
+			text-decoration: none;
+		}
+		.s-con-tl {
+			font-size: 2em;
+			font-weight: 300;
+			background: #C4EEC4;
+			padding: .2em .6em;
+			border-radius: 2px;
+			color: #FFF;
+			}
+		.list{
+			width: 1280px;
+			margin: 50px auto;
+			padding-bottom: 20px;
+		}
+		.gclearfix:after{
+			clear: both;
+			content: '';
+			display: block;
+			height: 0;
+			visibility: hidden;
+			*zoom: 1;
+		}
+		/* start */
+		.item{
+			float: left;
+			width: 220px;
+			margin-left: 20px;
+			margin-bottom: 35px;
+			position: relative;
+		}
+		.img{
+			display: block;
+			width: 220px;
+			height: 220px;
+			overflow: hidden;
+			-webkit-transition: all 0.5s ease 0s;
+			-moz-transition: all 0.5s ease 0s;
+			-o-transition: all 0.5s ease 0s;
+		}
+		.img:hover{
+			-moz-transform: translate(-2px,-2px);
+			-o-transform: translate(-2px,-2px);
+			-ms-transform: translate(-2px, -2px);
+			-webkit-transform: translate(-2px,-2px);
+			transform: translate(-2px,-2px);
+			-webkit-box-shadow: 5px 5px 15px rgba(67, 72, 84, 0.5);
+			-moz-box-shadow: 5px 5px 15px rgba(67, 72, 84, 0.5);
+			-o-box-shadow: 5px 5px 15px rgba(67, 72, 84, 0.5);
+			box-shadow: 5px 5px 15px rgba(67, 72, 84, 0.5);
+		}
+		.title{
+			position: absolute;
+			left: 0;
+			bottom: -28px;
+			opacity: 0;
+			width: 100%;
+			text-align: center;
+			-webkit-transition: opacity .5s ease;
+			-moz-transition: opacity .5s ease;
+			-o-transition: opacity .5s ease;
+		}
+		.title.show{
+			opacity: 1;
+		}
+		.title a{
+			color: #333;
+		}
+	</style>
+</head>
+<body>
+	<div id="main">
+		<header class="s-con-tl">
+			<h2>动画1</h2>
+		</header>
+		<ul class="list gclearfix">
+			<li class="item">
+				<a class="img" href="http://www.so.com" target="_blank" data-index="0">
+					<img src="http://p6.qhimg.com/t01e1096eed22df4dd6.jpg" width="220px" />
+				</a>
+				<h3 class="title"><a href="##">是我是我</a></h3>
+			</li>
+			<li class="item">
+				<a class="img" href="http://www.so.com" target="_blank" data-index="1">
+					<img src="http://p6.qhimg.com/t01e1096eed22df4dd6.jpg" width="220px" />
+				</a>
+				<h3 class="title"><a href="##">是我是我</a></h3>
+			</li>
+			<li class="item">
+				<a class="img" href="http://www.so.com" target="_blank" data-index="2">
+					<img src="http://p6.qhimg.com/t01e1096eed22df4dd6.jpg" width="220px" />
+				</a>
+				<h3 class="title"><a href="##">是我是我</a></h3>
+			</li>
+			<li class="item">
+				<a class="img" href="http://www.so.com" target="_blank" data-index="3">
+					<img src="http://p6.qhimg.com/t01e1096eed22df4dd6.jpg" width="220px" />
+				</a>
+				<h3 class="title"><a href="##">是我是我</a></h3>
+			</li>
+			<li class="item">
+				<a class="img" href="http://www.so.com" target="_blank" data-index="4">
+					<img src="http://p6.qhimg.com/t01e1096eed22df4dd6.jpg" width="220px" />
+				</a>
+				<h3 class="title"><a href="##">是我是我</a></h3>
+			</li>
+			<li class="item">
+				<a class="img" href="http://www.so.com" target="_blank" data-index="5">
+					<img src="http://p6.qhimg.com/t01e1096eed22df4dd6.jpg" width="220px" />
+				</a>
+				<h3 class="title"><a href="##">是我是我</a></h3>
+			</li>
+		</ul>
+	</div>
+</body>
+<script type="text/javascript">
+_loader.use('jquery',function(){
+	var context = $('#main'),
+		cover = $('.cover',context);
+	$('.img').hover(function(e){
+		var index = $(this).data('index');
+		$('.title').eq(index).addClass('show');
+	},
+	function(){
+		var index = $(this).data('index');
+		$('.title').eq(index).removeClass('show');
+	});
+});
+</script>
+</html>

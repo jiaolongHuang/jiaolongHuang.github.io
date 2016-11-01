@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 我常用的Linux命令(ing) · 小路口</title><meta name="description" content="我常用的Linux命令(ing) - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">我常用的Linux命令(ing)</h1><div class="post-info">Sep 9, 2016</div><div class="post-content"><p>自己常用Linux命令记录。<a id="more"></a>其实自己并不特别熟悉Linux的命令，得益于最近做一些项目的部署，常常用到一些Linux命令，这里记录下。</p>
+<ul>
+<li><p>su aa<br>切换身份为aa。常用<code>sudo su aa</code></p>
+</li>
+<li><p>scp<br>scp是有Security的文件copy，基于ssh登录</p>
+</li>
+<li><p>scp /home/daisy/full.tar.gz 自己的名字@要同步的开发机的ip:/home/root<br>要把本地的文件/home/daisy/full.tar.gz copy到远程另外一台主机上</p>
+</li>
+<li><p>scp 自己的名字@要同步的开发机的ip:/home/root/1.txt ./<br>把远程开发机上的1.txt文件copy到当前目录下</p>
+</li>
+<li><p>scp -r 自己的名字@要同步的开发机的ip:/home/root/ ./<br>把远程开发机上的整个root目录copy到当前目录下</p>
+</li>
+<li><p>lsb_release -a<br>查看linux版本</p>
+</li>
+<li><p>which mysql<br>mysql的启动文件是在哪儿</p>
+</li>
+<li><p>mysql -h aa.aa.aa.aa  -P bbb -u username -ppwd<br>以<strong>bbb</strong>的用户名，<strong>pwd</strong>的密码，登录地址为<strong>aa.aa.aa.aa</strong>，端口号为<strong>bbb</strong>的mysql数据库。注意密码与<strong>-p</strong>之间没有空格。</p>
+</li>
+<li><p>top<br>进行性能监控的。比如当前cup，内存占用率，哪个进程占用的最多</p>
+</li>
+<li><p>chown -R -v jack: file<br>改变指定目录以及其子目录下的所有文件的拥有者(jack)和群组(空缺)</p>
+</li>
+<li><p>chomd 777 file<br>更改文件file，任何人都有读、写、运行三项权限</p>
+</li>
+<li><p>不同身份用户所能操作的文件不同。比如a文件是属于jack的，那么当以mark身份登录时，就不能使用这个文件</p>
+</li>
+<li><p>find / -name my.cnf<br>所有路径下查找名字是my.cnf的文件</p>
+</li>
+<li><p>find . -name .DS_Store | xargs rm -f<br>当前路径下查找文件名为.DS_Store的文件，并强制删除它们</p>
+</li>
+<li><p>find . -name “*.txt”<br>当前目录下搜索所有txt文件</p>
+</li>
+<li><p>netstat -tunlp|grep 5893<br>查看端口号5893占用情况</p>
+</li>
+<li><p>jobs<br>查看当前后台运行了哪些进程</p>
+</li>
+<li><p>ln –s 源文件 目标文件<br>创建软链, 类似windows的快捷方式</p>
+</li>
+<li><p>mv shop school<br>重命名文件夹， shop-&gt;school</p>
+</li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2016/09/10/react-summary/" class="prev">PREV</a><a href="/2016/09/09/react/" class="next">NEXT</a></div><div data-thread-key="2016/09/09/linux-cmd/" data-title="我常用的Linux命令(ing)" data-url="http://jiaolongHuang.github.io/2016/09/09/linux-cmd/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

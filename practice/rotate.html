@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+	/* 
+		主要是用rotateY, rotateZ, 做翻滚
+		其中将元素利用absoulte,将中心定位在同一个点
+		在用translateZ将其位置分开。否则会变成一个横向纸片和竖向纸片中间交叉的模样
+
+		css 3d效果
+		html结构：
+		舞台
+			容器
+				图片
+				图片
+		css：
+		舞台，加视距
+		perspective: 800px;
+		容器，加3d视图申明
+		transform-style:  perspective-3d;
+
+		translateZ: 正值，向其面对的方向走去，如果无旋转，即向显示器走来;
+	 */
+	 *{
+	 	margin: 0;
+	 	padding:0;
+	 }
+	.social{
+		display: block;
+		width: 100px;
+		height: 100px;
+		line-height: 100px;
+		text-align: center;
+		color: #fff;
+		position: relative;
+		transform: rotateY(0deg);
+		transition:transform .25s ease-out;
+		transform-style:preserve-3d;
+	}
+	.social div {
+		width: 100px; height: 100px; background: #000;
+		position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+	}
+	.social .front {
+		transform:translateZ(40px);
+	}
+	.social .back {
+		background: #3B5998; font-size: 3em;
+		transform:rotateY(-100deg) translateZ(40px);
+	}
+	/* Hover */
+	.social:hover {
+		transform: rotateY(100deg);
+	}
+	/* rotateY */
+	.box{
+		width: 100px;
+		height: 100px;
+		margin-top: 50px;
+		background: red;
+		opacity: .6;
+		transform: rotateY(45deg);
+	}
+	/* 翻滚 */
+	.stage{
+		position: relative;
+		width: 300px;
+		height: 100px;
+		margin-top: 50px;
+		perspective: 4000px;
+	}
+	.container{
+		height: 100px;
+		transform: rotateX(0deg);
+		transform-style: preserve-3d;
+		transition: transform .6s;
+	}
+	.up,
+	.down{
+		position: absolute;
+		top: 0;
+		width: 310px;
+		height: 100px;
+		transition: transform .6s;
+	}
+	.up{
+		background: red;
+		transform: translateZ(50px);
+	}
+	.down{
+		height: 80px;
+		width: 290px;
+		padding: 10px;
+		background: yellow;
+		transform: rotateX(-90deg) translateZ(50px);
+	}
+	.container:hover{
+		transform: rotatex(95deg);
+	}
+	</style>
+</head>
+<body>
+	<a class="social" href="####" target="_blank">
+		<div class="front">
+			f
+		</div>
+		<div class="back">
+			f
+		</div>
+	</a>
+	
+	<div class="box"></div>
+
+	<div class="stage">
+		<div class="container">
+			<div class="up"></div>
+			<div class="down">Hello World!</div>
+		</div>
+	</div>
+</body>
+</html>

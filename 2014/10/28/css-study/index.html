@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> CSS学习1：《精通CSS》读书笔记 · 小路口</title><meta name="description" content="CSS学习1：《精通CSS》读书笔记 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">CSS学习1：《精通CSS》读书笔记</h1><div class="post-info">Oct 28, 2014</div><div class="post-content"><p>温故而知新，持之以恒，坚持~干巴爹<br><a id="more"></a></p>
+<p>###基础知识</p>
+<ol>
+<li>文档的意义：代码易维护；面向程序和其他设备更有意义；代码更少，下载更快</li>
+<li>ID：页面上特定的元素，且唯一；持久性结构元素，主导航，内容区等；一次性元素，form等</li>
+<li>命名：这个元素是什么，而不是长的什么样。可以通过这个命名找到对应的元素。重用。</li>
+<li>确定这个元素只会出现一次，用ID；以后可能需要相似的元素，用类。</li>
+<li>IE6在标准模式下，正常盒模型；混杂模式下，老式专有盒模型。</li>
+<li>DTD不存在或不正确，会触发混杂模式；有<strong>过渡DTD而没有URI？？？</strong>也会；DTD不是页面中的第一个元素，IE6也会触发。</li>
+<li>css，import速度比link慢</li>
+</ol>
+<p>###可视化格式模型</p>
+<ol>
+<li>outline不会影响元素的大小和定位。ie7+</li>
+<li><strong>普通文档流</strong>中<strong>块框</strong>垂直margin才会叠加。float，absoulte，inline框的margin都不会叠加。</li>
+<li>普通流中的元素框位置由元素在html中的位置决定</li>
+<li>行内框，垂直padding，垂直margin，垂直边框，对其<strong>高度</strong>无影响。显式设定其height和weight没有效果。除非修改<strong>行高</strong></li>
+<li><p>在块级元素标签(如p)开头处添加一些文本 ，这些文本形成匿名块级框。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>hello world~~~~~~~<span class="tag">&lt;<span class="name">p</span>&gt;</span>hello<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>同理，如果在行内元素标签(如span)开头加文本，则形成匿名行内框。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"##"</span>&gt;</span>hello world~~~~~~~<span class="tag">&lt;<span class="name">span</span>&gt;</span>hello<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>position</p>
+</li>
+</ol>
+<ul>
+<li>relative: 元素占据自己原来的位置，移动是相对于自己原来的位置</li>
+<li>absolute: 不占据空间。普通文档流中的其他元素就好像没看到它一样。移动相对于离它最近的已定位(除了static的)的祖先元素。</li>
+<li>ie6的bug，相对于relative进行absolute，右边或底部，需要确保relative的祖先元素设定了宽高，否则会相对画布定位。</li>
+<li>fixed，相对于viewport的绝对定位。ie7+</li>
+</ul>
+<ol>
+<li>float,元素不在文档的普通流中。其他没浮动的元素(框好像没看到它，但是框内的文本信息，会环绕着浮动元素)像没看到它一样。浮动停止的位置，是碰到包含框的边缘或是其他浮动元素的边缘。</li>
+<li>opacity,不透明度。除了对背景生效，元素中包含的内容也继承了这个属性。</li>
+</ol>
+<p>###浏览器，table，form</p>
+<ol>
+<li>浏览器默认对页面缩放而不是文本，也就是说，布局，格式和文字大小都会同比例变化</li>
+<li>border-spacing(IE8+),IE7-,可以用cellspacing</li>
+<li>fieldset,legend,label(for),input(与img一样是可置换元素，表现和inline-block差不多，display是inline的，却可以 设置宽高)</li>
+<li>对于button标签，ie6,ie7，提交元素本身的内容，其他浏览器提交value的值。如果页面上 有多个按钮 ，ie6会提交所有按钮的内容。</li>
+</ol>
+</div></article></div></section><footer><div class="paginator"><a href="/2014/11/03/css-practice/" class="prev">PREV</a><a href="/2014/10/24/sug/" class="next">NEXT</a></div><div data-thread-key="2014/10/28/css-study/" data-title="CSS学习1：《精通CSS》读书笔记" data-url="http://jiaolongHuang.github.io/2014/10/28/css-study/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

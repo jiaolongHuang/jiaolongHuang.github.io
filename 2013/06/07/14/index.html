@@ -1,0 +1,35 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Web前端开发修炼之道-CSS篇2（转+改） · 小路口</title><meta name="description" content="Web前端开发修炼之道-CSS篇2（转+改） - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">Web前端开发修炼之道-CSS篇2（转+改）</h1><div class="post-info">Jun 7, 2013</div><div class="post-content"><ol>
+<li><p><code>display:inline-block和hasLayout display:block,inline,list-item,table-cell,inline-bloack</code>等等。<br>为了兼容IE6、IE7(不支持display:inline:block)，我们真正能使用的display类型只有inline,block和none. display:inline-block集块级元素和行内元素的特点于一身。<br>为了使IE6、IE7实现display:inline-block效果，可以在行内元素(如span)中定义display：inline-block，以触发hasLayout,可以使用vertical-align:-10px(具体数值还要自己调)和其他实现浏览器效果一样。对块元素使用display:inline-block不能实现应有的效果。它只能对行内元素实现display:inline-block；还要用到针对IE的hack,*vertical-align。</p>
+</li>
+<li><p>relative、absolute和float position可能的取值：relative、absolute、static(默认的)、fixed（相对浏览器窗口的绝对定位）、inherit。<br>position:relative，z-index&gt;0,但会保留自己在z-index:0层的占位，left等是相对于自己在z-index:0层的位置。<br>position:absolute,完全脱离文档流，在z-index:0层不保留位置，left等值相对于距离自己最近的一个设置了relative或absolute的祖先元素，如果都有没有，就是相对于body的。<br>float让元素仍然在z-index:0层左右浮动。会改变正常的文档流排列。<br>position:absolute和float会隐式的改变display类型，不论之前是什么类型的元素（display:none除外），只要设置了postion:absolute、float；left和float:right中任意一个，都会让元素以display:inline-block显示，这也就是IE6下使用float产生双边距可以使用display:inline去除position:relative不会隐式改变display的类型。 </p>
+</li>
+<li><p>水平居中文本、图片等行内元素的水平居中可以使用text-align:center。<br>确定宽度的块级元素的水平居中可以使用margin:0 auto;<br>不确定宽度的块级元素的水平居中<br>（1）.讲内容放入table标签，这是table标签margin:0 auto;<br>（2）将块级元素使用display:inline变成行内元素，在通过text-align:center实现；<br>（3）再父元素之外再加一个div然后对这个div设置width，height，position：relative，然后对父元素设置position:absolute和left:50%,子元素设置成position:reletive和left:-50%.<br>（4）设置父元素的width：fit-content;然后再对父元素margin-left:auto;margin-right:auto;对子元素float:left;(5)对父元素设置display:box;box-orient:horizontal;box-pack:center;对子元素float：left; </p>
+</li>
+<li><p>竖直居中, 父元素高度不确定的文本、图片和块级元素竖直居中是通过给父容器设置上下边距实现的。<br>对父元素padding-bottom和padding-top设置相同的值。<br>父元素高度确定的单行文本竖直居中，是通过给父元素设置line-hignt等于父元素hight高度实现的。<br>父元素高度确定的多行文本、图片和块级元素竖直居中<br>（1）直接使用表格，直接将文字放在tr中<br>（2）对于支持display:table-cell的IE8和ff用display:table-cell和vertacil-align:middle实现居中。<br>对于不支持则使用IE hackIE hack： 最外层div，position：absolute； 内层div（包含文字）height:100px;position：absolute;top:50%；margin-top:-(height/2);必须要设置高度。<br>或者： 用3层嵌套，2个外div，1个内div（包含文字） #outer{position:relative;}   #middle{position:absolute;top:50%;}   #inner{position:relative;top:-50%;}。不用设置inner文字的高度。</p>
+</li>
+<li><p>水平垂直居中 <code>&lt;div class = &quot;conter&quot;&gt; 中间是块级元素 &lt;/div&gt;</code><br>最外div，display：box；box-orient:horizontal;box:pack:center;box-align:center; </p>
+</li>
+<li><p>网格布局同级下，哪块内容重要，在HTML就优先写到前面。用于布局个人偏好子选择器 </p>
+</li>
+<li><p>Z-index的相关问题及flash和IE6下的select元素 除了x,y轴，还有一个Z轴，z轴在元素设置position为reletive或absolute或被激活，其大小有z-index设置，z-index越大，元素位置越靠上。<br>z可以为负值，在body之下负边距也可造成元素位置重叠z-index只对非窗口的元素有效，而flash默认是窗口模式，我们要将flash中的womde设置成opaque或transpartent。<br>窗口类型，优先于非窗口类型的显示在页面最顶端。<br>select元素在IE6下也是默认以窗口形式显示的，这是IE6的一个Bug。<br>解决办法：用一个与div同样大小的ifream放在div之下，select之上，用ifream遮住select。<br>具体就是：设置div的z-index：2；ifream的z-index：1；同时ifream的frameborder=“0”否则在FF下会有边框</p>
+</li>
+<li><p>插入png图片 IE6的png图片不支持透明，可以使用IE下私有的滤镜解决。 </p>
+</li>
+<li><p>使用IETest进行多IE版本调试。</p>
+</li>
+<li><p>清除浮动 为了让浮动元素的父容易能根据浮动元素的高度而自适应高度。<br>有3种办法： 让父容器同时浮动，<code>&lt;div class=&quot;fl&quot;&gt;&lt;div class = &quot;fl&quot;&gt;&lt;/div&gt;&lt;/div&gt;</code>;<br>让浮动元素后面紧跟一个用于清除浮动的空标签, <code>&lt;div&gt;&lt;div class=&quot;fl&quot;&gt;&lt;/div&gt;&lt;div class=&quot;cb&quot;&gt;&lt;/div&gt;&lt;div&gt;</code>给父容器挂一个特殊class，直接从父容器清除浮动元素的浮动，</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;<span class="keyword">div</span> <span class="built_in">class</span>=<span class="string">"classfix"</span>&gt;&lt;<span class="keyword">div</span> <span class="built_in">class</span>=<span class="string">"fl"</span>&gt;&lt;/<span class="keyword">div</span>&gt;&lt;/<span class="keyword">div</span>&gt;</div><div class="line">.classfix:<span class="keyword">after</span>&#123;content:<span class="string">"."</span>;dispaly:block;height:<span class="number">0</span>;clear:both;visibility:hidden;&#125; .classfix&#123;display:inline-block;&#125; *html .classfix&#123;height:<span class="number">1</span>%;&#125; .clearfix&#123;dispaly:block;&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>版权声明：本文为博主原创文章，未经博主允许不得转载。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2013/06/07/13/" class="prev">PREV</a><a href="/2013/06/07/15/" class="next">NEXT</a></div><div data-thread-key="2013/06/07/14/" data-title="Web前端开发修炼之道-CSS篇2（转+改）" data-url="http://jiaolongHuang.github.io/2013/06/07/14/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

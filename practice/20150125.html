@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>图片集</title>
+	<style type="text/css">
+		.img-wrapper{
+			display: block;
+			width: 200px;
+			height: 200px;
+			margin-left: 200px;
+			margin-top: 50px;
+			position: relative;
+		}
+		.img-item{
+			position: absolute;
+			left: 10px;
+			top: 8px;
+			width: 200px;
+			height: 200px;
+			border: 5px solid #fff;
+			box-shadow: 1px 1px 8px #333;
+			transition: all 0.2s ease;
+		}
+		.img2{
+			left: 4px;
+			top: 4px;
+		}
+		.img3{
+			left: 0px;
+			top: 0px;
+		}
+		.img-wrapper:hover .img1{
+			transform: rotate(15deg);
+			left: 60px;
+		}
+		.img-wrapper:hover .img3{
+			transform: rotate(-15deg);
+			left: -50px;
+		}
+		.des-wrap{
+			width: 600px;
+			padding: 10px;
+			margin-top: 100px;
+			border: 1px solid #eaeaea;
+		}
+	</style>
+</head>
+<body>
+<a href="" class="img-wrapper">
+	<img class="img-item img1" src="http://p3.qhimg.com/t0188807307d514778a.jpg" alt="">
+	<img class="img-item img2" src="http://p5.qhimg.com/t0188de27c695ea7f39.jpg" alt="">
+	<img class="img-item img3" src="http://p1.qhimg.com/t012ca994d8b63289bf.jpg" alt="">
+</a>
+<div class="des-wrap">
+	<p>创意大于技术.(小猫 is so cute~)</p>
+	<p>技术点：没有什么难点，主要是absoulte,做hover后的位置变化,rotate,做角度变化,transition，让一切看起来都平和些</p>
+	<p>需要注意的点：html中后出现的图片，实际上展示时是在上面的</p>
+</div>
+</body>
+</html>

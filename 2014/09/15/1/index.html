@@ -1,0 +1,27 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 行内非替换元素的实际高度 · 小路口</title><meta name="description" content="行内非替换元素的实际高度 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">行内非替换元素的实际高度</h1><div class="post-info">Sep 15, 2014</div><div class="post-content"><p>晚上一个小师妹，问我为什么会出现下面这样的情况：</p>
+<p>这个问题之前自己还从没遇到过。</p>
+<p>1.刚看到这个问题时，心里还不确定是因为什么原因引起的，觉得可能和span的padding有关系，就先重置了*{margin：0px；}发现，红色背景元素不再高出。但是当将灰色背景的div向右下移动一定距离时，发现问题还是存在的。</p>
+<p>2.接着，怀疑是与行内元素的盒模型有关。但不能确定是与垂直方向的padding相关，还是和line-height相关。还在猜测会不会在某种情况下行内元素撑破了其父元素（block）的盒模型。</p>
+<p>在先后更改了span的padding-top,padding-bottom，line-height后发现，影响这样情况的是line-height。当line-height=它内容的值+padding-top+padding-bottom的值时，它表现的和预期一样。</p>
+<p>3.为什么会这样呢？自己又查了一些资料。</p>
+<p>最后得出的结论是，非替换的行内元素，其真正高度只有其内容的line-height有关。与垂直方向的padding，margin，border都无关。</p>
+<p>1、元素可以设置内边距，外边距，宽度，高度以及边框的宽度，而行内非替换元素在显示时还是有稍微差别，行内非替换元素的上下内边距、上下边框宽度，上下外边距并不会影响元素的高度，即对相对其它元素的距离不会以此改变，如a元素。</p>
+<p>2、当你将块元素与行内非替换元素放一起时，譬如行内非替换元素上面，块元素下面，假设行内非替换元素有5px的边框，你会发现快元素与行内非替换元素的之间的距离并不是相对行内非替换元素的边框而言，好像边框不存在一样。出现该情况是因为行内非替换元素由line-height决定，默认line-height为其内容的高度。</p>
+<ol>
+<li><p><a href="http://www.75team.com/archives/501" target="_blank" rel="external">http://www.75team.com/archives/501</a></p>
+</li>
+<li><p><a href="http://blog.csdn.net/fuyun2000/article/details/4399332" target="_blank" rel="external">http://blog.csdn.net/fuyun2000/article/details/4399332</a></p>
+</li>
+</ol>
+<p>版权声明：本文为博主原创文章，未经博主允许不得转载。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2014/09/28/0/" class="prev">PREV</a><a href="/2014/09/13/2/" class="next">NEXT</a></div><div data-thread-key="2014/09/15/1/" data-title="行内非替换元素的实际高度" data-url="http://jiaolongHuang.github.io/2014/09/15/1/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

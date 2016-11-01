@@ -1,0 +1,73 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 如何制作一个时钟 · 小路口</title><meta name="description" content="如何制作一个时钟 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">如何制作一个时钟</h1><div class="post-info">Dec 13, 2014</div><div class="post-content"><p>如何制作一个时钟呢。这里的时钟指的是，带有指针的那种，而不是电子的。方法至少有2种（因为目前只实践了这两种），css3和canvas<br><a id="more"></a></p>
+<p>##基础数学知识</p>
+<p>我们观察一下时钟，首先想到的是与<strong>角度</strong>有关。再有是，秒针，分针，时针之间的<strong>进位</strong>关系。<br>在讲解这两点之前，先考大家一个问题，4点15时，分针与时针之间的夹角是多少呢？（这可是鹅厂某年的面试题之一）</p>
+<ol>
+<li>我们都知道<code>1s = 1 / 60min</code>,<code>1min = 1 / 60h</code>;</li>
+<li>观察任意一款手表或时钟，我们会发现，通常时钟的表盘会被分成12个大格，<code>5*12=60</code>个小格，而整个表盘是<code>360°</code>，也就是说每个小格是<code>6°</code>。换句话说，秒针和分针每动一下，都会走过1小格，走过了<code>6°</code>，而时针动一下，则走过了一大格，<code>5*6°=30°</code>；因此，秒针和分针移动的基值是6°，时针是30°；</li>
+<li>另外在分针走动的时候，时针也不是静止不动的，而是不甘寂寞的默默向前移动，也就是说当分针动一下，走了6°时，时针实际上也挪动了<code>1 / 60 * 30°</code>。所以，计算时针角度时不要忽略了分针对其的影响。（虽然秒针对分针也有着同样的影响，但几乎看不出来，所以，通常我们会将其忽略）</li>
+</ol>
+<p>##如何用JS取到当前的秒，分，时</p>
+<p>我们制作的时针是基于当前时间，而用角度的形式将其表现出来的，所以取得当前时间是首步</p>
+<ul>
+<li>获得当前时间，<code>var date = new Date()</code>,获得当前时间，以毫秒数表示。</li>
+<li><code>getFullYear()</code>,4位年份</li>
+<li><code>getMonth()</code>,从0-11，分别表示1-12月</li>
+<li><code>getDate()</code>,月份中的天数</li>
+<li><code>getDay()</code>,从0-6，分别表示星期日-星期六</li>
+<li><code>getHours()</code>,0-23</li>
+<li><code>getMinutes()</code>,0-59</li>
+<li><code>getSecond()</code>,0-59</li>
+</ul>
+<p>##确定各指针的角度</p>
+<p>综上两个知识点，我们可以将各指针的角度表示为：</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sdegree = nSeconds * <span class="number">6</span> - <span class="number">90</span>;</div><div class="line">mdegree = nMinutes * <span class="number">6</span> - <span class="number">90</span>;</div><div class="line">hdegree = (nHour%<span class="number">12</span>) * <span class="number">30</span> + Math.floor((nMinutes/<span class="number">60</span>)*<span class="number">30</span>) - <span class="number">90</span>;</div><div class="line">（<span class="number">-90</span>，是因为rotateZ角度旋转规则，默认是从水平开始，逆时针为+，顺时针为-）</div></pre></td></tr></table></figure>
+<p>##各指针之间的进位关系</p>
+<p>如果还要显示此时此刻时钟的数字，那么就会面临另一个难点，临界情况，如，从<code>2014-12-13 12:38:59--&gt;2014-12-13 12:39:00</code>，<code>2014-12-13 12:59:59--&gt;2014-12-13 13:00:00</code>,<code>2014-12-13 23:59:59--&gt;2014-12-14 00:00:00</code>的情况</p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(<span class="built_in">minute</span> != origMinute)&#123;</div><div class="line">	<span class="built_in">text</span>(doms.<span class="built_in">minute</span>,<span class="built_in">minute</span>);</div><div class="line">	<span class="keyword">if</span>(<span class="built_in">minute</span> == <span class="string">"00"</span> &amp;&amp; <span class="built_in">hour</span> != origHour)&#123;</div><div class="line">		<span class="built_in">text</span>(doms.<span class="built_in">hour</span>,<span class="built_in">hour</span>);</div><div class="line">		<span class="keyword">if</span>(<span class="built_in">hour</span> == <span class="string">"00"</span> &amp;&amp; <span class="built_in">day</span> != origDay)&#123;</div><div class="line">			<span class="built_in">text</span>(doms.<span class="built_in">day</span>,<span class="built_in">day</span>);</div><div class="line">			<span class="comment">// 根据显示文案的不同，如果有必要，重新获取本地的年，月，日</span></div><div class="line">			<span class="built_in">text</span>(doms.date,zeroFill(date.getMonth()+<span class="number">1</span>)+<span class="string">"月"</span>+zeroFill(date.getDate())+<span class="string">"日"</span>);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>##涉及到的CSS3知识点</p>
+<ol>
+<li><p><code>transform:rotateZ()</code></p>
+<p> 只需要注意1点：rotateZ(弧度)，单位是弧度，即将我们计算的角度通过公式<code>1° = 180° / π</code>转化</p>
+</li>
+<li><p><code>transform-origin</code></p>
+<p> <code>transform-origin:left center;</code>，设定指针的旋转点为最左端，否则，指针将围绕着自己的中点，进行自旋转。</p>
+</li>
+<li><p><code>transform: translateZ</code></p>
+<p> <strong>制作表盘中的格格</strong>，这些格格是采用绝对定位，都挤在表盘的中间，这时用<code>tranform:translateX(75px)</code>让它们离中心远一点，到表盘边缘去。</p>
+</li>
+</ol>
+<p><a href="http://jiaolonghuang.github.io/practice/clock.html">css3时钟</a>–<a href="http://m.so.com/s?q=%E5%8C%97%E4%BA%AC%E6%97%B6%E9%97%B4&amp;src=home_input&amp;srcg=home" target="_blank" rel="external">北京时间</a>–<a href="http://m.so.com/s?q=%E7%BA%BD%E7%BA%A6%E6%97%B6%E9%97%B4&amp;src=home_input&amp;srcg=home&amp;pq=%E7%BA%BD%E7%BA%A6shiai%0D%0A%E6%97%B6%E9%97%B4&amp;rg=0&amp;_ms=0&amp;log_id=1499220" target="_blank" rel="external">纽约时间</a></p>
+<p>##涉及到的canvas知识点</p>
+<p>由于canvas自身的技术特点，在实现上与css3略有不同。</p>
+<ol>
+<li><p>每一秒钟，当前的时钟都不是前一秒的时钟，而是一个新绘制成的时钟。各指针都是重新绘制的。</p>
+</li>
+<li><p>也就是时钟状态改变的时候，都需要擦除画布，绘制指针</p>
+</li>
+<li><p>canvas也有与css3中transform类似的方法，如rotate，translate，transform，scale等</p>
+</li>
+</ol>
+<p><a href="http://jiaolonghuang.github.io/practice/canvas.html">canvas时钟</a></p>
+<p>##校正时间</p>
+<p>通常，我们会使用一个定时器（每秒调用一次函数）来让指针动起来。但是当在移动端时，系统处于节约资源的考虑，当屏幕暗下去时，会禁用一些资源，这个定时器就不会工作了。当我们再次点亮屏幕时，发现时间还是停留在上一次关闭屏幕时的状态，只有当再次刷新页面时，时间也会恢复成准确时间。这时，我们可以通过设定<strong>另一个定时器</strong>的方法来校正时间。</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// localNow:打开页面时的本地时间</span></div><div class="line"><span class="comment">// now: 打开页面时的系统时间</span></div><div class="line"><span class="comment">// clocker.date: 使用第一个定时器计算的时间</span></div><div class="line">setInterval(<span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</div><div class="line">	<span class="built_in">var</span> localRange = (+<span class="keyword">new</span> <span class="built_in">Date</span>) - localNow,</div><div class="line">		actualRange = (+clocker.date) - (+now);</div><div class="line">	<span class="keyword">if</span>(<span class="built_in">Math</span>.abs(localRange - actualRange)/<span class="number">1000</span> &gt; <span class="number">10</span>)&#123;</div><div class="line">		<span class="built_in">var</span> <span class="built_in">date</span> = <span class="keyword">new</span> <span class="built_in">Date</span>();</div><div class="line">		<span class="built_in">date</span>.setTime(+now + localRange);</div><div class="line">		clocker.setDate(<span class="built_in">date</span>).stop().start(callback);</div><div class="line">		doms.tip.style.visibility = <span class="string">"visible"</span>;</div><div class="line">		doms.info.style.visibility = <span class="string">"hidden"</span>;</div><div class="line">		setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">			doms.tip.style.visibility = <span class="string">"hidden"</span>;</div><div class="line">			doms.info.style.visibility = <span class="string">"visible"</span>;</div><div class="line">		&#125;,<span class="number">1000</span>);</div><div class="line">	&#125;</div><div class="line">&#125;,<span class="number">500</span>);</div></pre></td></tr></table></figure>
+<p>##参考的文章</p>
+<ul>
+<li><p><a href="http://www.cnblogs.com/sky000/archive/2011/02/27/1966173.html" target="_blank" rel="external">js+css3时钟</a></p>
+</li>
+<li><p><a href="http://blog.csdn.net/fengyee_zju/article/details/16994099" target="_blank" rel="external">canvas的translate、scale、rotate等方法</a></p>
+</li>
+<li><p><a href="http://www.cnblogs.com/sanshi/archive/2009/08/28/1555717.html" target="_blank" rel="external">CST和GMT时间的区别</a></p>
+</li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/01/26/vfm/" class="prev">PREV</a><a href="/2014/11/04/share-copy/" class="next">NEXT</a></div><div data-thread-key="2014/12/13/clock/" data-title="如何制作一个时钟" data-url="http://jiaolongHuang.github.io/2014/12/13/clock/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

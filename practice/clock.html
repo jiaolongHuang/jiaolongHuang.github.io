@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>clock</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		ul,li{
+			list-style: none;
+		}
+		.mh-clock-bg{
+			width: 200px;
+			height: 200px;
+			border-radius: 100%;
+			background: #333;
+			position: relative;
+		}
+		.mh-lines li{
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			width: 20px;
+			height: 2px;
+			background: red;
+			-webkit-transform-origin: left center;
+			
+		}
+		.mh-pointer li{
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			background: green;
+			-webkit-transform-origin: left center;
+		}
+		.mh-pointer .mh-hour{
+			width: 40px;
+			height: 4px;
+			margin-top: -2px;
+		}
+		.mh-pointer .mh-min{
+			width: 60px;
+			height: 3px;
+		}
+		.mh-pointer .mh-sec{
+			width: 70px;
+			height: 2px;
+		}
+		.mh-pointer .mh-cir{
+			width: 10px;
+			height: 10px;
+			border-radius: 100%;
+			margin-left: -5px;
+			margin-top: -5px;
+		}
+		
+	</style>
+</head>
+<body>
+	<div class="mh-clock-bg">
+		<ul class="mh-lines">
+			<li style="-webkit-transform:rotateZ(0deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(30deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(60deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(90deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(120deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(150deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(180deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(210deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(240deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(270deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(300deg) translateX(75px)"></li>
+			<li style="-webkit-transform:rotateZ(330deg) translateX(75px)"></li>
+		</ul>
+		<ul class="mh-pointer">
+			<li class="mh-hour"></li>
+			<li class="mh-min"></li>
+			<li class="mh-sec"></li>
+			<li class="mh-cir"></li>
+		</ul>
+	</div>
+</body>
+<script type="text/javascript" src="http://s8.qhimg.com/static/5d0cb4bd42d5cb6e/zepto_1.1.2.js"></script>
+<script>
+
+	function clock(){
+		var hour = $('.mh-hour'),
+			min = $('.mh-min'),
+			sec = $('.mh-sec');
+
+		var time,nHour,nMinutes,nSeconds,srotate,mrotate,hrotate,sdegree,mdegree,hdegree;
+		setInterval(function(){
+			time = new Date();
+			//console.log(time);
+			nHour = time.getHours();
+			nMinutes = time.getMinutes();
+			nSeconds = time.getSeconds();
+			//每格表示的度数为360/60=6度
+			sdegree = nSeconds * 6 - 90;
+			mdegree = nMinutes * 6 + (nSeconds/60)*6 - 90;
+	
+			//时针的度数应该为当前时间的小时数+与分针对应的小时度数
+			//(nHour%12) * 30 == (nHour%12) * (360/12)
+			//nMinutes/2 == (nMinutes/60)*5*6 这里的(nMinutes/60)*5表示的是与分针对应的小时刻度，然后每格的度数6
+			hdegree = (nHour%12) * 30 + Math.floor((nMinutes/60)*30) - 90;
+			
+			srotate = 'rotateZ(' + sdegree + 'deg)';
+			mrotate = 'rotateZ(' + mdegree + 'deg)';
+			hrotate = 'rotateZ(' + hdegree + 'deg)';
+			//console.log(srotate);
+			sec.css("-webkit-transform",srotate);
+			min.css("-webkit-transform",mrotate);
+			hour.css("-webkit-transform",hrotate);
+			document.title = nHour + ':' + nMinutes + ':' + nSeconds;
+		},1000);	
+	}
+	clock();
+</script>
+</html>

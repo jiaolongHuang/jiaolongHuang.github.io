@@ -1,0 +1,128 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> HTTP2学习(四)—HTTP2的新特性 · 小路口</title><meta name="description" content="HTTP2学习(四)—HTTP2的新特性 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">HTTP2学习(四)—HTTP2的新特性</h1><div class="post-info">Aug 16, 2015</div><div class="post-content"><p>HTTP2可以让我们的应用变得更快、更简单、更健壮，让我们在HTTP1.1时针对TCP协议特性而做的用来提高性能的HACK一笔勾销。<br><a id="more"></a></p>
+<h2 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h2><p>为了提高应用的性能，降低延迟，我们能做的无外乎2点，要么传输的东西越小越好，要么距离能获得资源的地方越近越好。</p>
+<p>这个就好比说是运动员赛跑，为了最先到达终点，在相同的速度下，当然是离终点越近，用时会越短；另一方面，在距离相等的情况下，当然是降低自上多余的重量，让速度越快越好，这也是为什么短跑运动员穿紧身运动服，鞋带都要藏起来的原因，为了最大限度的降低在空气中的阻力，提高速度。</p>
+<p>实际上无论是针对HTTP的哪个版本我们所做的性能优化，也都是针对这两点所作出的改进。</p>
+<p>HTTP2的目的：通过支持<strong>多路复用</strong>来提高并行能力，减少因为3次握手等而产生的延迟；通过<strong>压缩HTTP首部</strong>将协议开销降到最低，同时支持请求优先级和服务器推送。</p>
+<p>HTTP2最大的改变：引入<strong>二进制分帧层</strong>。HTTP2不会改动HTTP1.x的语义，提供的功能也不变，但是HTTP2对内修改了格式化数据的方式，以及传输这些数据的方式。对外，也就是面向应用，不用做任何改变，感知不到这一层的变化的。</p>
+<p>其实HTTP2是对HTTP1.x的一个扩展，而非替代，之所以称之为2是因为它引入的二进制分帧层之前的HTTP1.x的服务端和客户端并不兼容。</p>
+<h2 id="新特性浅析"><a href="#新特性浅析" class="headerlink" title="新特性浅析"></a>新特性浅析</h2><h3 id="二进制分帧层"><a href="#二进制分帧层" class="headerlink" title="二进制分帧层"></a>二进制分帧层</h3><p>这是HTTP2中最大的改变。HTTP2之所以性能会比HTTP1.x有那么大的提高，很大程度上正是由于这一层的引入。</p>
+<blockquote>
+<p>这里所谓的“层” ，指的是位于套接字接口(注1)与应用可见的高层HTTP API之间的一个新机制:HTTP的语义，包括各种动词、方法、首部，都不受影响，不同的是<strong>传输期间</strong>对它们的编码方式变了。</p>
+</blockquote>
+<p>HTTP1.x用回车换行符作为纯文本的分隔符，在进行解析和差错检测时不方便。HTTP1.x中用ASCII码，是16进制的，来表示报文中的每一个字符，如下图中,47代表字母G，45代表字符E，54代表字符T。<br><img src="http://p8.qhimg.com/d/inn/2bc21b16/http-header.png" alt=""><br>然而，HTTP2引入分帧层后，将报文分隔成一个个更小的帧，并采用二进制编码的方式。通常会将一个消息（首部和数据在一起的）分成一个HEADER帧和若干个DATA帧。如下图所示<br><img src="/img/http2/frame-layer.png" alt=""></p>
+<p>另外需要明确的几个定义：<br><strong>流</strong>：已建立的连接上的双向字节流。具有唯一的流ID，客户端发起的为奇数ID，服务端发起的为偶数ID。很多个流可以并行的在同一个tcp连接上交换消息。<br><strong>消息</strong>：与逻辑消息对应，比如一个请求或一个响应。由一个或多个帧组成。<br><strong>帧</strong>：HTTP2中最小的通信单位，每个帧都会有帧首部，每个帧或者用来承载HTTP首部或负荷数据，或其他特定类型的帧。帧是遵循二进制编码的。</p>
+<p>总得来说，就是这样的，在HTTP2中，相同域名下的所有通信都在一个连接上完成，这个连接中可以承载任意数量的双向流。这些流都是以消息的形式被发送的，同时消息又由一个或多个帧组成。多个帧之间可以乱序发送，最后根据帧首部的流标识重新组装。</p>
+<p><strong>解释</strong><br>这个双向是指，服务器可以给浏览器发消息（server push），浏览器也可以给服务器发东西（这就不用说啦）</p>
+<p>对于一个帧来说，有固定固定帧格式，其中帧首部规定了帧最多只能带64KB的数据，还包括了帧类型和流标识符等。另外，帧中还可以填充一些额外的数据，最多255字节，保证数据安全性，拿HEADER帧举例。<br><img src="/img/http2/frame-structure.png" alt=""><br><img src="/img/http2/frame-header.png" alt=""></p>
+<p>从这点上看，HTTP2中的帧与tcp报文段有些相似的。</p>
+<p>在客户端或服务端发起建立新流时，帧携带HTTP的首部块，其中服务端发起流时，发送的HEADER帧没有优先级这一字段；当新流建立之后，就可发送HTTP消息的应用数据，也就是帧的负荷数据。</p>
+<p>将消息拆成多个数据帧之后，会大大缓解HTTP队首阻塞[注2]的情况。但是与tcp层的队首阻塞[注3]并无直接关系。同时，改以帧为传输单位后，使得对报文无论是解析和差错检测方面都变得更加容易，因为对纯文本的解析还需要考虑到空格，空行，换行等问题。另外，也还消除了并行处理和发送请求及响应时对多个连接的依赖。</p>
+<p><strong>解释</strong><br>多路复用：用一个tcp连接，并行发好多。【…keep_alive 很像啊】<br>—分组数？？表示是底层的，都没有概念…按道理说是分帧了后，分组数会变多啊？？？<br>和keep_alive 不像，是和管道化很像哈。<br>实际上是这样的，首先肯定的是多使用同一个tcp连接，比起以前的多个tcp连接，会至少每次少了3个建立连接的tcp报文段，还不包括重传的。同时因为分帧之后出错的概率变小，间接的需要重传的包变少。从这两方面来说整个网络中的包中的总数是变少的。<br>另外呢，tcp报文段的长度其实还是保持不变的，不同流中的帧其实是混在一个tcp报文段中一起被发送，而在接收方那边接受到这个报文段后再进行拆分重新组装成新的http报文。</p>
+<h3 id="首部压缩"><a href="#首部压缩" class="headerlink" title="首部压缩"></a>首部压缩</h3><p>由于HTTP协议是一种无状态的协议，服务器自身不会保存太多的信息和先前请求过的元数据信息，这就需要客户端每次都使用多个首部字段来描述所传输的资源及其属性，又由于HTTP1.1是以文本形式传输的，每次都会给HTTP报文增加500-800字节的负荷，如果算上cookie，这个负荷甚至会增加到上千。如果可以有办法减少这些开销，那么对性能又有很大的提升。</p>
+<p>HTTP2采用HPACK压缩方法，一边用index mapping table压缩，一边编码。这个table由<a href="https://http2.github.io/http2-spec/compression.html#static.table.definition" target="_blank" rel="external">静态表</a>和动态表组成。</p>
+<ol>
+<li>先用预定义的index mapping table将头部中常用的字符串用index来代替</li>
+<li>对一定要使用文本表示的字符串，采用预定义的哈夫曼编码表进行编码<br>(具体的压缩和解压缩的方法请看<a href="http://www.cnblogs.com/ghj1976/p/4586529.html" target="_blank" rel="external">参考4</a>的解释)</li>
+</ol>
+<ul>
+<li>客户端和服务器端使用首部表来跟踪和存储之前发送的每一个键值对。第一次请求时发送过的键值对，第二次在再请求时就不在发送了。（这一现象还一直没观察到）</li>
+<li>在tcp连接期间，客户端和服务端共同维护这个首部表，并且是共同渐进更新的</li>
+<li>每个新的键值对，要么直接添加到首部表尾部，要么替换原有表中的值</li>
+</ul>
+<p>另外，HTTP2的前身SPDY采用的头部压缩算法是delate算法，这个算法的压缩效率也不错，但是由于存在<a href="http://www.freebuf.com/articles/web/5636.html" target="_blank" rel="external">CRIME攻击</a>，而HTTP2不得不重新设计了HPACK算法。</p>
+<p><strong>解释</strong><br>使用了HPACK算法，一方面如果下一次请求头部和上一次请求头部中有相同的字段，那么相同的字段不会被发送，只会被发送差异性的字段。另一方面，会有一张首部表，里面会有常用的首部字段极其对应的序号，会有序号来代替这个具体的字段字符串。同时，整个首部帧还会用哈夫曼编码来进行压缩。</p>
+<h3 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h3><p>引入二进制分帧层之后，HTTP2可以很容易的去实现多流并行而不用依赖建立多个tcp连接。</p>
+<blockquote>
+<p>实验表明，客户端使用更少的连接肯定可以降低延迟时间。HTTP 2.0 发送的总分组数量比 HTTP 差不多要少 40%。而服务器处理大量并发连接的情况也变成了可伸缩性问题，因为 HTTP 2.0 减轻了这个负担。               —-HTTP2.0</p>
+</blockquote>
+<p>每个来源使用一个连接，优势如下：</p>
+<ul>
+<li>从服务器和客户端来说，占用的资源和内存都少了。</li>
+<li>从tcp连接和网络来说，使得网络拥塞得到改善，慢启动时间减少，拥塞和丢包恢复速度变快。</li>
+</ul>
+<p><strong>解释</strong></p>
+<ul>
+<li><p>keep-alive，也是可以不进行3次握手就可以发送多个在同一个域下的请求。但是必须发送下一个请求B，等待前一个请求A的响应收到后才可以发送。多路复用和管道优化差不多，只是管道优化由于兼容性的问题，而没有被普遍使用。</p>
+</li>
+<li><p>但是什么时候断？如果太多的保持连接，会不会反而不好呢<br>和一般TCP连接释放一样，如果客户端没有数据要请求，或服务端数据发送完毕后，会主动发送关闭连接的报文。或者是服务端连续发送10个探测报文，客户端无响应，服务端就关闭了这个连接。</p>
+</li>
+</ul>
+<h3 id="请求优先级"><a href="#请求优先级" class="headerlink" title="请求优先级"></a>请求优先级</h3><p>当同一条连接上可以同时发送很多请求时，并不等于说这些请求对于服务器来说都应该一视同仁，因为客户端对资源的需求程度不同。比如说一个html文档，显然客户端对CSS和JS的需求，远大于对文档内图片的需求。</p>
+<p>因此在建立新流时，HEADER帧可以带有一个优先级(31位，0为优先级最高)的值。这样，服务端就可以因此而适当分配资源，优先发送这些优先级高的帧。</p>
+<p>HTTP2协议并没有规定这样的处理优先级的算法该如何实现，仅仅只是提供了这样一种机制。</p>
+<p>为了合理充分利用网络资源，服务器也应该交错处理不同优先级的帧。而不是严格按照优先级来处理，否则又会造成队首堵塞的情况。</p>
+<p><strong>解释</strong><br>？请求优先级….感觉需要服务器也要支持的节奏（那确实变复杂了）<br>是的。也就是说服务器和客户端对这个优先级的理解是一样的，或是达成一致的。</p>
+<h3 id="服务器推送"><a href="#服务器推送" class="headerlink" title="服务器推送"></a>服务器推送</h3><p>说到服务器推送，其实在HTTP1.1时，我们就用到过类似的，比如将图片使用base64编码嵌入在文档中。</p>
+<p>之所以要提供这个服务，是因为一个文档被请求回来时，往往还需要再次请求很多文档内的其他资源，如果这些资源的请求不用客户端发起，而是服务端提前预判发给客户端，那么就会减少一半的RTT。</p>
+<p>HTTP2这个协议也没有规定服务器端到底该怎样推送这个资源。服务端可以自己制定不同的策略，可以是根据客户端明确写出的推送请求；或者是服务端通过学习得来；再或者是通过额外的HTTP首部想服务端表明意向。</p>
+<p>这个服务的特点是：</p>
+<ul>
+<li>只有建立连接后，服务器才可以推送资源(发送PUSH_PROMISE帧，这个帧中只有要约的HTTP首部)，也就是说服务器不能无缘无故的主动向客户端推送资源</li>
+<li>客户端可以发送RST_STREAM拒绝服务器推送来的资源。但是这可能存在一个时间差，而导致客户端明明已经拒绝了，但服务端却还是把资源推送了过来。</li>
+<li>推送的资源可以有不同页面共享</li>
+<li>服务器可以按照优先级来推送资源</li>
+</ul>
+<p><strong>解释</strong><br>服务器主动推送一个资源，客户端有权来选择是接收还是不接收，不能‘来者不拒’嘛，是吧。</p>
+<h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><p>我们知道在HTTP2协议中，我们可以在同一个连接中，建立多个流，那么实际上这些流之间是相互竞争的，会相互争夺这个连接中资源的分配。此时与tcp流量控制相似，我们也需要对流中的帧进行流量控制。但只有DATA帧受流量控制，而其他类型的帧不受流量控制。同样，HTTP2也只提供了这样一种机制，而非具体实现。</p>
+<ul>
+<li>这个流量控制在没一跳之间进行，而非端到端</li>
+<li>流量控制基于窗口更新帧。连接建立之初，通过交换settings帧，来设定双向的流量控制窗口大小。</li>
+<li>发送端每发送一个DATA帧，就将window的值减去这次data帧的大小，直到window=0。</li>
+<li>接收方可通过发送window_update 帧。如果接收方不想接受数据了，就不发送window _update帧。</li>
+<li>在接受关键资源时，可将非关键资源的window设置的非常小，等网络空闲了，再改回大一些。</li>
+</ul>
+<h2 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h2><ul>
+<li><p>可以使用chrome的工具<code>chrome://net-internals/#http2</code>来查看具体发送的帧的内容</p>
+</li>
+<li><p>打开chrome-network中的protocol一栏，查看当前站点使用的HTTP版本<br><img src="/img/http2/chrome-tool.png" alt=""></p>
+</li>
+<li><p>安装chrome扩展<a href="https://chrome.google.com/webstore/detail/http2-and-spdy-indicator/mpbpobfflnpcgagjijhmgnchggcjblin?hl=zh-CN" target="_blank" rel="external">HTTP/2 and SPDY indicator</a>,在地址栏右侧会标示出是否使用了HTTP2或SPDY协议。<br><img src="/img/http2/chrome-tool1.png" alt=""></p>
+</li>
+<li><p>在firefox浏览器的网络中，也可直接查看使用的HTTP协议的版本<br><img src="/img/http2/firefox-tool.png" alt=""></p>
+</li>
+<li><p>帮助我们检测某个网站是否使用了HTTP2协议的网站<a href="https://www.h2check.org/" target="_blank" rel="external">HTTP/2 Checker</a>;检测是否使用了SPDY协议的网站<a href="https://spdycheck.org/" target="_blank" rel="external">SPDYCheck.org</a></p>
+</li>
+<li><p>分析页面性能的网站<a href="http://www.webpagetest.org/" target="_blank" rel="external">WebPagetest</a></p>
+</li>
+</ul>
+<h2 id="实验验证"><a href="#实验验证" class="headerlink" title="实验验证"></a>实验验证</h2><p>为了能够亲自证实HTTP2确实对web性能有了很大的改进，使用nodejs作为服务端，分别验证在使用HTTP2, HTTPS, HTTP和SPDY作为HTTP协议时，同时加载10张图片时web性能的表现，<a href="http://jiaolongHuang.github.io/code/http2-experiment.zip">代码下载</a>。结果比较出乎意外：</p>
+<ul>
+<li><p>可以比较直观的观察到多路复用的表现<br><img src="/img/http2/http2-e.png" alt="" width="600px"><br><img src="/img/http2/http1-e.png" alt="" width="600px"></p>
+</li>
+<li><p>Server Push的验证<br><a href="https://www.imququ.com/" target="_blank" rel="external">屈屈</a>的<a href="https://www.imququ.com/post/use-http2-now.html" target="_blank" rel="external">博客</a>中有专门的介绍，这里我们也看一下。打开博客首页后可看到响应头中有<code>link:&lt;...&gt;</code>这样一个键值对，这是告诉服务器这个资源需要被推送。<br><img src="/img/http2/server-push.png" alt="" width="800px"></p>
+</li>
+</ul>
+<p>然后使用之前提到过的<code>chrome://net-internals/#http2</code>工具来查看具体的Push过程<br><img src="/img/http2/push_promise.png" alt="" width="800px"></p>
+<ul>
+<li>至于头部压缩字节变少，页面加载速度变慢并无明显结果。与<a href="http://www.infoq.com/cn/news/2015/02/https-spdy-http2-comparison" target="_blank" rel="external">HTTPS、SPDY和HTTP/2的性能比较</a>的实验结果差的也比较多。</li>
+</ul>
+<p>猜测原因：由于是访问的本地资源，不能模拟网络拥塞的情况，故不能完全体现出http2的优势。</p>
+<h2 id="注"><a href="#注" class="headerlink" title="注"></a>注</h2><ol>
+<li><p>套接字：是支持TCP/IP网络通信的基本操作单元，可以看成是不同主机之间的进程进行双向通信的端点。是应用进程与tcp连接之间的门，通过套接字口来发送或获得报文。</p>
+</li>
+<li><p>HTTP队首阻塞：一个慢请求阻塞后面的所有请求。具体来说就是，假设客户端同时发送2个请求，一个高优先级，一个低优先级，即便低优先级的资源先准备好了，也不会先发送，而是先等着，等高优先级的响应发送完了再发送低优先级的。这样会导致网络资源浪费，服务器缓冲开销浪费，最终导致客户端等待时间无限期延迟。</p>
+</li>
+<li><p>tcp队首阻塞：tcp要求分组严格按照顺序交付，一个分组未收到，就会阻塞后续的所有高序号分组。直到重传那个丢失的分组。</p>
+</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://http2.github.io/" target="_blank" rel="external">HTTP/2</a></li>
+<li><a href="http://www.unclekevin.org/?p=402" target="_blank" rel="external">HTTP/2标准的发展 8 – HTTP 头部压缩</a></li>
+<li><a href="https://http2.github.io/http2-spec/compression.html" target="_blank" rel="external">HPACK: Header Compression for HTTP/2</a></li>
+<li><a href="http://io.upyun.com/2015/05/13/http2/" target="_blank" rel="external">HTTP/2 新特性浅析</a></li>
+<li><a href="http://www.cnblogs.com/ghj1976/p/4586529.html" target="_blank" rel="external">为 HTTP/2 头压缩专门设计的 HPACK</a></li>
+<li><a href="http://www.cnblogs.com/ghj1976/p/4552583.html" target="_blank" rel="external">HTTP2 概述</a></li>
+<li><a href="https://docs.google.com/presentation/d/1r7QXGYOLCh4fcUq0jDdDwKJWNqWK1o4xMtYpKZCJYjM/present?slide=id.p19" target="_blank" rel="external">HTTP/2 is here</a></li>
+<li><a href="https://docs.google.com/presentation/d/1l9c9ROjLTD8clOL0yFufAOMbxNC0D-19zCiXMgqtY-M/edit?pli=1#slide=id.p19" target="_blank" rel="external">HTTP/2 all the things!</a></li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/08/17/http2&amp;spdy/" class="prev">PREV</a><a href="/2015/08/16/http-pipelining/" class="next">NEXT</a></div><div data-thread-key="2015/08/16/http2/" data-title="HTTP2学习(四)—HTTP2的新特性" data-url="http://jiaolongHuang.github.io/2015/08/16/http2/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

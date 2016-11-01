@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>css3-chart</title>
+	<style type="text/css">
+		div{
+			margin-bottom: 30px;
+		}
+		.pie,
+		.pie-one{
+			width: 100px;
+			height: 100px;
+			border-radius: 100%;
+			background-color: #9783b7;
+			background-image: linear-gradient( to right, transparent 50%, #ed885f 0);
+		}
+		.pie::before,
+		.pie-one::before{
+			content: '';
+			display: block;
+			margin-left: 50%;
+			height: 100%;
+
+			transform-origin: left;
+			background-color: inherit;
+
+			border-radius: 0 100% 100% 0 / 50%;
+
+			
+		}
+		.pie::before{
+			animation: spin 50s linear infinite,
+						bg 100s steps(1, end);
+			animation-delay: inherit;
+			animation-play-state: paused;
+		}
+
+		.pie-one::before{
+			animation: spin 3s linear infinite,
+						bg 6s steps(1, end);
+
+		}
+		@keyframes spin{
+			to{
+				transform: rotate(.5turn);
+			}
+		}
+		@keyframes bg{
+			0%{
+				background-color: inherit;
+			}
+			50%{
+				background-color: #ed885f;
+			}
+			100%{
+				background-color: inherit;
+			}
+		}
+
+	</style>
+</head>
+<body>
+	<div class="chart">
+		<div class="pie-one"></div>
+	</div>
+	<div class="chart-another">
+		<div class="pie" >25%</div>
+		<div class="pie">60%</div>
+	</div>
+</body>
+
+<script type="text/javascript" src="http://s0.qhimg.com/lib/jquery/183.js"></script>
+<script type="text/javascript">
+(function(){
+	
+	$(".pie").each(function(index,pie){
+		var p = parseFloat(pie.textContent);
+		pie.style.animationDelay="-"+p+'s';
+		console.log(pie.style.animationDelay);
+	});
+	
+})();
+</script>
+</html>

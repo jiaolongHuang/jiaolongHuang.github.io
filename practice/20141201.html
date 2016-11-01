@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>径向动画菜单</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		.img-wrap,
+		.img-wrap p{
+			margin-left: 10px;
+		}
+		.img-wrap p{
+			margin-bottom: 10px;
+			color: red;
+		}
+		/* 
+			1. 分析效果，可以确定涉及到opacity和scale，以及位置从中心处扩散到边缘，以及使用transition对动画的一个渐变过程。
+			
+			2. 位置从中心处扩散到边缘
+			（1）一开始想假定每个图标是一个div的一端，再用rotateZ来确定其旋转的角度，后来实验发现这样会连带图标一起旋转，不可取。
+			（2）使用绝对定位，通过规律来确定其left和top与角度之间的关系，写成一个公式。
+
+			3. 之后，把效果先是很自然的加在了目标元素，也就是nav*上，这样会导致执行时扩散的效果只有一次。
+			第二次再执行时只会是nav*自身透明度和大小在边缘处变化，这样一点都不酷啊。
+
+			4. 再次，把opacity和scale的变化加在nav*的爸爸身上，也就是相当于那个画布上，这样画布逐渐放大时，它的儿子们也在逐渐放大。效果就有了。当然既然有scale的变化，就应当明确爸爸的大小，也就是宽度和高度。
+
+			5. 需要注意的是，Math.cos(x),Math.sin(x),x都是以弧度为单位的，1° = 180° / π；
+
+		 */
+		.nav-wrap,
+		.nav2-wrap{
+			position: relative;
+			margin: 50px 0 0 20px;
+			width: 200px;
+			height: 200px;
+		}
+		.nav-wrap a,
+		.nav2-wrap a{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-top: -15px;
+			margin-left: -15px;
+		
+			width: 30px;
+			height: 30px;
+			background: yellow;
+			text-align: center;
+		}
+		nav{
+			width: 200px;
+			height: 200px;
+
+			opacity: 0;
+			transform: scale(0);
+			transition: all 0.5s ease-out;
+		}
+		/* .nav2-wrap{
+			position: fixed;
+			bottom: 0px;
+			right: 0px;
+			margin: 50px 0 0 20px;
+			width: 200px;
+			height: 200px;
+		} */
+		.active nav{
+			opacity: 1;
+			transform: scale(1);
+		}
+		a.main-nav{
+			background: red;
+		}
+	</style>
+</head>
+<body>
+	<div class="nav-wrap">
+		<nav>
+			<a href="##" class="nav-item">1</a>
+			<a href="##" class="nav-item">2</a>
+			<a href="##" class="nav-item">3</a>
+			<a href="##" class="nav-item">4</a>
+			<a href="##" class="nav-item">5</a>
+			<a href="##" class="nav-item">6</a>
+			<a href="##" class="nav-item">7</a>
+			<a href="##" class="nav-item">8</a>
+		</nav>
+		<a href="##" class="main-nav"></a>
+	</div>
+
+	<div class="nav2-wrap">
+		<nav>
+			<a href="##" class="nav-item">1</a>
+			<a href="##" class="nav-item">2</a>
+			<a href="##" class="nav-item">3</a>
+			<a href="##" class="nav-item">4</a>
+		</nav>
+		<a href="##" class="main-nav"></a>
+	</div>
+	<div class="img-wrap">
+		<p>角度计算的步骤示意图</p>
+		<img src="http://p7.qhimg.com/t01c18a351447f47759.jpg" width="500" height="530" />
+		<img src="http://p0.qhimg.com/t016c4a982692543b59.jpg" width="500" height="530" />
+	</div>
+</body>
+<script src="http://s0.qhimg.com/lib/jquery/183.js" ></script>
+<script type="text/javascript">
+	(function(){
+		/* 
+			openIt(总度数,半径长度,是否为不完整原,子菜单集合,navWrap);
+		*/
+		function openIt(degs,radius,isHalf,navs,navWrap){
+			
+			var left,top,
+				len1 = navs.length;
+
+			var deg = degs / (len1 - isHalf),
+				addDeg = 360 - degs;
+			
+			for(var i = 0;i < len1; i++){
+				// 角度化成弧度
+				var d = (deg * i + addDeg) * Math.PI / 180;
+				top = (radius - Math.cos(d) * radius);
+				left = (radius + Math.sin(d) * radius);
+				
+				$(navs[i]).css("top",top+"px");
+				$(navs[i]).css("left",left+"px");
+			}
+		}
+
+		$('.nav-wrap').on('click','.main-nav',function(){
+			var navs = $('.nav-wrap .nav-item'),
+				navWrap = $('.nav-wrap');
+			if(!navWrap.hasClass('active')){
+				openIt(360,100,0,navs,navWrap);
+			}
+			navWrap.toggleClass('active');
+		});
+
+		$('.nav2-wrap').on('click','.main-nav',function(){
+			var navs = $('.nav2-wrap .nav-item'),
+				navWrap = $('.nav2-wrap');
+			if(!navWrap.hasClass('active')){
+				openIt(90,100,1,navs,navWrap);
+			}
+			navWrap.toggleClass('active');
+		});
+	})();
+</script>
+</html>

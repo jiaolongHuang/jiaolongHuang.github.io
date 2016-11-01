@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='UTF-8'>
+	
+	<title>Progress Bars</title>
+	
+	<link rel='stylesheet' href='css/style.css'>	
+	<style>
+		.img-wrap{
+			text-align: left;
+		}
+		.img-item{
+			margin: 20px 0 0 10px;
+		}
+		.articles{
+			margin: 40px 0;
+			text-align: left;
+		}
+		.articles a{
+			line-height: 22px;
+			color: #fff;
+		}
+		.meter { 
+			height: 20px;  /* Can be anything */
+			position: relative;
+			margin: 60px 0 20px 0; /* Just for demo spacing */
+			background: #555;
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+			border-radius: 5px;
+			padding: 20px;
+		}
+		.meter > span {
+			display: block;
+			height: 50px;
+			-webkit-border-radius: 5px;
+			
+			background-color: #f0a3a3;
+			background-image: -moz-linear-gradient(top, #f0a3a3, #f42323);
+			background-image:
+				 -webkit-gradient(linear,left top,left bottom,
+				 color-stop(0, #f0a3a3),
+				 color-stop(1, #f42323));
+			background-image: -webkit-linear-gradient(#f0a3a3, #f42323);
+			
+			position: relative;
+			overflow: hidden;
+		}
+		.meter > span:after{
+			content: "";
+			position: absolute;
+			top: 0; left: 0; bottom: 0; right: 0;
+			 background-image: 
+			   -webkit-gradient(linear, 0 0, 100% 100%, 
+				  color-stop(.25, rgba(255, 255, 255, .2)), 
+				  color-stop(.25, transparent),
+				  color-stop(.5, transparent), 
+				  color-stop(.5, rgba(255, 255, 255, .2)), 
+				  color-stop(.75, rgba(255, 255, 255, .2)), 
+				  color-stop(.75, transparent), to(transparent)
+			   );
+			z-index: 1;
+			-webkit-background-size: 50px;
+			-webkit-animation: move 2s linear infinite;
+			background-position: 50px;
+			overflow: hidden;
+		}
+		@-webkit-keyframes move {
+			0% {
+			   background-position: 0 0;
+			}
+			100% {
+			   background-position: 50px 50px;
+			}
+		}
+		.testBar{
+			width: 100px;
+			height: 100px;
+			background-color: #fff;
+			background-image:  
+				-webkit-gradient(linear, 0 0, 100% 100%,
+				from(red),
+				color-stop(0.5,yellow),
+				to(green)
+			   );
+			background-size: 50px 50px;
+			-webkit-animation: move 2s linear infinite; 
+		}
+		.testDiv{
+			width: 400px;
+			height: 400px;
+			margin-top: 40px;
+			border: 1px solid #000;
+			background-image: 
+				-webkit-gradient(linear, 0 0, 0 100%,
+					color-stop(0.97,transparent),
+					color-stop(0.97,#fff),
+					to(#fff)
+			   );
+			background-size: 30px;
+		}
+		.checkered{
+			width: 200px;
+			height: 200px;
+			margin-top: 40px;
+			background-image: 
+				-webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, #fff), color-stop(.25, transparent),color-stop(.75, transparent),color-stop(.75, #fff),to(#fff)), 
+				-webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, #fff), color-stop(.25, transparent),color-stop(.75, transparent),color-stop(.75, #fff),to(#fff));
+			background-size: 50px;
+		}
+		/* 比较疑惑的点：
+			1. 斜条是怎么出来的？
+			gradient从(left,top)-->(right,bottom),见图1
+			背景大小为50px，只取上面的20px，见图2
+			2. 怎么动起来的？
+			animation
+			3.颜色间隔如何处理的？
+			一个层，坐垂直的线性过渡，粉-->红
+			另一个层，斜条(透明+半透明的白)，见图3
+			技术点：
+			1. -webkit-gradient(type, start_point, end_point, / stop...)
+			2. color-stop(过渡点位置，过渡点颜色)，多个过渡点在同一位置
+			3. background-size: 背景的尺寸;
+			4. background-position: 背景的起始位置(见图4a,图4b);
+			巧妙点：
+			1. background-position的x,y坐标，恰好等于background-size的大小，使得动画从0->100%移动时，恰好是背景图从左上移到右下(见图5)。
+			2. 动画的infinite，无限次重复。无痕衔接。
+		 */
+	</style>
+</head>
+
+<body>
+	<div id="page-wrap">
+		<div class="meter red">
+			<span style="width: 100%"></span>
+		</div>
+		<div class="testBar"></div>
+		<div class="testDiv"></div>
+		<div class="checkered"></div>
+	</div>
+	
+	<div class="img-wrap">
+		<h1>示意图:</h1>
+		<div class="img-item">
+			<img  src="http://p9.qhimg.com/d/inn/bdbb8af1/img/1.png" width="400px" />
+			<p>(图1)</p>
+		</div>
+		<div class="img-item">
+			<img  src="http://p9.qhimg.com/d/inn/bdbb8af1/img/2.png" width="200px" />
+			<p>(图2)</p>
+		</div>
+		<div class="img-item">
+			<img  src="http://p9.qhimg.com/d/inn/bdbb8af1/img/3.png" width="400px" />
+			<p>(图3)</p>
+		</div>
+		<div class="img-item">
+			<img  src="http://p9.qhimg.com/d/inn/bdbb8af1/img/4a.png" width="600px" />
+			<p>(图4a)</p>
+		</div>
+		<div class="img-item">
+			<img  src="http://p9.qhimg.com/d/inn/bdbb8af1/img/4b.png" width="600px" />
+			<p>(图4b)</p>
+		</div>
+		<div class="img-item">
+			<img  src="http://p9.qhimg.com/d/inn/bdbb8af1/img/5.png" width="200px" />
+			<p>(图5)</p>
+		</div>
+	</div>
+	<div class="articles">
+		<h2>参考文章</h2>
+		<p><a href="http://www.w3school.com.cn/cssref/pr_background-position.asp" target="_blank">background-position 属性</a></p>
+		<p><a href="http://www.w3school.com.cn/cssref/pr_background-size.asp" target="_blank">background-size 属性</a></p>
+		<p><a href="http://www.zhangxinxu.com/wordpress/2010/04/css-gradient%E6%B8%90%E5%8F%98%E4%B9%8Bwebkit%E6%A0%B8%E5%BF%83%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%8B%E7%9A%84%E4%BD%BF%E7%94%A8/">CSS gradient渐变之webkit核心浏览器下的使用</a></p>
+		<p><a href="http://www.cnblogs.com/lhb25/archive/2013/01/30/css3-linear-gradient.html">CSS3 经典教程系列：CSS3 线性渐变（linear-gradient）</a></p>
+	</div>
+	
+</html>

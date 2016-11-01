@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> HTTP2学习(三)—关于HTTP/1.1管道化的问答(翻译) · 小路口</title><meta name="description" content="HTTP2学习(三)—关于HTTP/1.1管道化的问答(翻译) - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">HTTP2学习(三)—关于HTTP/1.1管道化的问答(翻译)</h1><div class="post-info">Aug 16, 2015</div><div class="post-content"><p><a href="http://www-archive.mozilla.org/projects/netlib/HTTP//pipelining-faq.html" target="_blank" rel="external">关于HTTP/1.1管道化的问答</a></p>
+<h2 id="什么是http管道化"><a href="#什么是http管道化" class="headerlink" title="什么是http管道化"></a>什么是http管道化</h2><p>通常，http请求总是顺序发送的，下一个请求只有在当前请求的响应被完全接受的时候才会被发送。由于网络延迟和带宽的限制，这样会导致在服务器发送下一个响应的时候中间有很大的延迟。<br>HTTP/1.1允许多个http请求通过一个套接字同时被输出 ，而不用等待相应的响应。然后请求者就会等待各自的响应，这些响应是按照之前请求的顺序依次到达。（me：所有请求保持一个FIFO的队列，一个请求发送完之后，不必等待这个请求的响应被接受到，下一个请求就可以被再次发出；同时，服务器端返回这些请求的响应时也是按照FIFO的顺序）。管道化的表现可以大大提高页面加载的速度，尤其是在高延迟连接中。<br>管道化同样也可以减少tcp/ip的数据包。通常MSS的大小是在536-1460字节，所以将许多个http请求放在一个tcp/ip包 里也是有可能的。减少加载一个网页所需数据包的数量可以在整体上对网络有益处，因为数据包越少，路由器和网络带来的负担就越少。<br>HTTP/1.1需要服务器也支持管道化。但这并不意味着服务器需要管道化响应，而是当客户端发出管道化请求时，服务器不会响应失败。This obviously has the potential to introduce a new category of evangelism bugs（不会翻。。），因为仅有现代浏览器支持管道化。</p>
+<h2 id="什么时候我们应该管道化请求"><a href="#什么时候我们应该管道化请求" class="headerlink" title="什么时候我们应该管道化请求"></a>什么时候我们应该管道化请求</h2><p>只有幂等的请求（见注1）才可以被管道化，比如GET和HEAD。POST和PUT不应该被管道化。我们同样也不应该在建立新连接的时候发出管道化的请求 ，因为不能确源服务或代理是否支持HTTP/1.1。因此，管道化只能利用已存在的keep-alive连接。</p>
+<h2 id="多少个请求应该被管道化"><a href="#多少个请求应该被管道化" class="headerlink" title="多少个请求应该被管道化"></a>多少个请求应该被管道化</h2><p>如果连接过早的关闭，管道化许多请求是划不来的，因为我们会花费很多时间用来向网络里写请求，然后还不得不在新连接中重写一遍。而且，如果较早到达的请求需要花费很长的时间完成，一个过长的管道实际上会让用户感知到更长的延迟。HTTP/1.1标准也没有提供关于管道化请求理想数目的任何指导。实际上，我们建议每个服务器不超过2个keep-alive连接。显然，这个还得依赖于应用本身。鉴于上述的原因，浏览器可能不需要一个持续时间特别长的管道。2个可能是比较合适的值，但是还有待测试。</p>
+<h2 id="如果一个请求被取消了，会发生什么？"><a href="#如果一个请求被取消了，会发生什么？" class="headerlink" title="如果一个请求被取消了，会发生什么？"></a>如果一个请求被取消了，会发生什么？</h2><p>如果一请求被取消了，是不是意味着整个管道都被取消了呢？或者，是不是意味着这个被取消请求的响应应该被简单的丢弃，以便这个管道中的其他请求不会被强制重发？这个答案依赖于很多因素，包括，这个被取消请求的响应还有多少没有被收到。最原始的办法可能是简单的取消管道，然后重发所有的请求。仅仅当请求是幂等的时候才可以。这样原始的方法也可以产生好的影响，因为正在管道中被发送的请求可能属于同一个正在被取消的页面载入组。</p>
+<h2 id="如果连接失败会发生什么？"><a href="#如果连接失败会发生什么？" class="headerlink" title="如果连接失败会发生什么？"></a>如果连接失败会发生什么？</h2><p>如果连接失败了或服务器在下载一个管道中的响应时中断了，浏览器必须有能力重新开始发送被丢失的请求。这种情况可以等同于上面讨论的被取消的例子。</p>
+<h2 id="注"><a href="#注" class="headerlink" title="注"></a>注</h2><ol>
+<li><strong>HTTP/方法的幂等性</strong>：是指一次和多次请求某一个资源应该具有同样的副作用。<br>幂等性的请求，实际上就是多次操作都不会改变结果的请求，比如GET，我可以多次从同一个地方获取资源，但是对于资源本身来说并不会发生什么变化，我GET10次和GET100次，资源都没有发生任何变化。而post则不同了，我提交表单10次，和100次，造成的结果是不同的，至少数据库里新增的数据有不同。</li>
+</ol>
+<h2 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h2><ol>
+<li><p>其实HTTP管道化就是将客户端的FIFO队列移到了服务端。在客户端可以依次发送所有要发送的请求（当然这些请求是在同一个域下的），一个请求发送完之后，不必等待这个请求的响应被接受到，下一个请求就可以被再次发出。在服务器端维持的FIFO队列，这个队列是按照资源的重要程度排列的。比如HTML比CSS要先返回，JS,CSS比图片先返回。</p>
+</li>
+<li><p>在服务器端会有一个缓冲区，来存放那些已经被处理好了但是还没轮到被发送的响应。比如服务器先后收到了A,B两个请求，A资源比B资源优先级要高，处理A需要10ms，处理B需要1ms，假设服务器可以并行处理请求，那么B的响应肯定是最先处理好了的，但是B响应不能先发出去，必须待在缓冲区里，等待A响应处理好了之后，先把A的响应发出去，B的响应才能够被发出去。因为服务端必须要遵循FIFO这个原则。</p>
+</li>
+<li><p>HTTP管道化不是HTTP2的内容，是对HTTP1.1协议下，服务器不能很好处理并行请求的一个改进。</p>
+</li>
+<li><p>管道化的有序和TCP的有序是本质上的不同，管道化的有序，是消息与消息之间的有序。TCP中的有序，组成一个消息的多个报文段之间的有序。打个不太恰当的比方，就好比是A同学吃午餐和B同学吃午餐哪个先吃完饭可以去玩电脑一样，假设是A同学先进食堂，B同学再进食堂，他俩的吃饭速度相同，那么按照FIFO原则，不论是A同学是吃了苹果，梨，米饭，菜，还是B同学只吃了苹果和米饭。虽然B同学是先吃完，他吃的少，但是在管道化中，也还一定是A同学先去玩电脑，B同学跟着。而在TCP中，就好像是在形容，这顿饭，A同学是先吃了苹果，梨，米饭，菜还是先吃了菜，米饭，梨，这样的内部顺序。</p>
+</li>
+<li><p>管道做了哪些事，我的理解是创造了一个可以不用等待前一个请求的响应即可发送下一个请求的场所。至于注意些什么，除了知道有些设备不支持，其他的我也没实际经验（毕竟没用过，囧）</p>
+</li>
+</ol>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/08/16/http2/" class="prev">PREV</a><a href="/2015/08/15/message-road/" class="next">NEXT</a></div><div data-thread-key="2015/08/16/http-pipelining/" data-title="HTTP2学习(三)—关于HTTP/1.1管道化的问答(翻译)" data-url="http://jiaolongHuang.github.io/2015/08/16/http-pipelining/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

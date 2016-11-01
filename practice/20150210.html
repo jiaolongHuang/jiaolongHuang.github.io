@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		.line-wrap,
+		.line-wrap2{
+			height: 120px;
+			width: 80%;
+		}
+		.line-wrap{
+			border: 1px solid red;
+		}
+		.line-wrap2{
+			margin-top: 30px;
+			border: 1px solid green;
+		}
+		.line-wrap2 li{
+			font-size: 12px;
+			margin-top: 8px;
+		}
+		.line{
+			position: relative;
+			background: red;
+			width: 25px;
+			height: 5px;
+			margin: 30px auto;
+			border-radius: 2px;
+			background-color: red;
+			transition: transform .2s ease;
+		}
+		.line:before,
+		.line:after{
+			position: absolute;
+			left: 0;
+			content: '';
+			display: block;
+			width: 100%;
+			height: 100%;
+			border-radius: 2px;
+			transition: transform .3s ease;
+		}
+		.line:before{
+			top: -8px;
+			background-color: black;
+		}
+		.line:after{
+			top: 8px;
+			background-color: green;
+		}
+		.closed{
+			width: 0;
+			height: 0;
+			position: relative;
+			left: 15px;
+			transform: rotate(-180deg);
+		}
+		.closed:before,
+		.closed:after{
+			position: absolute;
+			top: 0;
+			left: 0;
+			content: '';
+			display: block;
+			width: 25px;
+			height: 5px;
+			border-radius: 2px;
+		}
+		.closed:before{
+			background-color: black;
+			transform: rotate(-45deg);
+		}
+		.closed:after{
+			transform: rotate(45deg);
+			background-color: green;
+		}
+
+		.menu{
+			width: 3em;
+			height: 3em;
+			position: relative;
+			margin-right: auto;
+			margin-left: auto;
+		}
+		.menu div{
+			background-color: red;
+		}
+		.menu .line1:before,
+		.menu .line1:after,
+		.menu .line3:before,
+		.menu .line3:after{
+			position: absolute;
+			content: '';
+			width: 1em;
+			height: .3em;
+			background-color: red;
+		}
+		.menu .line1:before{
+			top: .5em;
+			left: .5em;
+			transform-origin: left bottom;
+			transition: transform 0.3s, top 0.3s;
+		}
+		.menu .line1:after{
+			top: .5em;
+			right: .5em;
+			transform-origin: right bottom;
+			transition: transform 0.3s, top 0.3s;
+		}
+		.menu .line2{
+			position: absolute;
+			width: 2em;
+			height: .3em;
+			top: 50%;
+			left: 50%;
+			background-color: green;
+			transform: translate(-50%,-50%);
+			transition: transform 0.3s 0.3s, width 0.3s .6s;
+		}
+		.menu .line3:before{
+			bottom: .5em;
+			left: .5em;
+			transform-origin: left top;
+			transition: transform 0.3s, bottom 0.3s;
+		}
+		.menu .line3:after{
+			bottom: .5em;
+			right: .5em;
+			transform-origin: right top;
+			transition: transform 0.3s, bottom 0.3s;
+		}
+		.open .line2{
+			width: .3em;
+			transform: translate(-50%,-50%) rotate(45deg);
+			transition: transform 0.3s 0.3s, width 0.3s;
+		}
+		.open .line1:before{
+			width: 1.2em;
+			top: .4em;
+			transform: rotate(45deg);
+			transform-origin: left bottom;
+			transition: all .3s .3s;
+		}
+		.open .line1:after{
+			width: 1.2em;
+			top: .4em;
+			transform: rotate(-45deg);
+			transform-origin: right bottom;
+			transition: all .3s .3s;
+		}
+		.open .line3:before{
+			width: 1.2em;
+			bottom: .4em;
+			transform: rotate(-45deg);
+			transform-origin: left top;
+			transition: all .3s .3s;
+		}
+		.open .line3:after{
+			width: 1.2em;
+			bottom: .4em;
+			transform: rotate(45deg);
+			transform-origin: right top;
+			transition: all .3s .3s;
+		}
+	</style>
+</head>
+<body>
+	<section class="line-wrap">
+		<div class="line"></div>
+	</section>
+
+	<section class="line-wrap2">
+		<div class="menu">
+			<div class="line1"></div>
+			<div class="line2"></div>
+			<div class="line3"></div>
+		</div>
+		<ul>
+			<li>如果不给每个二分之一的线加transform-origin，会导致线在高度上跳来跳去的情况</li>
+			<li>中间的小方块，如果没有transform: translate(-50%,-50%)，旋转45deg后会斜了(拿个小纸片试一下吧。。还有transform-origin)</li>
+			<li>transition,的延迟，先长度变化，再角度旋转</li>
+		</ul>
+	</section>
+</body>
+<script type="text/javascript" src="http://s0.qhimg.com/lib/jquery/183.js"></script>
+<script>
+	(function(){
+		$('.line').click(function(){
+			var me = $(this);
+			me.toggleClass('closed');
+		});
+		$('.menu').click(function(){
+			var me = $(this);
+			me.toggleClass('open');
+		});
+	})();
+</script>
+</html>

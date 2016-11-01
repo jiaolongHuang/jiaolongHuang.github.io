@@ -1,0 +1,37 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 迁移CSDN博客 · 小路口</title><meta name="description" content="迁移CSDN博客 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">迁移CSDN博客</h1><div class="post-info">Oct 28, 2015</div><div class="post-content"><p>csdn总是在公司打不开，上面的博客不更新了又舍不得扔，便想着迁过来。<br><a id="more"></a></p>
+<p>大致思路：</p>
+<ol>
+<li>csdn里的博客都不能直接导出成md格式的</li>
+<li>hexo的博客是解析markdowwn的</li>
+<li>抓取网页html结构 -&gt; md格式</li>
+</ol>
+<p>工具：</p>
+<ol>
+<li><p>说到网页抓取工具，首先想到的是<a href="http://phantomjs.org/" target="_blank" rel="external">phantomJs</a>, 还有一个<a href="http://casperjs.org/" target="_blank" rel="external">casperjs</a>, 后者是在前者的基础上包装了一层，使用起来更方便。<br>这两个工具使用起来都是与node相似，但是它们又是有自己的环境，独立于node的，基于node的包不可以直接在它们中使用<br>另外，casperjs又是依赖于phantomJs的，也就是说安装casperjs要先安装phantomJs<br>不得不吐槽的是，在环windows上装casperjs太费劲了，各种配环境变量，装python2.7 啥的都不好使，装了2天都没成功，mac上一下就成功了</p>
+</li>
+<li><p>因为在markdown中，有效的标签只有那么几种，而直接抓取下来的网页中标签很杂，因此需要过滤保留几种标签。<br>可以用正则来匹配，但是考虑到嵌套标签，以及里面标签的不可预知性（说白了就是想偷懒），找了一个防xss的node包，<a href="https://github.com/leizongmin/js-xss" target="_blank" rel="external">js-xss</a>, 这个插件里可以指定只保留哪些标签</p>
+</li>
+<li><p>最后就是用<a href="https://github.com/domchristie/to-markdown" target="_blank" rel="external">to-markdwon</a>, 这个包来生成最后md格式的文件</p>
+</li>
+<li><p>由于casperjs的环境和node的环境是独立的，显然这是一个两步走的流程，但是可以使用node中exec方法<code>var exec = require(&#39;child_process&#39;).exec;</code>，来执行命令行命令，这样就把两者结合起来了</p>
+</li>
+</ol>
+<p>问题：<br>毕竟这是工具生成的，再最终的文件中，还是有些地方不那么完美，需要手动再次调整下，但是比起来一个个的粘贴复制，工作量还是小不少。主要问题体现在：</p>
+<ol>
+<li>代码的格式，乱七八糟。。csdn自身展示代码的插件会在有代码的地方生成一些乱七八糟的dom结果</li>
+<li>对md中的关键字符，没有转义，比如星号等</li>
+<li>图片无法抓取保存</li>
+</ol>
+<p>结果<br><a href="http://jiaolonghuang.github.io/categories/csdn/">CSDN旧博客</a></p>
+<p>附件<br><a href="http://jiaolonghuang.github.io/code/run.js">抓取网页的js</a><br><a href="http://jiaolonghuang.github.io/code/toMD.js">toMarkdown</a></p>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/11/16/bug-canvas/" class="prev">PREV</a><a href="/2015/08/21/http2-qa/" class="next">NEXT</a></div><div data-thread-key="2015/10/28/htmltomd/" data-title="迁移CSDN博客" data-url="http://jiaolongHuang.github.io/2015/10/28/htmltomd/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+	*{
+		margin: 0;
+		padding:0;
+	}
+	.gclearfix:after{
+		clear: both;
+		content: '';
+		display: block;
+		height: 0;
+		visibility: hidden;
+	}
+	.circle-wrap,
+	.top-bottom-circle-wrap,
+	.test-wrap{
+		float: left;
+		margin: 20px 30px 0 0 ;
+	}
+	/* hover-circle-border */
+	.circle-wrap{
+		position: relative;
+		width: 220px;
+		height: 220px;
+		overflow: hidden;
+	}
+	.border{
+		width: 200px;
+		height: 200px;
+		border: 10px solid #ecab18;
+		border-right-color: #1ad280;
+		border-bottom-color: #1ad280;
+		border-radius: 100%;
+		transition: all 1s ease-in-out;
+	}
+	.img{
+		position: absolute;
+		left: 10px;
+		top: 10px;
+		width: 200px;
+		height: 200px;
+		border-radius: 100%;
+	}
+	.info{
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		width: 200px;
+		height: 200px;
+		background: rgba(0,0,0,0.6);
+		color: #fff;
+		text-align: center;
+		opacity: 0;
+		border-radius: 100%;
+		transition: all 1s ease-in-out;
+	}
+	.info-inner{
+		margin-top: 30px;
+	}
+	.circle:hover .border{
+		transform: rotate(180deg);
+	}
+	.circle:hover .info{
+		opacity: 1;
+	}
+	/* hover-top-bottom */
+	.top-bottom-circle-wrap{
+		position: relative;
+		width: 220px;
+		height: 220px;
+	}
+	.top-bottom-img-wrap{
+		z-index: 11;
+		position: relative;
+		width: 220px;
+		height: 220px;
+		border-radius: 50%;
+		transform: scale(1);
+		transition: all 0.35s ease-in-out;
+	}
+	.top-bottom-img-wrap:before{
+		position: absolute;
+		display: block;
+		content: '';
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		box-shadow: inset 0 0 0 16px rgba(255, 255, 255, 0.6), 0 1px 2px red;
+		transition: all 0.35s ease-in-out;
+	}
+	.top-bottom-img{
+		width: 220px;
+		height: 220px;
+		border-radius: 100%;
+	}
+	.top-bottom-info{
+		position: absolute;
+		left: 0;
+		top:0;
+		bottom: 0;
+		right: 0;
+		border-radius: 100%;
+		color: #fff;
+		text-align: center;
+		background: #333333;
+		opacity: 0;
+		transform: scale(0);
+		transition: all 0.35s ease-in-out;
+	}
+	.top-bottom-info-inner{
+		margin-top: 30px;
+	}
+	.top-bottom-circle:hover .top-bottom-img-wrap{
+		transform: translateY(50px) scale(0.5);
+	}
+	.top-bottom-circle:hover .top-bottom-info{
+		transform: scale(1);
+		opacity: 1;
+	}
+	/* 给img加box-shadow的方法2*/
+	.test-wrap,.test{
+		width: 200px;
+		height: 200px;
+	}
+	.test-info{
+		margin: 30px 0 20px 10px;
+	}
+	.test-wrap{
+		box-shadow: inset 0 0 0 16px rgba(255, 255, 255, 0.6),0 1px 2px red;
+	}
+	.test{
+		position: relative;
+		z-index: -1;
+	}
+	/*  使用到的主要知识点：
+		1. transform的scale,translateY,rotate
+		2. border圆的两种颜色，border-right,border-bottom是一种颜色，另外两个是另一种颜色。
+		3. 另外就是transform与opcity的组合使用
+		
+		需要注意的点：
+		1. 直接在img上使用box-shadow是没有用的，需要在img外包一层div，并将box-shadow加在div上。同时，对img用relative让其处于div的下一层(relative,z-index: -1)。
+		2. 或者，在div的before上使用box-shadow，这样就不用多处理img了。
+	 */
+	</style>
+</head>
+<body>
+	<div class="content-wrap gclearfix">
+		<!-- 遗留问题1，觉得滚的不是很圆呢 ？？-->
+		<!-- 遗留问题2，多行文字的垂直居中：margin-top:50%;transform:translateY(50%)-->
+		<div class="circle-wrap">
+			<a href="#" class="circle">
+				<div class="border"></div>
+				<img src="http://p4.qhimg.com/t01c005aac999d45e93.jpg" alt="" class="img">
+				<div class="info">
+					<div class="info-inner">
+						<h3>this is a title</h3>
+						<p>say sth.</p>
+					</div>
+				</div>
+			</a>
+		</div>
+		<div class="top-bottom-circle-wrap">
+			<a href="#" class="top-bottom-circle">
+				<div class="top-bottom-img-wrap">
+					<img src="http://p4.qhimg.com/t01c005aac999d45e93.jpg" alt="" class="top-bottom-img">
+				</div>
+				<div class="top-bottom-info">
+					<div class="top-bottom-info-inner">
+						<h3>this is a title</h3>
+						<p>say sth.</p>
+					</div>
+				</div>
+			</a>
+		</div>
+		<div class="test-wrap">
+			<img src="green.jpg" alt="" class="test">
+		</div>
+	</div>
+</body>
+</html>

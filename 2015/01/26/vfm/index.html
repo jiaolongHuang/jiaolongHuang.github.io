@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 关于Visual formatting model的学习 · 小路口</title><meta name="description" content="关于Visual formatting model的学习 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">关于Visual formatting model的学习</h1><div class="post-info">Jan 26, 2015</div><div class="post-content"><p>文档树中的一个元素在网页中是如何通过CSS来确定它自己的布局呢？<br><a id="more"></a>我们可以把页面中的元素都可以看成是一个矩形的框，那么之前的问题显然与两种因素有关，框的位置和框的大小。那么这两种因素又是如何计算的呢？</p>
+<h2 id="几个名词概念"><a href="#几个名词概念" class="headerlink" title="几个名词概念"></a>几个名词概念</h2><ul>
+<li>containing block</li>
+<li>block-level element,block-level box,block container,block box</li>
+<li>inline-level element</li>
+<li>匿名块级(行内)元素</li>
+<li>Block Formatting Context(BFC)，Inline Formatting Context(IFC)，都是指containing box中的一种布局的方式</li>
+</ul>
+<p>VFM可以理解为是一种文字排版的方式，通常一种box对应的一种排版的上下文，但是在block box中可能存在两种，BFC和IFC。</p>
+<h2 id="几个block-名词之间的关系"><a href="#几个block-名词之间的关系" class="headerlink" title="几个block**名词之间的关系"></a>几个block**名词之间的关系</h2><p>(这里谈论的元素，默认是在普通文档流中)</p>
+<p>(1) 首先是block-level element，表象是，这些元素会独占一行，即使是不能占满，也要霸道的不把那一行让给别的元素。</p>
+<p>这样的一些元素有，<strong>(1)display:block的(2)display:list-item的(li)(3)display:table的</strong>。</p>
+<p>这些block-level element会创建一个叫block-level box的东西，可以给它设置宽和高，已经垂直方向上的margin。</p>
+<p>但是不是每一个block-level box都是block-level element，比如table box和replaced element。</p>
+<p>(2) 接着是block container，是指只包括block-level box，或者建立了inline formatting context的一种容器，而IFC只能包含inline-level element.</p>
+<p>也就是说block container,要么只能全包含block-level box，要么只能全包含inline-level box(block container中的行内元素会被匿名块级盒子包裹，从整体上来看还是一个呈现出block的)。</p>
+<p>它可以有以下几种，<strong>(1)block-level box(2)non-replaced inline-block(3)non-replaced table cells</strong>.</p>
+<p>(3) 再有如果一个box既是block container又是block-level box，那么这个box被称之为block box。</p>
+<p>这部分有点绕，可以看一下下面的示意图</p>
+<p><img src="http://p3.qhimg.com/t0138b558f254893586.png"></p>
+<h2 id="BFC是什么"><a href="#BFC是什么" class="headerlink" title="BFC是什么"></a>BFC是什么</h2><p>从表现来看，是处于BFC中的box，从container top开始，由上至下，垂直方向的一个个’落’下来；这些box上下之间的间隙由各box的margin决定，会有margin叠加；并且这些box的margin box的左边挨着container的content box的左边缘；</p>
+<p>什么时候情况下能构建出BFC？</p>
+<p>float,绝对定位的元素；inline-block，table-cell,table-caption的block container；<code>overflow != visible</code>的block box</p>
+<h2 id="containing-box"><a href="#containing-box" class="headerlink" title="containing box"></a>containing box</h2><p>通常我们说一个元素的containing box，是要在它的祖先元素上查找这个box。并且这个元素的大小与它的containing box的内容框的大小有关，这个元素的位置与containing box是谁有关。</p>
+<h2 id="如何确定元素的位置"><a href="#如何确定元素的位置" class="headerlink" title="如何确定元素的位置"></a>如何确定元素的位置</h2><p>首先，我们应当清楚的以下3种定位的方案：</p>
+<p>(1) 正常文档流中包括的position为relative的块级和行内元素，还有block-level box的block formatting和inline-level box的inline formatting</p>
+<p>(2) 绝对定位</p>
+<p>(3) float</p>
+<p>在<a href="http://www.zhihu.com/question/20086234" target="_blank" rel="external">知乎</a>上看到的这个解释的比较好：</p>
+<p><img src="http://p2.qhimg.com/t0142268f62285125f7.png"></p>
+<h2 id="如何确定元素的大小"><a href="#如何确定元素的大小" class="headerlink" title="如何确定元素的大小"></a>如何确定元素的大小</h2><p>先了解下一耳熟能详的盒模型：</p>
+<p><img src="http://p2.qhimg.com/t0148b42c70f85c342b.png" alt=""></p>
+<p>关于width，height，margin，padding，再来看下面的这个图，然后再讨论有auto时是如何计算的？</p>
+<p><img src="http://p6.qhimg.com/t01666d976006575e06.png"></p>
+<p>(1) 对于块级元素(<strong>非替换的行内元素直接设置width,height,垂直方向上的margin是不会生效的</strong>)，从水平方向来说，需要满足下面的公式：</p>
+<p><code>margin-left+border-left+padding-left+width+padding-right+border-right+margin-right=CBWidth(包含块的content box的宽度)</code></p>
+<p>(tips:下面讨论的场景都是没有为元素设置padding和border的情况下)</p>
+<p>一个auto时：</p>
+<p>设置auto的这个属性的宽度=CBWidth-另外两个不是auto的值</p>
+<p>二个auto时：</p>
+<ul>
+<li>margin-left(margin-right)和width是auto，那么margin-left(margin-right)会被置为0，而width会尽可能的宽，直到满足上述公式。比如CBWidth=400px,margin-right=100px,那么此时margin-left=0,width=300px.</li>
+<li>margin-left,margin-right是auto，那么它们俩的宽度将均分CBWidth-width之后的值。也就是假设，CBWidth=400px,width=100px,那么此时margin-left=150px,margin-right=150px.这也就是为什么设置margin-left:auto,margin-right:auto之后，元素会水平居中对齐。</li>
+</ul>
+<p>三个auto时：</p>
+<p>margin-left和margin-right都会被置为0，然后width会尽可能的宽，直到等于CBWidth</p>
+<p>(2) 对于inline box来说，只有line-height，font-size，vertical这3个属性能对其高度影响</p>
+<p>vertical只应用于行内元素，替换元素。vertical设置为%时，是相对于这个元素自身的line-height的。</p>
+<h2 id="我所理解的VFM里的关系"><a href="#我所理解的VFM里的关系" class="headerlink" title="我所理解的VFM里的关系"></a>我所理解的VFM里的关系</h2><p><img src="http://p9.qhimg.com/t01eb9bd2556f0405c6.png" alt=""></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="http://swordair.com/block-level-box-block-container-box-block-box/" target="_blank" rel="external">http://swordair.com/block-level-box-block-container-box-block-box/</a></li>
+<li><a href="http://www.w3.org/TR/CSS2/box.html" target="_blank" rel="external">w3c CS2.1之box</a></li>
+<li><a href="http://www.w3.org/TR/CSS2/visuren.html" target="_blank" rel="external">w3c CS2.1之Visual formatting model</a></li>
+<li><a href="http://www.w3.org/TR/CSS2/visudet.html" target="_blank" rel="external">w3c CS2.1之Visual formatting model details</a></li>
+<li><a href="http://w3help.org/zh-cn/kb/010/" target="_blank" rel="external">http://w3help.org/zh-cn/kb/010/</a></li>
+<li><a href="http://css-tricks.com/the-css-box-model/" target="_blank" rel="external">css-tricks–the-css-box-model</a></li>
+<li><a href="http://www.hicss.net/do-not-tell-me-you-understand-margin/" target="_blank" rel="external">不要告诉我你懂margin(里面有好多与margin相关的IE bug及解决方案)</a></li>
+</ul>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/01/28/margin/" class="prev">PREV</a><a href="/2014/12/13/clock/" class="next">NEXT</a></div><div data-thread-key="2015/01/26/vfm/" data-title="关于Visual formatting model的学习" data-url="http://jiaolongHuang.github.io/2015/01/26/vfm/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

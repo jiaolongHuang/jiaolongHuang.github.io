@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>选中</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		html,body{
+			width: 100%;
+			height: 100%;
+		}
+		#rec{
+			position: absolute;
+			border: 1px dotted #000;
+			cursor: default;
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<div id="rec"></div>
+</body>
+<script type="text/javascript">
+	/*
+		需要注意的：
+		1. top和left的定位，取值
+		2. width和height的计算，取值
+		3. 整体类似于拖拽效果
+	*/
+	window.onload = function(){
+		var rec = document.getElementById("rec"),
+			startX, 
+			startY,
+			isMove = false;// 加锁标志
+		
+		document.onmousedown = function(e){
+			
+			startX = e.clientX;
+			startY = e.clientY;
+			
+			isMove = true;
+		};
+
+		document.onmousemove = function(e){
+			if(!isMove) return;
+
+			var left, top,
+				w, h,
+				endX = e.clientX,
+				endY = e.clientY,
+				xRange = endX - startX,
+				yRange = endY - startY;
+
+			// 因为有border，减去2，防止出现滚动条
+			var maxW = document.body.clientWidth - 2,
+				maxH = document.body.clientHeight - 2;
+
+			// 鼠标向上或向右移动
+			left = (xRange < 0) ? (startX - Math.abs(xRange)) : startX;
+			top = (yRange < 0) ? (startY - Math.abs(yRange)) : startY;
+
+			// 边界处理：最大值
+			w = ((left + Math.abs(xRange)) > maxW) ? (maxW - left) : Math.abs(xRange);
+			h = ((top + Math.abs(yRange)) > maxH) ? (maxH - top) : Math.abs(yRange);
+
+			// 边界处理： 边界顶部, 到达浏览器工具栏内，客户区外时，startY < Math.abs(yRange)
+			if(top < 0){
+				top = 0;
+				h = yRange;
+			}
+
+			rec.style.display = "block";
+			rec.style.left = left + "px";
+			rec.style.top = top + "px";
+			rec.style.width = w + "px";
+			rec.style.height = h + "px";	
+		};
+	
+		document.onmouseup = function(e){
+			// 恢复初始状态
+			rec.style.display = "none";
+			rec.style.left = 0 + "px";
+			rec.style.top = 0 + "px";
+			rec.style.width = 0 + "px";
+			rec.style.height = 0 + "px";
+			isMove = false;
+		};
+	}
+</script>
+</html>

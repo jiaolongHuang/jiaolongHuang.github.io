@@ -1,0 +1,62 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> HTTP2学习(一)—HTTP的历史 · 小路口</title><meta name="description" content="HTTP2学习(一)—HTTP的历史 - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">HTTP2学习(一)—HTTP的历史</h1><div class="post-info">Aug 14, 2015</div><div class="post-content"><p>一直以来对HTTP都是只见树木不见森林的感觉，这次借着对HTTP2的学习，希望可以梳理出一条自己对HTTP的了解认识线。<br><a id="more"></a></p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
+<li>在上世纪60年代，世界上占统治地位的通信网络是电话网络，它是基于电路交换[1]的。与此同时，随着分时计算机的出现和计算机重要性的提高，如何充分利用分散在世界各地的数字计算机为人们所共享就变的越发重要了。其中需要注意的是，这些用户所产生的流量是具有突发性的，也就是说具有活动的间断性。</li>
+<li>于是世界上的科学家们就发明了更能很好解决突发性的分组交换来替代电路交换。最开始是美国的阿帕网，ARPAnet，是世界上第一个分组交换机网络，也就是今天因特网的直接祖先。</li>
+<li>HTTP协议是现代web的基础。其实HTTP协议的出现主要是为了推动万维网的应用，它们的发明者是同一个人。HTTP协议设计之初是非常简洁的，就是为了传输超文本文档，也就是HTTP0.9版本。</li>
+</ul>
+<h2 id="HTTP的版本"><a href="#HTTP的版本" class="headerlink" title="HTTP的版本"></a>HTTP的版本</h2><ul>
+<li>HTTP0.9<ul>
+<li>请求：ASCII字符串＋CRLF结尾</li>
+<li>响应：ASCII字符流/HTML+CRLF结尾</li>
+<li>只能GET获取资源，不能发送携带数据的POST请求</li>
+<li>文档传完之后，断开连接            </li>
+</ul>
+</li>
+<li><p>HTTP1.0（并不是真正的规范）</p>
+<p>  随着页面上的内容逐渐丰富，除了文字，超链接，还有图片资源。<br>  人们对web应用的需求也不断增加，要求不仅能够访问HTML同时还需要能够提供有关请求和响应的元数据（首部字段），在页面上进行交互操作，比如表单提交，并且支持内容协商。</p>
+<ul>
+<li>请求/响应的首部可有多行首部字段构成</li>
+<li>响应对象前增加了一个响应状态行</li>
+<li>可以支持长连接，还是每次请求结束后默认都断开连接</li>
+</ul>
+</li>
+<li><p>HTTP1.1</p>
+<ul>
+<li>持久连接</li>
+<li>分块传输</li>
+<li>字节范围请求</li>
+<li>协商机制更健全，协商内容更多：内容编码，传输编码，缓存指令，客户端cookie等</li>
+<li>HTTP pipling(实际使用受限，浏览器默认不开启，很多中间代理不提供该服务)</li>
+</ul>
+</li>
+<li><p>HTTP2<br>  在web应用中资源越来越丰富的趋势中，由于tcp自身的特点以至于HTTP1.1的性能上受到了很大的限制，虽然我们有做一些针对性能提高的hack。HTTP2的出现主要是为了提高传输性能，降低延迟，提高吞吐量。</p>
+</li>
+</ul>
+<p>从总体来说，HTTP0.9用了一行命令就启动了万维网，HTTP1.0是对0.9扩展的正式说明，而HTTP1.1则是一份官方标准。总之，HTTP1.x的设计的初衷是实现要简单。但是这也是以牺牲性能为代价的。所以，这也是现在HTTP2所要解决的问题。</p>
+<p><strong>解释</strong></p>
+<ol>
+<li>“HTTP1.x的设计的初衷是实现要简单。但是这也是以牺牲性能为代价的”<br>比如没有处理并行连接和请求的快捷方法，没有为了减少不必要的请求开销而做优化（首部压缩）等等，这些以至于在页面资源极其丰富的今天，即便我们针对HTTP1.1做了很多HACK优化，然而性能还是没有得到很大的提升。而这些点在HTTP2中都得到了改进。</li>
+</ol>
+<h2 id="HTTP与tcp的关系"><a href="#HTTP与tcp的关系" class="headerlink" title="HTTP与tcp的关系"></a>HTTP与tcp的关系</h2><ul>
+<li>HTTP是应用层的协议，tcp是传输层的协议。HTTP协议并没有规定必须要使用tcp协议当作是传输层的协议，现在默认使用tcp当做是传输层协议，采用80端口（因为HTTP是无状态协议，要是使用未经改良的不可靠传输协议，很容易造成数据丢失）；另外，谷歌还研发了一种基于udp的多路传输协议QUIC(Quick UDP Internet Connections)(注2)，用来解决SPDY在TCP遇到的瓶颈而在UDP上做出的探索。</li>
+<li>HTTP是一种无状态的协议，当前的请求与上一次的请求并无关系，也就是说这次HTTP请求做什么和上一次请求做什么是没有关系的，哪怕请求的是相同的资源。这样做的好处是，服务器不用为了保存状态而消耗过多的资源，坏处是重复发相同的状态，会浪费网络资源，造成网络拥塞，延迟增大。</li>
+<li>tcp提供了可靠传输的性能，为精确传输做了优化，比如3次握手，差错检测，快速重传。同时还进行了拥塞预防与控制，慢启动等来减轻整个网络的拥塞程度。一个数据包从请求到收到，需要经过传播延迟，传输延迟，处理延迟和排队延迟。因此，tcp比较适合大块数据的精确传输，性价比高；若常有突发的连接请求，实际上是其负作用的。原因很简单，在拿到完整数据之前，tcp做了太多事，造成了太多延迟，至少1个RTT。</li>
+</ul>
+<h2 id="注"><a href="#注" class="headerlink" title="注"></a>注</h2><ol>
+<li>电路交换：在端系统会话过程中，预留了端系统间所经路径所需要的资源，包括缓存，链路传输速率。</li>
+<li>QUIC能够处理传输可靠性、丢包或无序数据包等一系列UDP默认未处理的问题。它的高层类似SPDY，低层是在UDP上模仿实现TCP的面向连接特性和可靠性并加入类似TLS的加密过程</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="http://www.infoq.com/cn/news/2014/02/quic/" target="_blank" rel="external">Google期望使用QUIC给互联网加速</a></li>
+</ol>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/08/15/message-road/" class="prev">PREV</a><a href="/2015/08/14/chart-pie/" class="next">NEXT</a></div><div data-thread-key="2015/08/14/http-history/" data-title="HTTP2学习(一)—HTTP的历史" data-url="http://jiaolongHuang.github.io/2015/08/14/http-history/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		html,body
+		{
+			font-size:100%;
+			height:100%;
+		}
+		body{
+			background-color:#f4f5f6;
+			color:#333;
+			font-family:'Microsoft YaHei',Hei,arial,sans-serif;
+		}
+		a{
+			text-decoration: none;
+			color: #fff;
+		}
+
+		.cont{
+			position: relative;
+			display: block;
+			width: 325px;
+			height: 260px;
+			margin: 10px 0 0 10px;
+			padding: 5px;
+			background-color: #000;
+			
+			overflow: hidden;
+		}
+		.cont img{
+			position: absolute;
+			transition: all 0.35s ease-in-out;
+		}
+		
+		.info{
+			position: absolute;
+			top: 100%;
+			left: 0;
+			width: 100%;
+			padding: 5px;
+			transition: transform 0.3s ease-in-out;
+		}
+		.cont:hover img{
+			transform: scale(0.65);
+			transform-origin: 0 0;
+		}
+		.cont:hover .info{
+			padding-bottom: 15px;
+			transform: translateY(-120%);
+		}
+
+		.tips-wrap{
+			border: 1px solid #eaeaea;
+			width: 580px;
+			padding: 15px 10px;
+			margin: 30px 0 0 10px;
+		}
+		.tips-wrap p{
+			line-height: 32px;
+		}
+	</style>
+</head>
+<body>
+	<a href="#" class="cont">
+		<img src="http://p4.qhimg.com/d/inn/c5c465f3/img/3.jpg" alt="">
+		<p class="info">阳光底下最灿烂的桑格花。也许我们一直寻觅的,就是这样一种温暖的状态。</p>
+	</a>
+
+	<div class="tips-wrap">
+		<p>与hover-top-bottom的原理相同，absoulte,translateY,scale,transform-origin</p>
+		<p><strong>遗留问题：</strong>向坐上角移动时有些不自然</p>
+	</div>
+</body>
+</html>

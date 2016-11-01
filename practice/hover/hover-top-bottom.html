@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+	*{
+		margin: 0;
+		padding:0;
+	}
+	.top-bottom-circle-wrap{
+		position: relative;
+		width: 220px;
+		height: 220px;
+	}
+	.top-bottom-img-wrap{
+		z-index: 11;
+		position: relative;
+		width: 220px;
+		height: 220px;
+		border-radius: 50%;
+		transform: scale(1);
+		transition: all 0.35s ease-in-out;
+	}
+	.top-bottom-img-wrap:before{
+		position: absolute;
+		display: block;
+		content: '';
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		box-shadow: inset 0 0 0 16px rgba(255, 255, 255, 0.6), 0 1px 2px red;
+		transition: all 0.35s ease-in-out;
+	}
+	.top-bottom-img{
+		width: 220px;
+		height: 220px;
+		border-radius: 100%;
+	}
+	.top-bottom-info{
+		position: absolute;
+		left: 0;
+		top:0;
+		bottom: 0;
+		right: 0;
+		border-radius: 100%;
+		color: #fff;
+		text-align: center;
+		background: #333333;
+		opacity: 0;
+		transform: scale(0);
+		transition: all 0.35s ease-in-out;
+	}
+	.top-bottom-info-inner{
+		margin-top: 30px;
+	}
+	.top-bottom-circle:hover .top-bottom-img-wrap{
+		transform: translateY(50px) scale(0.5);
+	}
+	.top-bottom-circle:hover .top-bottom-info{
+		transform: scale(1);
+		opacity: 1;
+	}
+	.test-wrap,.test{
+		width: 200px;
+		height: 200px;
+	}
+	.test-info{
+		margin: 30px 0 20px 10px;
+	}
+	.test-wrap{
+		box-shadow: inset 0 0 0 16px rgba(255, 255, 255, 0.6),0 1px 2px red;
+	}
+	.test{
+		position: relative;
+		z-index: -1;
+	}
+	/* 需要注意的点：
+		1. 直接在img上使用box-shadow是没有用的，需要在img外包一层div，并将box-shadow加在div上。同时，对img用relative让其处于div的下一层(relative,z-index: -1)。
+		2. 或者，在div的before上使用box-shadow，这样就不用多处理img了。
+	 */
+	</style>
+</head>
+<body>
+	<div class="top-bottom-circle-wrap">
+		<a href="#" class="top-bottom-circle">
+			<div class="top-bottom-img-wrap">
+				<img src="green.jpg" alt="" class="top-bottom-img">
+			</div>
+			<div class="top-bottom-info">
+				<div class="top-bottom-info-inner">
+					<h3>this is a title</h3>
+					<p>say sth.</p>
+				</div>
+			</div>
+		</a>
+	</div>
+
+	<p class="test-info">给img加box-shadow的方法2：</p>
+	<div class="test-wrap">
+		<img src="green.jpg" alt="" class="test">
+	</div>
+</body>
+</html>

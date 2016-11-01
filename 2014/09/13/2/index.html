@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 熟悉而又陌生的table(续） · 小路口</title><meta name="description" content="熟悉而又陌生的table(续） - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">熟悉而又陌生的table(续）</h1><div class="post-info">Sep 13, 2014</div><div class="post-content"><p>针对table中，单元格的内容过长是否会破坏table结构，是否会做截断，做了测试，总结的规律如下：</p>
+<ol>
+<li><p>table:fixed之后，指定col宽度，对td做<br><code>{    white-space: nowrap;     overflow: hidden;     text-overflow: ellipsis; }</code> 如果是在table上做，结构不会乱，但是超出宽度的不会被截断</p>
+</li>
+<li><p>table:fixed之后，没有指定col宽度，默认每列的宽度为平均分</p>
+</li>
+<li><p>如果没有fixed，只指定col宽度，需要在td中加标签，一个block元素，p等，在p上做 <code>{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }</code>，并且需要指定p的宽度，如100px，但宽度不能是%。</p>
+</li>
+<li><p>如果没有fixed，指定col了宽度，但没有在td中加标签，而是在td上做 <code>{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }</code>，即使给td再指定宽度，如100px，也没有截断的效果。会破坏结构。如果不加那段代码，就会折行显示。 </p>
+</li>
+<li>如果没有fixed，指定了col了宽度，也没有在td中加标签，而是在table上了加了 <code>{ white-space: nowrap;     overflow: hidden;     text-overflow: ellipsis;}</code>，那么超出指定宽度后就会结构乱掉，因为，不能换行（white-space: nowrap;）</li>
+</ol>
+<p>另外：</p>
+<ol>
+<li><p>表格还可以用ul，li来实现，每一行是一个li，每个单元格是一个span，对这个span设置display：inline-block</p>
+</li>
+<li><p>给表格的每行加下划线，必须加在td上，如果加在tr上，在ie7以下，就不显示了。</p>
+</li>
+<li><p>判断单元格内容是否为空，应该保留td标签，再进行判断。否则，会使一行的下划线不完整。</p>
+</li>
+</ol>
+<p>版权声明：本文为博主原创文章，未经博主允许不得转载。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2014/09/15/1/" class="prev">PREV</a><a href="/2014/07/18/3/" class="next">NEXT</a></div><div data-thread-key="2014/09/13/2/" data-title="熟悉而又陌生的table(续）" data-url="http://jiaolongHuang.github.io/2014/09/13/2/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>canvas时钟 - test.germanyt.com</title>
+		<style>
+	.canvas_inner{
+		margin:0 auto;
+		width:400px;
+	}
+		</style>
+	</head>
+	<body>
+		<div class="canvas_inner">
+			<canvas id="canvas_box" width="400" height="400"></canvas>
+		</div>
+	<script>
+(function(doc){
+	var can = doc.getElementById('canvas_box');
+	if(can.getContext){
+		var con=can.getContext("2d");
+		con.beginPath();
+		con.translate(200,200);
+		//绘制外圆
+		con.arc(0,0,199,0,Math.PI*2,false);
+		con.lineWidth =2;
+		con.stroke();
+
+		// 绘制内圆
+		con.moveTo(190,0);
+		con.arc(0,0,190,0,Math.PI*2,false);
+		con.lineWidth =1;
+		con.strokeStyle = '#000';
+		con.stroke();
+
+		con.font = "bold 16px Arial";
+		con.textAlign="center";
+		con.textBaseline = "middle";
+		con.fillText("12",0,-178);
+		con.fillText("3",178,0);
+		con.fillText("6",0,178);
+		con.fillText("9",-178,0);
+		// con.save();
+		var time={};
+		function getTimeData(){
+			var d=new Date();
+				time.M = d.getMinutes();
+				time.S = d.getSeconds();
+				time.H = d.getHours()%12;				
+			canvasTimeLine();
+		}
+
+		function transNumberToDeg(num){
+			return ((num*6-90)*Math.PI/180);
+		}
+		function computePositionByLenAndDeg(len,deg){
+			return {
+				x:len*Math.cos(deg),
+				y:len*Math.sin(deg)
+			}
+		}
+		function canvasLineMintus(){
+			var rec = 200;
+			for(var i=0;i<60;i++){
+				con.beginPath();
+				if(i%5 == 0){
+					con.lineWidth =2;
+					rec=180;
+				}else{
+					con.lineWidth =1;
+					rec=184;
+				}
+				
+				var beginDeg=transNumberToDeg(i),
+				beginPot = computePositionByLenAndDeg(rec,beginDeg),
+				endPot = computePositionByLenAndDeg(190,beginDeg);
+				con.moveTo(beginPot.x,beginPot.y);
+				con.lineTo(endPot.x,endPot.y);
+				
+				con.stroke();
+			}
+		}
+	
+		function canvasTimeLine(){
+			var sDeg = transNumberToDeg(time.S),
+			mDeg = transNumberToDeg(time.M),
+			hDeg = transNumberToDeg(time.H*5+Math.floor(time.M/12)),
+			sPot = computePositionByLenAndDeg(160,sDeg),
+			mPot = computePositionByLenAndDeg(140,mDeg),
+			hPot = computePositionByLenAndDeg(120,hDeg);
+
+			con.beginPath();
+			con.moveTo(150,0);
+			con.arc(0,0,160,0,Math.PI*2,false);
+			con.fillStyle = '#fff';
+			con.fill();
+			
+			 // 绘制时针
+			con.beginPath();
+			con.moveTo(0,0);
+			con.lineTo(hPot.x,hPot.y);
+			con.lineWidth =4;
+			con.stroke();
+			// 绘制分针
+			con.moveTo(0,0);
+			con.lineTo(mPot.x,mPot.y);
+			con.lineWidth =2;
+			con.stroke();
+
+			// 绘制秒针
+			con.moveTo(0,0);
+			con.lineTo(sPot.x,sPot.y);
+			con.lineWidth =1;
+			con.stroke();
+		}
+
+		setTimeout(function(){
+			getTimeData();
+			setTimeout(arguments.callee,1000);
+		},1000);
+		canvasLineMintus();
+	}
+})(document);
+  </script>
+	</body>
+</html>

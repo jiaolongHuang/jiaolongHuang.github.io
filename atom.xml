@@ -1,0 +1,900 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>小路口</title>
+  <subtitle>一步一步向前走</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://jiaolongHuang.github.io/"/>
+  <updated>2016-10-31T09:48:00.000Z</updated>
+  <id>http://jiaolongHuang.github.io/</id>
+  
+  <author>
+    <name>jiaolongHuang</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>选中文本换背景色的实现</title>
+    <link href="http://jiaolongHuang.github.io/2016/09/11/range/"/>
+    <id>http://jiaolongHuang.github.io/2016/09/11/range/</id>
+    <published>2016-09-11T10:39:00.000Z</published>
+    <updated>2016-10-31T09:48:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近遇到的一个需求是，选择某段文字中的部分，为选中区域加颜色<a id="more"></a>主要是用到<code>window.getSelection()</code>和<code>rangeObject</code></p>
+<h2 id="主要方法"><a href="#主要方法" class="headerlink" title="主要方法"></a>主要方法</h2><p>需要区分高级浏览器和IE。这里只讨论高级浏览器下的用法。</p>
+<ul>
+<li><code>userSelection = window.getSelection()</code></li>
+<li><code>userSelection.toString()</code></li>
+<li><code>rangeObject = userSelection.getRangeAt(0)</code></li>
+<li><code>rangeObject.startContainer</code></li>
+<li><code>rangeObject.getClientRects()</code></li>
+<li><code>rangeObject.deleteContents()</code></li>
+<li><code>rangeObject.insertNode(span)</code></li>
+</ul>
+<ol>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Range" target="_blank" rel="external">MDN Range</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Selection" target="_blank" rel="external">MDN Selection</a></li>
+<li>《Javasctipt高级程序设计》P438</li>
+</ol>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>前方高能，大段代码。。。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*是否在合法选择范围内*/</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">rangeIsOk</span>(<span class="params">sContainer, eContainer</span>)</span>&#123;</div><div class="line">	</div><div class="line">&#125;</div><div class="line"></div><div class="line">$(<span class="string">'html, body'</span>).on(<span class="string">'mousedown'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</div><div class="line">    <span class="keyword">if</span>(!$(e.target).is(<span class="string">'.tip-entity-list *'</span>))&#123;</div><div class="line">        <span class="comment">// 先清空选区，否则再次点击选区会再次获得选区内容</span></div><div class="line">        userSelection &amp;&amp; userSelection.removeAllRanges();</div><div class="line">        selTip.hide();</div><div class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>($(e.target).is(<span class="string">'*[unselectable=on]'</span>))&#123;</div><div class="line">        e.preventDefault();</div><div class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"></div><div class="line">$(<span class="string">'body'</span>).on(<span class="string">'mouseup'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</div><div class="line">    <span class="keyword">var</span> me = $(<span class="keyword">this</span>);</div><div class="line"></div><div class="line">    <span class="comment">// 优先用高级浏览器的</span></div><div class="line">    <span class="keyword">if</span>(<span class="built_in">window</span>.getSelection())&#123;</div><div class="line">        userSelection = <span class="built_in">window</span>.getSelection();</div><div class="line">        selText = userSelection.toString();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">// 没有选中的文字，或者click事件直接返回</span></div><div class="line">    <span class="keyword">if</span>(!selText.length) <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">		</div><div class="line">		<span class="comment">// 获得多个选区中的第一个选区</span></div><div class="line">    rangeObject = userSelection;</div><div class="line">    <span class="keyword">if</span> (userSelection &amp;&amp; userSelection.getRangeAt) &#123;</div><div class="line">        rangeObject = userSelection.getRangeAt(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="keyword">if</span>(!rangeObject.collapsed)&#123;</div><div class="line">        <span class="keyword">var</span> sContainer = rangeObject.startContainer.parentNode;</div><div class="line">        <span class="keyword">var</span> eContainer = rangeObject.endContainer.parentNode;</div><div class="line">        </div><div class="line">        <span class="comment">// 下面这个是为了定位选中后提示框的位置</span></div><div class="line">        <span class="keyword">if</span>(rangeIsOk(sContainer, eContainer))&#123;</div><div class="line">        		<span class="comment">// 获得选中区域的一个矩阵</span></div><div class="line">            <span class="keyword">var</span> rangeRects = rangeObject.getClientRects();</div><div class="line">            <span class="keyword">var</span> maxTop = <span class="number">0</span>, num = <span class="number">0</span>, pHeight = <span class="number">20</span>;</div><div class="line">            <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = rangeRects.length; i &lt; len; i++)&#123;</div><div class="line">                <span class="comment">//pHeight：一行文字的高度，为了避免双击选中整个大的区域</span></div><div class="line">                <span class="keyword">if</span>(rangeRects[i].height &lt;= pHeight &amp;&amp; rangeRects[i].width &amp;&amp; maxTop &lt; rangeRects[i].top)&#123;</div><div class="line">                    maxTop = rangeRects[i].top;</div><div class="line">                    num = i;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">			</div><div class="line">            <span class="keyword">var</span> lastLeft = <span class="built_in">Math</span>.floor(rangeRects[num].left + rangeRects[num].width);</div><div class="line">            <span class="keyword">var</span> lastTop =  <span class="built_in">Math</span>.ceil(rangeRects[num].top + rangeRects[num].height);</div><div class="line">            </div><div class="line">            tipX = lastLeft;</div><div class="line">            tipY = lastTop + $(<span class="built_in">window</span>).scrollTop();</div><div class="line">            </div><div class="line">            <span class="keyword">var</span> tipEntityLen = $(<span class="string">'.tip-entity-item'</span>).length;</div><div class="line">            <span class="keyword">if</span>(tipEntityLen)&#123;</div><div class="line">                <span class="comment">// 不trim会获得选中的空格</span></div><div class="line">                <span class="keyword">if</span>($.trim(selText))&#123;</div><div class="line">                    tipShow(selText, tipX, tipY);</div><div class="line">                &#125;</div><div class="line">            &#125;<span class="keyword">else</span>&#123;</div><div class="line">                <span class="comment">// open dialog</span></div><div class="line">                showTipPanel($(<span class="string">"#messPanel"</span>), <span class="string">"没有待选项"</span>);</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">tipShow</span>(<span class="params">text, tipX, tipY</span>)</span>&#123;</div><div class="line">    selTip.css(<span class="string">'left'</span>,tipX).css(<span class="string">'top'</span>,tipY).show();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 加上颜色</span></div><div class="line">$(<span class="string">'body'</span>).on(<span class="string">'click'</span>, <span class="string">'.tip-entity-item'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</div><div class="line">    </div><div class="line">    <span class="keyword">var</span> me = $(<span class="keyword">this</span>);</div><div class="line">    <span class="keyword">var</span> color = me.attr(<span class="string">'data-color'</span>);</div><div class="line">    <span class="keyword">var</span> title = me.attr(<span class="string">'data-title'</span>);</div><div class="line">    <span class="keyword">var</span> <span class="keyword">type</span> = me.attr(<span class="string">'data-type'</span>);</div><div class="line">    </div><div class="line">    <span class="keyword">var</span> sContainer = rangeObject.startContainer.parentNode;</div><div class="line">    <span class="keyword">var</span> eContainer = rangeObject.endContainer.parentNode;</div><div class="line"></div><div class="line">    <span class="keyword">if</span>(rangeIsOk(sContainer, eContainer))&#123;</div><div class="line">        <span class="keyword">var</span> span = <span class="built_in">document</span>.createElement(<span class="string">'span'</span>);</div><div class="line">        span.innerHTML = selText;</div><div class="line">        span.style.background = color;</div><div class="line">        span.title = title;</div><div class="line">        span.setAttribute(<span class="string">'data-eid'</span>, <span class="keyword">type</span>);</div><div class="line">        </div><div class="line">        rangeObject.deleteContents();</div><div class="line">        rangeObject.insertNode(span);</div><div class="line"></div><div class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span>(sNodeName == <span class="string">'SPAN'</span> || eNodeName == <span class="string">'SPAN'</span>)&#123;</div><div class="line">        alert(<span class="string">'已经有选中了的，点击取消后再进行重新选择'</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    selTip.hide();</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">递归的为某节点添加不可选择属性</div><div class="line">function makeUnselectable(<span class="keyword">node</span><span class="title">) &#123;</span></div><div class="line">		//Node.ELEMENT_NODE</div><div class="line">    if (<span class="keyword">node</span>.<span class="title">nodeType</span> == <span class="number">1</span>) &#123;</div><div class="line">        <span class="keyword">node</span>.<span class="title">setAttribute</span>(<span class="string">"unselectable"</span>, <span class="string">"on"</span>);</div><div class="line">    &#125;</div><div class="line">    var child = <span class="keyword">node</span>.<span class="title">firstChild</span>;</div><div class="line">    while (child) &#123;</div><div class="line">        makeUnselectable(child);</div><div class="line">        child = child.nextSibling;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近遇到的一个需求是，选择某段文字中的部分，为选中区域加颜色
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="总结" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/%E6%80%BB%E7%BB%93/"/>
+    
+    
+      <category term="range" scheme="http://jiaolongHuang.github.io/tags/range/"/>
+    
+      <category term="selection" scheme="http://jiaolongHuang.github.io/tags/selection/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>React系列之-使用React+Redux中遇到的坑</title>
+    <link href="http://jiaolongHuang.github.io/2016/09/10/react-summary/"/>
+    <id>http://jiaolongHuang.github.io/2016/09/10/react-summary/</id>
+    <published>2016-09-10T10:36:00.000Z</published>
+    <updated>2016-10-31T09:21:03.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>初次相遇总是美好的，相识久了总是会遇到很多问题。<a id="more"></a>随着开发的不断深入，也逐渐遇到了很多问题，并预计还在不断更新中，因为项目还未完成。</p>
+<h2 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h2><ul>
+<li><p>onEnter中的callback(), 当获取判断状态是异步操作时，特别有用。react-router文档中这么写到：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">on</span>Enter(nextState, replaceState, callback?)</div><div class="line">当 route 即将进入时调用。它提供了下一个路由的 <span class="keyword">state</span>，一个函数重定向到另一个路径。this 会触发钩子去创建 route 实例。</div><div class="line">当 callback 作为函数的第三个参数传入时，这个钩子将是异步执行的，并且跳转会阻塞直到 callback 被调用。</div></pre></td></tr></table></figure>
+</li>
+<li><p>onEnter往往用来做权限验证，登录验证</p>
+</li>
+<li>需要注意的是，dispatch是异步的，等待获取结果需要在之后的<code>then()</code>里使用</li>
+</ul>
+<h2 id="redux中的state和react内部的state"><a href="#redux中的state和react内部的state" class="headerlink" title="redux中的state和react内部的state"></a>redux中的state和react内部的state</h2><ul>
+<li>这两者之间没什么关系。各干各的事。</li>
+<li>redux中的state实际上也就是通过reducer处理之后挂在store树上一个状态。</li>
+<li>通过redux的connect()方法可以将这个state值变成组件的props，供组件使用。</li>
+</ul>
+<h2 id="reducer返回的state"><a href="#reducer返回的state" class="headerlink" title="reducer返回的state"></a>reducer返回的state</h2><ul>
+<li>一个reducer文件中可能会有多个子reducer，每个一个子reducer中的state参数对应自己那部分的state数据，不是全局state本身。</li>
+<li>Redux提供了<code>combineReducers()</code>来管理各个子reducer </li>
+<li>不能修改state, 需要返回一个新的state。这样便于做到“回退/撤销”，追踪全局状态。<br>另外在react的components里往往还需要通过<code>shouldComponentUpdate(nextProps, nextState)</code>函数来进行性能优化</li>
+<li>并且需要有default的处理，即遇到未知actioin时，一定要返回旧的state</li>
+</ul>
+<h2 id="关于reducer的划分"><a href="#关于reducer的划分" class="headerlink" title="关于reducer的划分"></a>关于reducer的划分</h2><p>依据对state对象的设计。可以理解为数据库中的一张表；关于层级保持多深，还没有很好的实践</p>
+<h2 id="多个异步的action-creator"><a href="#多个异步的action-creator" class="headerlink" title="多个异步的action creator"></a>多个异步的action creator</h2><ul>
+<li>在进行某些操作的时候，我们可能需要触发好几个action来完成这个操作。同时呢这些action或者有先后依赖顺序，或许需要一起完成才可能拿到最终的值。这时我们就需要用promise来帮助我们。</li>
+<li>在redux中我们可以用redux-thunk中间件来构建异步action。（还可以dispatch函数或者Promise, 比如从异步接口取到数据）</li>
+<li>对于同步的action我们可以使用<code>Promise.resolve()</code>来包装下。</li>
+<li>需要记得每一层都要return， 否则最外层被调用之后是undefined的</li>
+</ul>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">return</span> (dispatch, getStore) =&gt; &#123;</div><div class="line">	<span class="keyword">return</span> api.login(data).<span class="keyword">then</span>(res =&gt; &#123;</div><div class="line">		<span class="keyword">if</span>(res.code == <span class="number">1</span>)&#123;</div><div class="line">			<span class="keyword">return</span> Promise.resolve( dispatch(loginSuccess(res.data)) )</div><div class="line">							.<span class="keyword">then</span>( <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">								<span class="keyword">return</span> <span class="literal">true</span></div><div class="line">							&#125;)</div><div class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(res.code == <span class="number">-1</span>)&#123;</div><div class="line">			<span class="keyword">return</span> Promise.resolve( dispatch(loginError(res.message)) )</div><div class="line">							.<span class="keyword">then</span>( <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">								<span class="keyword">return</span> Promise.resolve(</div><div class="line">									dispatch(showDialog(<span class="string">'登录失败'</span>)).<span class="keyword">then</span>( <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">									<span class="keyword">return</span> <span class="literal">false</span></div><div class="line">								&#125;)	</div><div class="line">							&#125;)</div><div class="line">		&#125;</div><div class="line">	&#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="redux-form"><a href="#redux-form" class="headerlink" title="redux-form"></a>redux-form</h2><ul>
+<li>组件更新很多，但是小问题也很多。</li>
+<li>建议是，如果表单中的标准控件很多，适合使用。</li>
+<li><p>但如果控件个数不多，但是里面自定义的控件又居多，那么建议还是不用。因为可能需要单独处理自定义控件的状态，反而增加了工作量。</p>
+</li>
+<li><p>设置初始值，<code>enableReinitialize: true</code>,<code>initialValues</code>是一个对象，它的key值与组件里的”name”对应;</p>
+</li>
+<li><code>SubmissionError</code>触发后，store树上form的<code>submitFailed</code>变成<code>true</code>, 且目前找不到重新设置为false的方法</li>
+<li>reset, 不能自动重置自定义组件的值，可能需要手动重置(一般通过内部state的方法来解决);</li>
+<li><code>sync error + field array</code>, field 被移除但是values里保存的依然是initvalue，没有改变。原因是渲染field array的值是从store树上拿的，改为initialValues初始化后解决。</li>
+</ul>
+<h2 id="直接使用了数组的引用-改变了原数组"><a href="#直接使用了数组的引用-改变了原数组" class="headerlink" title="直接使用了数组的引用, 改变了原数组"></a>直接使用了数组的引用, 改变了原数组</h2><p>在组件内部使用了一个变量，这个变量指向了store树上的一个状态，在没有使用immutable的前提下，改变这个变量，实际上也把store树上的状态改变了。这种情况是一个双刃剑，有利有弊。使用时要比较明确可能会发生的后果。</p>
+<h2 id="无状态component"><a href="#无状态component" class="headerlink" title="无状态component"></a>无状态component</h2><ul>
+<li>一般的组件有有完整的生命周期。无状态组件，则更像是一个函数返回一段html片段，只有render方法。</li>
+<li>它没有实例化的过程，不需要被分配多余的内存，可以提高整体渲染性能。</li>
+<li>它只涉及到props，而不涉及到state的操作。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> HelloComponent = <span class="function">(<span class="params">props</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>Hello &#123;props.name&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="axios的Content-Type"><a href="#axios的Content-Type" class="headerlink" title="axios的Content-Type"></a>axios的Content-Type</h2><ul>
+<li>默认是<code>&#39;application/json&#39;</code>。</li>
+<li>这种情况下PHP无法直接从 $_POST 对象从上面的请求中获得内容。</li>
+<li>解决办法：</li>
+</ul>
+<ol>
+<li>设置axios<code>Content-Type:application/x-www-form-urlencode</code>, <a href="https://github.com/Gozala/querystring" target="_blank" rel="external">querystring</a>转换要传参数的格式。</li>
+<li>php从<code>php://input</code>里获得原始输入流, 再<code>json_decode</code>成对象。具体见<a href="https://imququ.com/post/four-ways-to-post-data-in-http.html" target="_blank" rel="external">四种常见的 POST 提交数据方式</a></li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://cn.redux.js.org/" target="_blank" rel="external">Redux中文文档</a><br><a href="http://div.io/topic/1309" target="_blank" rel="external">深入到源码：解读 redux 的设计思路与用法</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;初次相遇总是美好的，相识久了总是会遇到很多问题。
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="总结" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/%E6%80%BB%E7%BB%93/"/>
+    
+    
+      <category term="react" scheme="http://jiaolongHuang.github.io/tags/react/"/>
+    
+      <category term="redux" scheme="http://jiaolongHuang.github.io/tags/redux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我常用的Linux命令(ing)</title>
+    <link href="http://jiaolongHuang.github.io/2016/09/09/linux-cmd/"/>
+    <id>http://jiaolongHuang.github.io/2016/09/09/linux-cmd/</id>
+    <published>2016-09-09T06:03:08.000Z</published>
+    <updated>2016-09-09T07:44:10.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>自己常用Linux命令记录。<a id="more"></a>其实自己并不特别熟悉Linux的命令，得益于最近做一些项目的部署，常常用到一些Linux命令，这里记录下。</p>
+<ul>
+<li><p>su aa<br>切换身份为aa。常用<code>sudo su aa</code></p>
+</li>
+<li><p>scp<br>scp是有Security的文件copy，基于ssh登录</p>
+</li>
+<li><p>scp /home/daisy/full.tar.gz 自己的名字@要同步的开发机的ip:/home/root<br>要把本地的文件/home/daisy/full.tar.gz copy到远程另外一台主机上</p>
+</li>
+<li><p>scp 自己的名字@要同步的开发机的ip:/home/root/1.txt ./<br>把远程开发机上的1.txt文件copy到当前目录下</p>
+</li>
+<li><p>scp -r 自己的名字@要同步的开发机的ip:/home/root/ ./<br>把远程开发机上的整个root目录copy到当前目录下</p>
+</li>
+<li><p>lsb_release -a<br>查看linux版本</p>
+</li>
+<li><p>which mysql<br>mysql的启动文件是在哪儿</p>
+</li>
+<li><p>mysql -h aa.aa.aa.aa  -P bbb -u username -ppwd<br>以<strong>bbb</strong>的用户名，<strong>pwd</strong>的密码，登录地址为<strong>aa.aa.aa.aa</strong>，端口号为<strong>bbb</strong>的mysql数据库。注意密码与<strong>-p</strong>之间没有空格。</p>
+</li>
+<li><p>top<br>进行性能监控的。比如当前cup，内存占用率，哪个进程占用的最多</p>
+</li>
+<li><p>chown -R -v jack: file<br>改变指定目录以及其子目录下的所有文件的拥有者(jack)和群组(空缺)</p>
+</li>
+<li><p>chomd 777 file<br>更改文件file，任何人都有读、写、运行三项权限</p>
+</li>
+<li><p>不同身份用户所能操作的文件不同。比如a文件是属于jack的，那么当以mark身份登录时，就不能使用这个文件</p>
+</li>
+<li><p>find / -name my.cnf<br>所有路径下查找名字是my.cnf的文件</p>
+</li>
+<li><p>find . -name .DS_Store | xargs rm -f<br>当前路径下查找文件名为.DS_Store的文件，并强制删除它们</p>
+</li>
+<li><p>find . -name “*.txt”<br>当前目录下搜索所有txt文件</p>
+</li>
+<li><p>netstat -tunlp|grep 5893<br>查看端口号5893占用情况</p>
+</li>
+<li><p>jobs<br>查看当前后台运行了哪些进程</p>
+</li>
+<li><p>ln –s 源文件 目标文件<br>创建软链, 类似windows的快捷方式</p>
+</li>
+<li><p>mv shop school<br>重命名文件夹， shop-&gt;school</p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;自己常用Linux命令记录。
+    
+    </summary>
+    
+    
+      <category term="Linux" scheme="http://jiaolongHuang.github.io/tags/Linux/"/>
+    
+      <category term="命令" scheme="http://jiaolongHuang.github.io/tags/%E5%91%BD%E4%BB%A4/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>React系列之-开始使用React+Redux</title>
+    <link href="http://jiaolongHuang.github.io/2016/09/09/react/"/>
+    <id>http://jiaolongHuang.github.io/2016/09/09/react/</id>
+    <published>2016-09-09T06:03:08.000Z</published>
+    <updated>2016-09-09T10:25:21.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>React是一个让人使用后就想忘却jQuery的工具。<a id="more"></a>得益于最近一个新项目的开发，可以实践一下ReactJs。这里暂且先只讨论开始搭建一个应用的框架，不去过多介绍React背景，也不去对比React与其他框架，因为这样的文章随便一找就有很多写的很好的文章，关于开发过程中踩到的坑会另开一篇总结。</p>
+<h2 id="框架选取与资源推荐"><a href="#框架选取与资源推荐" class="headerlink" title="框架选取与资源推荐"></a>框架选取与资源推荐</h2><ul>
+<li>ReactJs: V15+</li>
+<li>状态管理: redux, react-redux</li>
+<li>Redux中间件: redux-thunk(让action支持异步)</li>
+<li>路由管理: react-router, react-router-redux</li>
+<li>html类名: classnames</li>
+<li>HTTP客户端: axios</li>
+<li>webpack: 静态资源管理</li>
+<li>webpack-loader: babel, postcss, jsx</li>
+<li>其他库: react-bootstrap, antd, redux-form</li>
+<li>Debug: <a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi" target="_blank" rel="external">React Developer Tools</a>, <a href="https://github.com/zalmoxisus/redux-devtools-extension" target="_blank" rel="external">Redux DevTools</a></li>
+</ul>
+<h2 id="Redux简单介绍"><a href="#Redux简单介绍" class="headerlink" title="Redux简单介绍"></a>Redux简单介绍</h2><p>数据驱动是与之前基于jQuery的过程化开发最大的不同。而Redux是目前为止公认的对Flux思想(单向数据流管理)比较好的实现。对它理解的如何，可以说在一定程度上决定了开发的难易程度。<br>它是独立的，起源于React，但不止于支持React、Angular、Ember…,甚至是jQuery。但是显然更适用于状态驱动的框架。其基本架构如下图:<br><img src="/img/react-intro/redux.png" alt="" width="500px"></p>
+<p>其核心可以理解为由3部分组成，aciton，reducer，store</p>
+<ul>
+<li><p>action：用来描述需要进行一个怎样的行为。<br>比如添加电影A和添加电影B，但这是两个不同的action。我们可以使用action creator叫做添加电影来创造之前的两个actioin。</p>
+</li>
+<li><p>reducer：每一个行为具体需要做什么才能改变state。<br>可以理解为是数据库中的每一张表。最后通过Redux提供的combinReducers({})来组合所有的reducer并挂在到store树上。<br>一个action可以对应多个不同的reducer，一个reducer也可以处理不同action。是多对多的关系。<br>接收旧的state，并返回一个新的state。需要注意，不能返回之前state的引用。会用到Object.assign({}, state), […state]。</p>
+</li>
+<li><p>store: 是一个对象，维护一个全局的，唯一的state。并且提供dispatch, subscribe, getState的方法。</p>
+</li>
+</ul>
+<p><strong>Redux与React的结合：redux-react</strong><br>Redux通过Redux组件的Provider为整个react注入store。这个Provider组件也是继承了React.Component.</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="xml"><span class="tag">&lt;<span class="name">Provider</span> <span class="attr">store</span>=</span></span><span class="template-variable">&#123;store&#125;</span><span class="xml"><span class="tag">&gt;</span></span></div><div class="line">		<span class="tag">&lt;<span class="name">Router</span> <span class="attr">history</span>=</span><span class="template-variable">&#123;history&#125;</span><span class="xml"><span class="tag">&gt;</span></span></div><div class="line">      <span class="template-variable">&#123;routes&#125;</span><span class="xml"></span></div><div class="line">    <span class="tag">&lt;/<span class="name">Router</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">Provider</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>Connect方法为React组件提供stroe中的state和dispatch方法。简单来说，connect()可以把普通的react组件包装成Redux组件。<br><figure class="highlight pf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">const mapStateToProps = (<span class="keyword">state</span>) =&gt; &#123;</div><div class="line">  return &#123;</div><div class="line">    services: getVisibleServices(<span class="keyword">state</span>.services),</div><div class="line">    panelList: <span class="keyword">state</span>.panelList</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">const mapDispatchToProps = (dispatch) =&gt; &#123;</div><div class="line">  return &#123;</div><div class="line">    actions: bindActionCreators(Object.assign(&#123;&#125;, ServerActions, ServiceActions), dispatch)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">ServiceList.propTypes = &#123;</div><div class="line">  services: PropTypes.array.isRequired,</div><div class="line">  actions: PropTypes.object.isRequired</div><div class="line">&#125;</div><div class="line"></div><div class="line">export <span class="keyword">default</span> connect(</div><div class="line">  mapStateToProps,</div><div class="line">  mapDispatchToProps</div><div class="line">)(ServiceList)</div></pre></td></tr></table></figure></p>
+<ul>
+<li>bindActionCreators: 对 store.dispatch(actionCreator(…args))的再次封装。直接写actions.xxx即可。</li>
+</ul>
+<p>参考：<a href="https://github.com/joeyguo/blog/issues/3" target="_blank" rel="external">React 数据流管理架构之 Redux 介绍</a></p>
+<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><p>因为react推崇的是组件化开发，因此代码组织上也是按照组件，将每个组件相关的资源放在一起管理起来更方便(之前自己还是按照传统多页开发的结构搭建，后来证明很不方便)<br>(这图截出来真是虚。。。)<br><img src="/img/react-intro/floder.png" alt=""></p>
+<h2 id="React-Redux适用的场景"><a href="#React-Redux适用的场景" class="headerlink" title="React+Redux适用的场景"></a>React+Redux适用的场景</h2><p>可以从上面的目录图中看出，整个目录结构还是挺复杂的。所以在使用这套搭配之前，我们需要提前评估我们的应用这样去构建是否是性价比合理的。一般来说，这样的搭配适用于这样的场景：<br><img src="/img/react-intro/react-sence.png" alt="" width="350px"></p>
+<p>否则，就有些得不偿失，反而增加了开发成本。</p>
+<h2 id="使用之后"><a href="#使用之后" class="headerlink" title="使用之后"></a>使用之后</h2><ul>
+<li><p>在整个应用中，我们只需要关注数据状态的变化，使得我们开发时更加专注。什么样的界面对应什么样的状态，什么样的操作会引起什么样状态的变化，从而呈现什么样的界面。我们不再需要像jQuery那样去关注，都是哪些DOM的操作会影响本DOM的变化。<br><img src="/img/react-intro/jquery.png" alt="" width="500px"></p>
+</li>
+<li><p>整个html几乎全部由js生成（在不使用服务端渲染的前提下）。</p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/build/index.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></div></pre></td></tr></table></figure>
+<ul>
+<li><p>服务端渲染只适用于由NodeJs做开发语言的框架，像PHP, JAVA这类的是无法提供服务端渲染的。</p>
+</li>
+<li><p>在后端不提供渲染模板的情况下，基本上只是把后端当做是异步接口的提供方。</p>
+</li>
+<li><p>当redux+react更新state时，与这个state相关的组件都会被重新渲染。所以如果不需要，做shouldComponetUpdate()判断很重要。</p>
+</li>
+<li><p>最后附上之前分享时的<a href="http://jiaolonghuang.github.io/img/react-intro/reactjs.pdf">PPT</a></p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;React是一个让人使用后就想忘却jQuery的工具。
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="总结" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/%E6%80%BB%E7%BB%93/"/>
+    
+    
+      <category term="react" scheme="http://jiaolongHuang.github.io/tags/react/"/>
+    
+      <category term="redux" scheme="http://jiaolongHuang.github.io/tags/redux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>item2启动慢的解决</title>
+    <link href="http://jiaolongHuang.github.io/2016/04/21/item2/"/>
+    <id>http://jiaolongHuang.github.io/2016/04/21/item2/</id>
+    <published>2016-04-21T08:12:09.000Z</published>
+    <updated>2016-04-21T08:17:36.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>item2启动慢了，多半是oh-my-zsh的问题。<a id="more"></a></p>
+<ul>
+<li><p>oh-my-zsh加载的插件太多<br>终端输入<code>vi ~/.zshrc</code><br>plugins=(git autojump zsh-syntax-highlighting)</p>
+</li>
+<li><p>缓存<br><code>sudo rm /private/var/log/asl/*.asl</code><br>第二种的可能性比较大,我这次就是这样解决的</p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;item2启动慢了，多半是oh-my-zsh的问题。
+    
+    </summary>
+    
+    
+      <category term="小问题" scheme="http://jiaolongHuang.github.io/tags/%E5%B0%8F%E9%97%AE%E9%A2%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>charles调试指南一二</title>
+    <link href="http://jiaolongHuang.github.io/2016/04/19/mac-charles/"/>
+    <id>http://jiaolongHuang.github.io/2016/04/19/mac-charles/</id>
+    <published>2016-04-19T03:58:49.000Z</published>
+    <updated>2016-04-21T08:11:43.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在windows下可以使用fiddler作为调试代理工具，那么在mac下可以用什么呢？这里推荐使用<a href="http://www.charlesproxy.com/" target="_blank" rel="external">Charles</a>。<a id="more"></a>Charles可以理解为mac上的’fiddler’。下面就介绍一下如何使用这样类似的代理工具，下面是以charles为例，可能设置的位置不同，但是需要的步骤都是相似的，可类比。</p>
+<p>一般使用调试代理工具，是调试一些js文件，抓包，查看http请求与返回相关的信息。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
+<li>首先保证需要调试的设备(电脑或是手机)与Charles处于<strong>同一网段</strong>中，比如都连上了noway的无线网。<ul>
+<li>mac支持多网卡同时工作，插网线和无线网都可以同时连接。</li>
+</ul>
+</li>
+<li>设置Charles的代理端口号，默认是8888(fiddler也一样)<br>  <img src="/img/charles/proxy_setting.png" alt=""><br>  <img src="/img/charles/port.png" alt=""></li>
+</ul>
+<h2 id="pc端如何使用"><a href="#pc端如何使用" class="headerlink" title="pc端如何使用"></a>pc端如何使用</h2><ul>
+<li><p>在<strong>charles</strong>开启mac proxy<br><img src="/img/charles/macos_proxy.png" alt=""></p>
+</li>
+<li><p><strong>需要抓包的软件</strong>关闭其他代理<br>比如浏览器，看看是不是用了其他代理，需要选择系统代理。否则会抓不到用浏览器浏览时的包。</p>
+</li>
+<li><p><strong>浏览器清缓存</strong><br>假设上面几个步骤都成功了，但是依然看不到加载的资源，需要看看是不是浏览器还是从<strong>浏览器缓存</strong>中读取的这些资源。</p>
+<ul>
+<li>如果是，那么就在charles获取到的请求资源中看不到文件信息。</li>
+<li>那么需要强制刷新，或是清除浏览器缓存后再刷新页面。这时就可以看到加载的资源了。</li>
+<li>mac下<code>command+r</code>,是刷新网页。<code>command+shift+r</code>是强制刷新（但往往起不了效果）。可以使用chrome的插件<strong>click&amp;clean</strong>来清除缓存。<br><img src="/img/charles/network_304.png" alt=""><br><img src="/img/charles/network_200.png" alt=""><br><img src="/img/charles/charles_package.png" alt=""></li>
+</ul>
+</li>
+</ul>
+<h2 id="移动端如何调试"><a href="#移动端如何调试" class="headerlink" title="移动端如何调试"></a>移动端如何调试</h2><ul>
+<li>手机设置代理<ul>
+<li>设置电脑上的网络，保证第一个是以太网的</li>
+<li>连上与mac同一个无线网后，设置mac中wifi的ip(和以太网的ip不一样)，和端口号8888<br><img src="/img/charles/network.png" alt=""></li>
+</ul>
+</li>
+<li>这时如果前面的步骤都没问题，就会在charles界面上出现一个弹出框，选择<strong>allow</strong>即可。<br><img src="/img/charles/allow.png" alt=""></li>
+<li>这样我们就可以像调试pc页面一样，对移动端页面进行脚本调试了。</li>
+<li>另外呢，连上这样的代理之后，手机相当于是电脑的另一个屏幕了。就是说，只要电脑能访问的页面，在手机上也都可以访问了。可以通过chrome的二维码插件，直接扫码访问，或者通过任意方式，能让手机获取到需要访问的地址即可。</li>
+</ul>
+<h2 id="虚拟机中如何使用"><a href="#虚拟机中如何使用" class="headerlink" title="虚拟机中如何使用"></a>虚拟机中如何使用</h2><p>在虚拟机开启代理工具后，比如fiddler，在本机上的浏览器的代理地址设置成虚拟机中的代理地址即可。这样在虚拟机里就可以抓本机上的包了。其实就是相当于两台电脑之间的代理设置。</p>
+<h2 id="替换文件"><a href="#替换文件" class="headerlink" title="替换文件"></a>替换文件</h2><p><strong>适用与pc和移动</strong></p>
+<p>有时我们需要对页面中的脚本进行调试，如果页面是线上的，或者由于环境的限制，不能直接修改已有的脚本看到效果，该怎么办？</p>
+<p>那么使用<strong>map</strong>大法好，map分为<strong>map remote</strong>和<strong>map local</strong>两种。都是替换已抓到的文件，不同的是前者是用线上地址的文件替换，后者使用本地文件替换。本地文件替换也是我们debug时最常用的。<br><img src="/img/charles/charles_map.png" alt="" height="400"></p>
+<ul>
+<li><p>右键需要替换的文件后出现如下对话框<br><img src="/img/charles/map_local.png" alt=""></p>
+</li>
+<li><p>如果调试完了，不需要本地文件替换了，那么可以通过下面的设置remove掉设置(map remote也类似)。把前面的钩钩去掉，再点ok就ok了。<br><img src="/img/charles/map_remove.png" alt=""></p>
+</li>
+</ul>
+<h2 id="安装破解charles"><a href="#安装破解charles" class="headerlink" title="安装破解charles"></a>安装破解charles</h2><p>(并不鼓励[doge脸])</p>
+<ul>
+<li><a href="https://yunpan.cn/cqwqiHXcf2uKD" target="_blank" rel="external">安装包</a> （提取码：ecf8）</li>
+<li>破解：用破解包里面的”Mac/charles.jar” 替换 Charles 安装文件里面的 “Contents/Java/charles.jar” 文件</li>
+</ul>
+<h2 id="移动端页面的UI怎么调"><a href="#移动端页面的UI怎么调" class="headerlink" title="移动端页面的UI怎么调"></a>移动端页面的UI怎么调</h2><p>用<strong>Chrome devTools</strong>调试Android手机<strong>各种app中的web页面</strong></p>
+<ul>
+<li>手机要满足Android系统为4.4或更高版本，低版本不支持这种方式。(也不是所有的手机都支持，比如有的华为就不支持)</li>
+<li>确保App已经开启了webview的debug调试模式。</li>
+<li>用usb数据线连接好手机与电脑。</li>
+<li>将手机中的 设置 - 开发人员工具 - USB调试功能打开。</li>
+<li>打开chrome://inspect/#devices，即单击chrome右上角控制按钮 - 更多工具 - 检查设备 - 勾选上Discover USB devices</li>
+<li>在app中访问一个web页面,对应的webview就可以出现在devices中，单击inspect即可调试。</li>
+</ul>
+<p>用<strong>safari</strong>调试iPhone中<strong>safari里的web页面</strong></p>
+<p>由于iPhone安全性的限制，我们只能通过safari调试iPhone在safari中的页面，调试不了别的地方的webview。</p>
+<ul>
+<li>手机中，<strong>设置 &gt; Safari &gt; 高级</strong>开启<strong>web检查器</strong></li>
+<li>用usb数据线连接好手机与电脑</li>
+<li>在手机的safari中打开一个网页</li>
+<li>在电脑的safari，点击 开发 - 自己iphone的名称 - 手机上打开页面的url</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://drops.wooyun.org/tips/2423" target="_blank" rel="external">charles使用教程指南</a></li>
+<li><a href="http://www.infoq.com/cn/articles/network-packet-analysis-tool-charles/" target="_blank" rel="external">iOS开发工具——网络封包分析工具Charles</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在windows下可以使用fiddler作为调试代理工具，那么在mac下可以用什么呢？这里推荐使用&lt;a href=&quot;http://www.charlesproxy.com/&quot;&gt;Charles&lt;/a&gt;。
+    
+    </summary>
+    
+    
+      <category term="调试工具" scheme="http://jiaolongHuang.github.io/tags/%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我遇到过的那些自动化脚本</title>
+    <link href="http://jiaolongHuang.github.io/2016/04/17/linux-js/"/>
+    <id>http://jiaolongHuang.github.io/2016/04/17/linux-js/</id>
+    <published>2016-04-17T08:45:20.000Z</published>
+    <updated>2016-04-17T10:30:50.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在实际项目中，我们不可避免的需要用到自动化脚本来帮助我们完成一些事情，比如自动发送邮件，当系统宕机之后自动重启等等。<a id="more"></a>下面我将结合一个实际项目分析介绍，总共在哪些场景中使用了自动化脚本并且是如何做的。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在这个项目中，我们除了完成构建系统的基本代码之外，还需要完成下面一些任务：</p>
+<ol>
+<li>定时进行数据处理并入库</li>
+<li>定时使用casperjs截图，并发送邮件</li>
+<li>监控是否有新代码提交，更新代码，并重启系统</li>
+<li>为了保证顺利截图，还需要创建守护进程</li>
+</ol>
+<h2 id="crontab命令"><a href="#crontab命令" class="headerlink" title="crontab命令"></a>crontab命令</h2><ul>
+<li>分析上面的一些任务，我们发现基本都有<strong>定时</strong>两个字，那么在linux中这个具体是怎么实现的呢。就是使用crontab命令来完成定时任务。(这里暂且先不做关于crontab具体介绍和使用的过多介绍,仅介绍在实际中是如何操作的)</li>
+<li><code>crontab -e</code>编辑crontab列表；<code>crontab -l</code>查看crontab列表。</li>
+<li>它执行任务的最小间隔是1min，利用这个特性，我们可以用来创建守护进程。即，如果发现某个进程不存在，即立即重新运行。</li>
+<li>需要注意的是，crontab命令在执行时，往往并不知道这个命令是在什么样的环境下执行的。所以，对于执行命令，我们往往都写成命令的绝对路径，比如<code>/usr/local/bin/node</code></li>
+<li><p>我们还可以在指定路径下，执行命令。比如:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * * (cd <span class="regexp">/sotraffic-web/</span>webpack; sh .<span class="regexp">/../</span>crontabscript<span class="regexp">/daemon.sh &gt;&gt; ./</span>..<span class="regexp">/log/</span>daemon.log)</div></pre></td></tr></table></figure>
+</li>
+<li><p>任意一个在命令行执行的命令都可以被创建成crontab定时任务。</p>
+</li>
+</ul>
+<h2 id="选取脚本语言"><a href="#选取脚本语言" class="headerlink" title="选取脚本语言"></a>选取脚本语言</h2><ul>
+<li><p>node<br>  这里隆重介绍下node中的<code>child_process = require(&#39;child_process&#39;)</code>模块，利用child_process中的<strong>exec</strong>方法，我们可以执行命令行中可执行的任意命令，比如：<code>cd path &amp;&amp; ls</code> 或者<code>git pull</code>，<code>pm2 restart</code>等等</p>
+</li>
+<li><p>shell, python<br>关于shell语法的介绍，可以参考<a href="http://hackerxu.com/2014/09/05/shell.html" target="_blank" rel="external">这个系列</a>。</p>
+</li>
+<li><p>针对前言提到的4个任务，我们都分别采用了什么脚本语言呢？</p>
+</li>
+</ul>
+<ol>
+<li>定时进行数据处理并入库 （node）</li>
+<li><p>监控是否有新代码提交，更新代码，并重启系统 （node）</p>
+</li>
+<li><p>定时使用casperjs截图，并发送邮件 (casperjs, python, shell)<br>实际上这一步骤，是两个任务的结合，先用casperjs完成截图，并且截图完成后，再执行使用python编写的发送邮件脚本(实际上node也可以)。而结合的这一任务是用shell来写的。<br>在这一步骤中还遇到一个问题，就是由于未知原因，截图不能一次性成功。检测截图是否成功，如果不成功则继续执行命令，直到成功为止。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/bash</span></div><div class="line"><span class="built_in">echo</span> <span class="string">"====Starting capturing and sending Email===="</span></div><div class="line"><span class="built_in">echo</span> `date +%Y-%m-%d%t%H:%M:%S`</div><div class="line"></div><div class="line"><span class="built_in">source</span> /etc/bashrc</div><div class="line"></div><div class="line">TIME=`date +%Y-%m-%d`</div><div class="line">myFilePc=<span class="string">"/www/static/img/<span class="variable">$TIME</span>/report_pc.png"</span></div><div class="line">myFileMobile=<span class="string">"/www/static/img/<span class="variable">$TIME</span>/report_mobile.png"</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> [ <span class="_">-f</span> <span class="variable">$myFilePc</span> ]</div><div class="line"><span class="keyword">then</span></div><div class="line">	rm <span class="_">-f</span> <span class="string">"<span class="variable">$myFilePc</span>"</span></div><div class="line">	<span class="built_in">echo</span> <span class="string">"rm <span class="variable">$myFilePc</span> is done!"</span></div><div class="line"><span class="keyword">else</span></div><div class="line">	<span class="built_in">echo</span> <span class="string">"cannot find <span class="variable">$myFilePc</span>"</span></div><div class="line"><span class="keyword">fi</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> [ <span class="_">-f</span> <span class="variable">$myFileMobile</span> ]</div><div class="line"><span class="keyword">then</span></div><div class="line">	rm <span class="_">-f</span> <span class="string">"<span class="variable">$myFileMobile</span>"</span></div><div class="line">	<span class="built_in">echo</span> <span class="string">"rm <span class="variable">$myFileMobile</span> is done!"</span></div><div class="line"><span class="keyword">else</span></div><div class="line">	<span class="built_in">echo</span> <span class="string">"cannot find <span class="variable">$myFileMobile</span>"</span></div><div class="line"><span class="keyword">fi</span></div><div class="line"></div><div class="line"><span class="comment">#需要检测哪个图没有截取成功，再次执行命令，所以把capture_pc和capture_mobile分成两个文件写，这样成本最低</span></div><div class="line"><span class="keyword">while</span> [ ! <span class="_">-f</span> <span class="variable">$myFilePc</span> ]</div><div class="line"><span class="keyword">do</span></div><div class="line">	/usr/<span class="built_in">local</span>/bin/casperjs /crontabscript/capture_pc.js</div><div class="line"><span class="keyword">done</span></div><div class="line"></div><div class="line"><span class="keyword">while</span> [ ! <span class="_">-f</span> <span class="variable">$myFileMobile</span> ]</div><div class="line"><span class="keyword">do</span></div><div class="line">	/usr/<span class="built_in">local</span>/bin/casperjs /crontabscript/capture_mobile.js</div><div class="line"><span class="keyword">done</span></div><div class="line"></div><div class="line">/usr/<span class="built_in">local</span>/Python-2.7.11/python /crontabscript/Email.py</div><div class="line"></div><div class="line"><span class="built_in">echo</span> <span class="string">""</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>为了保证顺利截图，还需要创建守护进程 (shell)<br>创建守护进行的思路是，每隔1分钟检查一次查找所需进程是否在进程列表中，如果没有，则启动进程</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/bash</span></div><div class="line">CONDITION=<span class="string">'能识别进程的关键字'</span></div><div class="line">CMD=<span class="string">'需要执行的命令'</span></div><div class="line"></div><div class="line">PROCESS_INFO=`ps aux|grep <span class="variable">$CONDITION</span>|grep -v <span class="string">'grep'</span>`</div><div class="line"><span class="comment">#echo $PROCESS_INFO</span></div><div class="line">PID=`<span class="built_in">echo</span> <span class="string">"<span class="variable">$PROCESS_INFO</span>"</span>|awk <span class="string">'&#123;print $2&#125;'</span>`</div><div class="line"><span class="comment">#echo $PID</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> [ <span class="string">"<span class="variable">$PID</span>"</span> == <span class="string">""</span> ]</div><div class="line"><span class="keyword">then</span></div><div class="line">	TIME=`date`</div><div class="line">	<span class="built_in">echo</span> <span class="string">"=============<span class="variable">$TIME</span>==============="</span></div><div class="line">    <span class="built_in">echo</span> <span class="string">'No runnning process found! Try starting new process...'</span></div><div class="line">    `<span class="variable">$CMD</span>`</div><div class="line">    <span class="built_in">echo</span> <span class="string">'Restart done!'</span></div><div class="line"><span class="keyword">fi</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="记录日志"><a href="#记录日志" class="headerlink" title="记录日志"></a>记录日志</h2><p>因为这些脚本会定时自动执行，在执行过程中可能会失败，我们需要一些信息来帮助我们定位问题。所以一定要在脚本中输出一些有价值的信息，并记录日志。</p>
+<h2 id="遇到过的问题"><a href="#遇到过的问题" class="headerlink" title="遇到过的问题"></a>遇到过的问题</h2><ul>
+<li>python在发送邮件时，使用域名致使邮件不能成功发送，暂时使用IP。<strong>（原因待查）</strong></li>
+<li>crontab执行截图时，报出phantomjs未安装，以及python未找到的错误。<br>  原因：crontab未找到正确的环境变量<br>  解决: 在脚本中执行截图操作前，先<code>source /etc/bashrc</code></li>
+<li>重启webpack的命令需要在指定的路径下才能执行<br>  <img src="/img/webpack-error.png" alt=""><br>  解决：（1）先cd到指定路径，再执行命令。（2）或者命令中指定webpack.config.js  <figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="regexp">/usr/</span>local<span class="regexp">/bin/</span>node <span class="regexp">/webpack/</span>node_modules<span class="regexp">/.bin/</span>webpack-dev-server <span class="regexp">/webpack/</span>webpack.config.js --inline --hot --quiet --host <span class="number">0.0</span>.<span class="number">0.0</span> --port <span class="number">8366</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>自我感想，无论是使用shell、python、node，或者php都是可以完成任务的，没有规定什么样的语言只能完成什么样的任务。个人更建议选择一种自己熟悉的语言，来完成所有操作，这样可以降低学习成本。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在实际项目中，我们不可避免的需要用到自动化脚本来帮助我们完成一些事情，比如自动发送邮件，当系统宕机之后自动重启等等。
+    
+    </summary>
+    
+    
+      <category term="Linux" scheme="http://jiaolongHuang.github.io/tags/Linux/"/>
+    
+      <category term="自动化" scheme="http://jiaolongHuang.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/"/>
+    
+      <category term="脚本" scheme="http://jiaolongHuang.github.io/tags/%E8%84%9A%E6%9C%AC/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Casperjs实战</title>
+    <link href="http://jiaolongHuang.github.io/2016/04/17/casperjs-example/"/>
+    <id>http://jiaolongHuang.github.io/2016/04/17/casperjs-example/</id>
+    <published>2016-04-17T08:04:20.000Z</published>
+    <updated>2016-04-17T10:28:17.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Casperjs系列之实践操作。接上一篇Casperjs的理论介绍之后，我们来介绍一下Casperjs如何在实际场景中使用，以及可能会遇到的一些问题。<br><a id="more"></a></p>
+<h2 id="怎么用？"><a href="#怎么用？" class="headerlink" title="怎么用？"></a>怎么用？</h2><p>因为Casperjs使用比较简单，基本可以分为三步，’创建并打开一个浏览器’，’进行网页浏览点击等等一系列操作’, ‘关闭浏览器’。这里仅举两个例子作为介绍，其他更多的用法请参考Casperjs官方API。</p>
+<ul>
+<li><p><strong>网页截图</strong><br>  截图可分为2种，一种是简单的<strong>直接截图</strong>，一种是<strong>先登录再截图</strong>。对于前者很简单，直接调api即可。难点再与后者，如何登录。<br>  而登录又分为2种，<strong>正常填写form表单并提交</strong>，网页跳转登录，但是这一种，往往会遇到需要填写验证码的情况，尤其是图片验证码，可能需要先进行图片识别，这样操作会比较复杂；另一种是，<strong>带着cookie</strong>直接打开需要截取的页面，但这种也存在弊端，就是如何解决cookie过期的问题。</p>
+<p>  对于表单提交可以使用<code>fill, fillSelectors</code>的方法，关键代码片段如下：</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> casper = <span class="built_in">require</span>(<span class="string">'casper'</span>).create(&#123;</div><div class="line">	<span class="attr">pageSettings</span>: &#123;</div><div class="line">		<span class="attr">userAgent</span>: <span class="string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2593.0 Safari/537.36"</span></div><div class="line">	&#125;,</div><div class="line">	<span class="comment">// 不可以写online路径，只能写相对或绝对路径</span></div><div class="line">	<span class="comment">//clientScripts: ["includes/jquery.min.js"],</span></div><div class="line">	verbose: <span class="literal">true</span>,</div><div class="line">	<span class="attr">logLevel</span>: <span class="string">'debug'</span></div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 1. start，初始化一个浏览器</span></div><div class="line">casper.start().then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">this</span>.echo(<span class="string">'....begin.....'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 2. 设置viewportsize后打开页面</span></div><div class="line">casper.viewport(<span class="number">1024</span>, <span class="number">768</span>)</div><div class="line">		.thenOpen(<span class="string">'https://www.so.com'</span>)</div><div class="line">		.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">			<span class="keyword">this</span>.echo(<span class="keyword">this</span>.getTitle());</div><div class="line">		&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 点击名为‘登录’的链接</span></div><div class="line">casper.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">if</span>( <span class="keyword">this</span>.exists(<span class="string">'#user-login'</span>) )&#123;</div><div class="line">		<span class="keyword">this</span>.echo(<span class="string">'还未登录'</span>);</div><div class="line">		<span class="comment">// 也可用'click'，'click'要求对选择器跟精确些</span></div><div class="line">		<span class="keyword">this</span>.clickLabel(<span class="string">'登录'</span>, <span class="string">'a'</span>);</div><div class="line">	&#125;<span class="keyword">else</span>&#123;</div><div class="line">		<span class="keyword">this</span>.echo(<span class="string">'已登录'</span>);</div><div class="line">		<span class="keyword">this</span>.exit();</div><div class="line">	&#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 等待表单出现</span></div><div class="line">casper.waitForSelector(<span class="string">'form.quc-form'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="comment">// 截图： 登录之前的首页</span></div><div class="line">	<span class="keyword">this</span>.captureSelector(<span class="string">'a.png'</span>, <span class="string">'body'</span>);</div><div class="line">	<span class="keyword">this</span>.echo(<span class="string">'登录表单已出现, 即将开始填写表单'</span>);</div><div class="line"></div><div class="line">	<span class="comment">// 填写表单，要是遇着输入图片形式的验证码就没辙了。。</span></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 方法1</div><div class="line">	 */</div><div class="line">	<span class="keyword">this</span>.fillSelectors(<span class="string">'form.quc-form'</span>, &#123;</div><div class="line">		<span class="string">'.quc-input-account'</span>: <span class="string">'你的账号'</span>,</div><div class="line">		<span class="string">'.quc-input-password'</span>: <span class="string">'你的密码'</span></div><div class="line">	&#125;, <span class="literal">true</span>);</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 方法2</div><div class="line">	 * fill(),根据他们的'name'值来选择字段</div><div class="line">	 */</div><div class="line">	<span class="comment">/*this.fill('form.quc-form', &#123;</span></div><div class="line">		'account': '你的账号',</div><div class="line">		'password': '你的密码'</div><div class="line">	&#125;, true);*/</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 * 手动点击提交</div><div class="line">	 */</div><div class="line">	<span class="comment">/*this.evaluate(function()&#123;</span></div><div class="line">		document.querySelector('.quc-form').submit();</div><div class="line">	&#125;);*/</div><div class="line">&#125;);</div><div class="line"></div><div class="line">casper.wait(<span class="number">2000</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="keyword">this</span>.echo(<span class="string">'表单填写完成，正在验证.....'</span>);</div><div class="line">	<span class="comment">// 验证是否得到登录后的用户名</span></div><div class="line">	<span class="keyword">var</span> name = <span class="keyword">this</span>.exists(<span class="string">'.login .uname'</span>) ? <span class="keyword">this</span>.getElementInfo(<span class="string">'.login .uname'</span>).text : <span class="string">''</span>;</div><div class="line">	<span class="keyword">this</span>.echo(<span class="string">'the name is: '</span> + name);</div><div class="line">	<span class="comment">// 截图： 登录之后的首页</span></div><div class="line">	<span class="keyword">this</span>.captureSelector(<span class="string">'b1.png'</span>, <span class="string">'body'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// 3. 将上面定义的操作进行实际操作</span></div><div class="line">casper.run(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">	<span class="comment">// 4. 关闭浏览器</span></div><div class="line">	<span class="keyword">this</span>.echo(<span class="string">'===================the progress is over!==================='</span>).exit();</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>  带着cookie打开网页的方法，但是Casperjs没有提供cookie相关的方法，好在我们还可以使用phantom中的方法，代码片段如下：</p>
+  <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">phantom.cookiesEnabled = <span class="literal">true</span>;</div><div class="line">casper.then(function()&#123;</div><div class="line">	phantom.addCookie(&#123;</div><div class="line">	  <span class="string">'name'</span>: <span class="string">'Q'</span>,</div><div class="line">	  <span class="string">'value'</span>: <span class="string">'具体的值'</span>,</div><div class="line">	  <span class="string">'domain'</span>: <span class="string">'.so.com'</span></div><div class="line">	&#125;);</div><div class="line"></div><div class="line">	phantom.addCookie(&#123;</div><div class="line">	  <span class="string">'name'</span>: <span class="string">'T'</span>,</div><div class="line">	  <span class="string">'value'</span>: <span class="string">'具体的值'</span>,</div><div class="line">	  <span class="string">'domain'</span>: <span class="string">'.so.com'</span></div><div class="line">	&#125;);</div><div class="line"></div><div class="line">	showAllCookie();</div><div class="line"></div><div class="line">	<span class="comment">// 需要带着cookie重新打开一下页面</span></div><div class="line">	casper.thenOpen(<span class="string">'https://www.so.com'</span>, function()&#123;</div><div class="line">		<span class="comment">// 点击登录</span></div><div class="line">		<span class="keyword">if</span>( <span class="keyword">this</span>.exists(<span class="string">'#user-login'</span>) )&#123;</div><div class="line">			<span class="keyword">this</span>.echo(<span class="string">'还未登录'</span>);</div><div class="line">			<span class="comment">// 也可用'click'，'click'要求对选择器跟精确些</span></div><div class="line">			<span class="keyword">this</span>.clickLabel(<span class="string">'登录'</span>, <span class="string">'a'</span>);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="comment">// 验证是否得到登录后的用户名</span></div><div class="line">		<span class="keyword">var</span> name = <span class="keyword">this</span>.exists(<span class="string">'.login .uname'</span>) ? <span class="keyword">this</span>.getElementInfo(<span class="string">'.login .uname'</span>).text : <span class="string">''</span>;</div><div class="line">		<span class="keyword">this</span>.echo(<span class="string">'the name is: '</span> + name);</div><div class="line"></div><div class="line">		<span class="comment">// 截图： 登录之后的首页</span></div><div class="line">		<span class="keyword">this</span>.captureSelector(<span class="string">'CB1.png'</span>, <span class="string">'body'</span>);</div><div class="line">	&#125;);</div><div class="line">	</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>爬虫</strong><br>  爬虫的基本思路就是，在网页中根据有序的dom结构获得到自己想要的信息。Casperjs自身提供了很多简单的可以操作dom的api，比如getTitle，getCurrentUrl，getHTML等等。除此之外，还可以在创建Casperjs对象时引入其他脚本，比如jquery。<br>  有时我们在做无具体目标的，需要保存页面中所有链接及其子链接依次往下链接内容时，就可能会连续用到then和thenOpen方法打开url。这里贴出一段官方的例子,就是遇到a链接就打开，并在新的页面中继续查找链接并打开，直接页面中没有链接为止：</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*eslint strict:0*/</span></div><div class="line"><span class="comment">/*global CasperError, console, phantom, require*/</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> casper = <span class="built_in">require</span>(<span class="string">"casper"</span>).create(&#123;</div><div class="line">    <span class="attr">verbose</span>: <span class="literal">true</span></div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">// The base links array</span></div><div class="line"><span class="keyword">var</span> links = [</div><div class="line">    <span class="string">"http://www.so.com/"</span></div><div class="line">];</div><div class="line"></div><div class="line"><span class="comment">// If we don't set a limit, it could go on forever</span></div><div class="line"><span class="keyword">var</span> upTo = ~~casper.cli.get(<span class="number">0</span>) || <span class="number">10</span>;</div><div class="line"></div><div class="line"><span class="keyword">var</span> currentLink = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="comment">// Get the links, and add them to the links array</span></div><div class="line"><span class="comment">// (It could be done all in one step, but it is intentionally splitted)</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">addLinks</span>(<span class="params">link</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> found = <span class="keyword">this</span>.evaluate(searchLinks);</div><div class="line">        <span class="keyword">this</span>.echo(found.length + <span class="string">" links found on "</span> + link);</div><div class="line">        links = links.concat(found);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Fetch all &lt;a&gt; elements from the page and return</span></div><div class="line"><span class="comment">// the ones which contains a href starting with 'http://'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">searchLinks</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> filter, map;</div><div class="line">    filter = <span class="built_in">Array</span>.prototype.filter;</div><div class="line">    map = <span class="built_in">Array</span>.prototype.map;</div><div class="line">    <span class="keyword">return</span> map.call(filter.call(<span class="built_in">document</span>.querySelectorAll(<span class="string">"a"</span>), <span class="function"><span class="keyword">function</span>(<span class="params">a</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> (<span class="regexp">/^http:\/\/.*/i</span>).test(a.getAttribute(<span class="string">"href"</span>));</div><div class="line">    &#125;), <span class="function"><span class="keyword">function</span>(<span class="params">a</span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> a.getAttribute(<span class="string">"href"</span>);</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Just opens the page and prints the title</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">start</span>(<span class="params">link</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.start(link, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.echo(<span class="string">'Page title: '</span> + <span class="keyword">this</span>.getTitle());</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// As long as it has a next link, and is under the maximum limit, will keep running</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">check</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (links[currentLink] &amp;&amp; currentLink &lt; upTo) &#123;</div><div class="line">        <span class="keyword">this</span>.echo(<span class="string">'--- Link '</span> + currentLink + <span class="string">' ---'</span>);</div><div class="line">        start.call(<span class="keyword">this</span>, links[currentLink]);</div><div class="line">        addLinks.call(<span class="keyword">this</span>, links[currentLink]);</div><div class="line">        currentLink++;</div><div class="line">        <span class="keyword">this</span>.run(check);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">this</span>.echo(<span class="string">"All done."</span>);</div><div class="line">        <span class="keyword">this</span>.exit();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">casper.start().then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.echo(<span class="string">"Starting"</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">casper.run(check);</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="我遇到过的问题"><a href="#我遇到过的问题" class="headerlink" title="我遇到过的问题"></a>我遇到过的问题</h2><ul>
+<li><p>viewport的设置:<br>  phantom默认设置是<code>300*400</code>。实践证明在不重写的情况下，不同页面截取下来的大小不一，有时是<code>300*y</code>，有时是<code>x*400</code>。<br>  如果需要根据页面的内容来截取特定大小的，需要先设置viewport中width，height中的任意一个，再通过极端内容的宽高，再次动态改变viewport的大小。</p>
+</li>
+<li><p>不同系统对字体和highdpi支持不好<br>  比如在某些linux系统上无法显示汉字和某些特定的字体，需要重新安装。<br>  截出来的图在highdpi的屏幕上显示会发虚<strong>（暂时还没找到解决办法）</strong></p>
+</li>
+<li><p>不支持多进程，耗时长<br>  虽然可以通过配置<code>loadImages:  false,loadPlugins: false</code>来提高页面加载速度，但是在进行数据量较大的爬虫时，与pyhton还是有较大差距。</p>
+</li>
+<li><p>找不到环境变量，如Phantomjs，python<br>  我自己是在使用crontab命令时遇到的，主要原因是环境变量没生效。<br>  解决办法：在命令运行之前，先source一下环境变量</p>
+</li>
+<li><p>截图在开发机上莫名崩溃<br>  没有原因，不能稳定复现；不是占用内存或cpu过高，事实上才占用百分之几到0点几。<br>  暂且解决办法是，多执行几次截图命令直到截取成功为止。<br>  <strong>目前没有找到真正的原因和解决办法</strong></p>
+</li>
+<li><p>截取vue组件渲染的页面，空白<br>  具体场景：使用webpack来运行一套view，使用thinkjs来运行webpack打包后的view，截取后者view页面时，总是空白<br>  解决办法：去截取webpack运行的view</p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Casperjs系列之实践操作。接上一篇Casperjs的理论介绍之后，我们来介绍一下Casperjs如何在实际场景中使用，以及可能会遇到的一些问题。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="Casperjs" scheme="http://jiaolongHuang.github.io/tags/Casperjs/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Casperjs简介</title>
+    <link href="http://jiaolongHuang.github.io/2016/04/13/casperjs/"/>
+    <id>http://jiaolongHuang.github.io/2016/04/13/casperjs/</id>
+    <published>2016-04-13T06:24:35.000Z</published>
+    <updated>2016-04-22T04:06:49.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Casperjs系列之理论介绍。这一篇我们先来认识一下Casperjs是什么，以及它的一些基本理论知识。<a id="more"></a></p>
+<h2 id="是什么？"><a href="#是什么？" class="headerlink" title="是什么？"></a>是什么？</h2><blockquote>
+<p><a href="http://Casperjs.org/" target="_blank" rel="external">Casperjs</a>是一个开源的导航脚本处理和测试工具，基于Phantomjs和SlimerJS。它简化了页面间导航的定义过程，提供了处理常见任务的实用的高级函数、方法和语法糖。</p>
+</blockquote>
+<p>上面这段是从官网上摘取翻译的，可以看出Casperjs是在Phantomjs和Selemjs基础上的再一次更好的封装，有更简单的api，使用起来会更简单，同时它还有自己的测试框架(Phantomjs则没有）。</p>
+<p>我们知道Phantomjs就是一个基于webkit内核的无头浏览器（没有界面的浏览器）,它可以完全模拟webkit内核浏览器的行为。因此借助于Casperjs我们可以模拟真实用户正常打开浏览器浏览网页的行为。同时，因为它还是一个测试工具，我们可以借助它完成前端自动化测试（端到端）的测试。</p>
+<h2 id="能干什么？"><a href="#能干什么？" class="headerlink" title="能干什么？"></a>能干什么？</h2><ul>
+<li>定义、排列页面间导航的步骤(先打开页面A，再打开页面B，open, thenOpen)</li>
+<li>表单的填充、提交(fill)</li>
+<li>点击、跟踪超链接(click a)<br><code>以上三点其实就是模拟用户的浏览网页时的行为</code></li>
+<li>区域、页面截图<br>  <code>最重要也是最常用的功能之一</code></li>
+<li>测试远程DOM(有自己的断言语法)<br>  <code>最重要也是最常用的功能之一</code></li>
+<li>记录日志(不同级别的，包括debug，info，warning，error;Casperjs默认在标准输出不输出log信息)</li>
+<li>资源下载，包括二进制资源</li>
+<li>编写功能测试套件，可以将结果以JUnit XML形式导出</li>
+<li>抓取网页内容</li>
+</ul>
+<p>今天在这里我们对Casperjs的测试工具的功能先不做讨论，主要介绍和讨论Casperjs的<strong>页面导航截图</strong>的功能。</p>
+<h2 id="如何安装？"><a href="#如何安装？" class="headerlink" title="如何安装？"></a>如何安装？</h2><ul>
+<li>首先需要装Phantomjs, &gt;= 1.9.1；python, &gt;= 2.6；mac中默认安装了python，<code>python --version</code>可以查看python的版本</li>
+<li>再装Casperjs, 多种安装方式，比如mac, 可以从homebrew, git, npm等等。这里以npm安装举例：<code>npm install -g Casperjs</code></li>
+<li>虽然Casperjs可以通过npm来安装，但是Casperjs和Phantomjs都是独立于node系统的。它不是nodejs的一个库或是包，可以通过node的exec方法来执行Casperjs命令。或者使用<a href="https://github.com/SpookyJS/SpookyJS" target="_blank" rel="external">SpookyJS</a>来是的node可以驱动Casperjs。</li>
+<li>spookyJS是将Casperjs作为nodejs的一个子进程来执行。</li>
+<li>当然了，在其他语言中也可以直接调用它们，比如java，php，shell等等。</li>
+</ul>
+<h2 id="是如何工作的？"><a href="#是如何工作的？" class="headerlink" title="是如何工作的？"></a>是如何工作的？</h2><ul>
+<li>首先它是基于消息驱动的。有then,wait字样的操作都是异步的行为。需要注意的是exit()也是异步的。也就是说，step1中调用exit,step2也有可能执行。</li>
+<li>同时，它是基于step栈的。只有当执行run()命令时这些步骤才会被真正开始执行。一个step是这样的一个js方法：等待前一个step正在执行时处于等待状态；在请求一个链接和页面加载未完成时处于等待状态。典型的一个方法是<code>then()</code>方法。</li>
+<li>当完成一个step时，casperjs会去检查三个状态标识<code>pendingWait, loadInProgress, and navigationRequested</code>，当这三个标识只有任意一个为true时，就会挂起等待，直到全部为false时才会进行下一个step。</li>
+</ul>
+<p>casperjs也提供了查看具体step的方法：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">require</span>(<span class="string">'utils'</span>).dump(casper.steps.map(<span class="function"><span class="keyword">function</span>(<span class="params">step</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> step.toString();</div><div class="line">&#125;));</div></pre></td></tr></table></figure></p>
+<p>在控制台看到的打印的栈信息如下，其中有一个_step()，这个是CasperJs自动帮我们加的。<br><img src="/img/casperjs-test.png" alt=""></p>
+<h2 id="更多疑问，参考这里"><a href="#更多疑问，参考这里" class="headerlink" title="更多疑问，参考这里"></a>更多疑问，参考<a href="http://docs.casperjs.org/en/latest/faq.html" target="_blank" rel="external">这里</a></h2><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://casperjs.org/" target="_blank" rel="external">Casperjs官网</a></li>
+<li><a href="http://html-js.com/article/CasperJS-based-frontend-automation-testing-road" target="_blank" rel="external">CasperJS 基础</a></li>
+<li><a href="http://group.jobbole.com/12782/" target="_blank" rel="external">使用phantomJS 、casperjs 一个月小感受</a></li>
+<li><a href="http://sudodev.cn/tag/casperjs-phantomjs/" target="_blank" rel="external">别的人遇到的相关问题</a></li>
+<li><a href="http://thejsguy.com/2015/02/28/end-to-end-testing-with-phantomsjs-and-casperjs.html" target="_blank" rel="external">End To End Testing with PhantomJS and CasperJS</a></li>
+<li><a href="http://my.oschina.net/leejun2005/blog/407043?fromerr=2nf4tBuT" target="_blank" rel="external">Web 自动化测试与智能爬虫利器：PhantomJS 简介与实战</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Casperjs系列之理论介绍。这一篇我们先来认识一下Casperjs是什么，以及它的一些基本理论知识。
+    
+    </summary>
+    
+    
+      <category term="Casperjs" scheme="http://jiaolongHuang.github.io/tags/Casperjs/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用ES7的async函数简化异步编程[译]</title>
+    <link href="http://jiaolongHuang.github.io/2015/12/08/async-fy/"/>
+    <id>http://jiaolongHuang.github.io/2015/12/08/async-fy/</id>
+    <published>2015-12-08T06:23:08.000Z</published>
+    <updated>2016-01-15T03:50:10.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>翻译<a href="http://www.sitepoint.com/simplifying-asynchronous-coding-es7-async-functions/" target="_blank" rel="external">Simplifying Asynchronous Coding with ES7 Async Functions</a><br><a id="more"></a></p>
+<p>js中Promises的出现照亮了互联网，它帮助开发者逃出callback地狱，并且解决了大部分js编程者无处不在都会遇到的异步代码的困扰。然而Promises并不是完美的，它依旧会有callback，在复杂的情况下仍然很混乱和难以置信的冗余。</p>
+<p>随着ES6的出现，不仅可以无需引入任意一个库就可以直接使用语言自带的promise，而且我们还可以使用过generators。generators可以通过一个函数来暂停进程，这意味着把generators包裹在一个通用函数中，我们可以等待一个异步操作结束之后再执行下一行代码。突然，你的异步代码开始看上去像同步一样。</p>
+<p>但是这只是第一步。在ES7中，async functions即将被发布了。async functions的思想是这样的，使用异步编程的generators，并且赋予它们独有的简单和富有语义的语法。因此，你不必使用一个库来获取之前提到的那个通用函数，因为这一些都在背后默默做好了。</p>
+<p>如果要是跑一下这篇文章里的ES7代码，你需要使用Traceur编译器。</p>
+<h2 id="Async-Functions-vs-Generators"><a href="#Async-Functions-vs-Generators" class="headerlink" title="Async Functions vs Generators"></a>Async Functions vs Generators</h2>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;翻译&lt;a href=&quot;http://www.sitepoint.com/simplifying-asynchronous-coding-es7-async-functions/&quot;&gt;Simplifying Asynchronous Coding with ES7 Async Functions&lt;/a&gt;&lt;br&gt;
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="JS" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/JS/"/>
+    
+      <category term="ES7" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/JS/ES7/"/>
+    
+    
+      <category term="JS" scheme="http://jiaolongHuang.github.io/tags/JS/"/>
+    
+      <category term="Dec" scheme="http://jiaolongHuang.github.io/tags/Dec/"/>
+    
+      <category term="异步编程" scheme="http://jiaolongHuang.github.io/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>用thinkjs2升级moheUI平台</title>
+    <link href="http://jiaolongHuang.github.io/2015/12/07/thinkjs2/"/>
+    <id>http://jiaolongHuang.github.io/2015/12/07/thinkjs2/</id>
+    <published>2015-12-07T01:19:02.000Z</published>
+    <updated>2016-01-15T03:50:10.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>花了4天时间把之前mohe平台用thinkjs2升级了下，3天改代码，1天部署。在thinkjs2.X版本中还是遇到了些大大小小的问题，这里记录下。</p>
+<a id="more"></a>
+<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><ol>
+<li><p>凡是需要init的地方，都得用super.init()</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">init (...arg) &#123;</div><div class="line">	<span class="keyword">super</span>.init(...arg);</div><div class="line">&#125;</div><div class="line">一般情况下，只需传参http：</div><div class="line">init (http) &#123;</div><div class="line">	<span class="keyword">super</span>.init(http);</div><div class="line">	<span class="keyword">this</span>.__model = <span class="keyword">this</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>2.0 里推荐的文件名都小写,有大写的话会看到一个warning的。<br>比如componentController中有个action名以前是componentSubmitAction，在view中我们会这样写请求，<code>/component/componentSubmit</code>,在1.x版本是没有问题的；<br>但是在2.x版本中thinkjs会强制将请求的url都转成小写的，所以最终发送的请求就变成了<code>/component/componentsubmit</code>,这样就会出现找不到action的情况。<br>虽然在2.0.6版本后，thinkjs支持<strong>URL 解析后的 Action 支持含有 - 字符</strong>,但是<code>component-submitAction</code>这样命名还是感觉怪怪的。</p>
+</li>
+<li><p>用await代替了promise后，之前用<code>then.then.catch</code>的流程可以改为</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>&#123;</div><div class="line">	<span class="comment">//这里就是各种操作</span></div><div class="line">&#125;<span class="keyword">catch</span>(err)&#123;</div><div class="line">	console.log(err);</div><div class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.fail(<span class="string">'保存组件失败'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>controller中还是可以用promise，也不是全都非得改成await的形式，还是得看具体流程。<br>比如有个操作需要，先检查文件后缀名-&gt;文件重命名-&gt;上传文件-&gt;检测代码-&gt;返回成功结果。这样一个流程，就很适合用then连接起来。<br>但是，需要注意的是如果需要流程进行下去，需要返回一个普通的json或变量，而不是this.success(),否则流程会被中断，直接将success返回给view了</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.checkFile( file, fileType )</div><div class="line">		.then(<span class="function"><span class="params">reg</span> =&gt;</span>&#123;</div><div class="line">		<span class="built_in">console</span>.log(<span class="string">'--------renameFile-----'</span>);</div><div class="line">		<span class="comment">// 重命名文件</span></div><div class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.renameFile( reg, file );</div><div class="line">	&#125;).then(<span class="function"><span class="params">passedFile</span>=&gt;</span>&#123;</div><div class="line">		<span class="built_in">console</span>.log(<span class="string">'--------uploadFile-----'</span>);</div><div class="line">		<span class="comment">// uploadFile函数里已返回this.success</span></div><div class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.uploadFile( <span class="keyword">this</span>.UPLOAD_FILE_PATH, passedFile );</div><div class="line">	&#125;).then(<span class="function"><span class="params">res</span>=&gt;</span>&#123;</div><div class="line">		<span class="built_in">console</span>.log(<span class="string">'----chheckCode outter---'</span>);</div><div class="line">		<span class="comment">// 检查代码内容</span></div><div class="line">		<span class="keyword">if</span>( fileType == <span class="string">'code'</span> )&#123;</div><div class="line">			<span class="built_in">console</span>.log(<span class="string">'----chheckCode inner---'</span>);</div><div class="line">			<span class="keyword">return</span> <span class="keyword">this</span>.checkCode( <span class="keyword">this</span>.UPLOAD_FILE_PATH, res );</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> res;</div><div class="line">	&#125;).then(<span class="function"><span class="params">res</span>=&gt;</span>&#123;</div><div class="line">		<span class="built_in">console</span>.log(<span class="string">'--------return data-----'</span>);</div><div class="line">		<span class="keyword">this</span>.success(res,<span class="string">'success'</span>);</div><div class="line">	&#125;).catch(<span class="function"><span class="params">err</span>=&gt;</span>&#123;</div><div class="line">		<span class="built_in">console</span>.log( <span class="string">`fileupload is err =======:<span class="subst">$&#123;err&#125;</span>`</span> );</div><div class="line">		<span class="keyword">this</span>.fail( <span class="number">100</span>, err, &#123;<span class="attr">fileName</span>: file.originalFilename&#125; );</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+</li>
+<li><p>在promise中要像以前一样用到this，需要写在箭头函数中。<br><a href="https://thinkjs.org/zh-CN/doc/2.0/controller.html#toc-4e2" target="_blank" rel="external">this 作用域的问题</a></p>
+</li>
+</ol>
+<h2 id="model"><a href="#model" class="headerlink" title="model"></a>model</h2><ol>
+<li><p>最好跟数据表名一致,不然就要在模型里配置<br>(成银：如果表名中带下划线，那么实例化的地方也要改成下划线,因为实例化的时候会试图去寻找模型文件，如果找不到的话会实例化默认的模型，就不能用模型中自定义的方法了。)<br>比如：有一张表component_version，那么相应的模型命名为，component_version.js，在要用到这个模型时，这样实例化<code>this.model(&#39;component_version&#39;)</code>,这样就可以用里面的方法了，以及select，where等等这样自带的原子方法。</p>
+<p> 自己之前因为弄不清楚实例化模型的原理，各种尝试，还用过import模型，再new的方法，其实thinkjs中提供的this.model()方法就已经是实例化的方法，不用再new了</p>
+</li>
+<li><p>如果在模型中的init()方法出错了，会出现access deny，就是连不上数据库的错误。</p>
+</li>
+<li><p>有表别名时，countSelect()会报错。(以反馈，还未修好)<br>之前在用2.0.6版本时，还遇到了当page取默认值时，limit是从1开始而不是从0开始，后来的版本修好了。(使用最新版本的代码是多么的重要啊)</p>
+</li>
+</ol>
+<h2 id="其他配置"><a href="#其他配置" class="headerlink" title="其他配置"></a>其他配置</h2><ol>
+<li><p>需要用到自己添加的配置文件<br>比如有个文件<code>/src/common/src/github_opts.js</code>，需要用到其中的数据，就可以这样引入<code>think.config(&#39;github_opts&#39;)</code></p>
+</li>
+<li><p>定义全局变量<br><img src="/img/thinkjs2/developmentjs.png" width="400px"><br>相应的productionjs也需要修改</p>
+</li>
+</ol>
+<h2 id="代码运行模式切换"><a href="#代码运行模式切换" class="headerlink" title="代码运行模式切换"></a>代码运行模式切换</h2><ol>
+<li><p>使用npm start 默认是development环境,因为start读的是package.json文件<br><img src="/img/thinkjs2/packagejson.png" width="400px"></p>
+</li>
+<li><p>如果需要运行在production环境，<code>npm start production</code></p>
+</li>
+</ol>
+<h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><ol>
+<li><p>大部分时候自己是通过console.log()来进行调试，心累手累。<br>如果是–es6的形式来创建的项目，最终控制台报错的行号，是在编译后的app目录文件里的。</p>
+</li>
+<li><p><a href="http://www.cnblogs.com/jkisjk/p/debug_thinkjs_with_webstorm.html" target="_blank" rel="external">ThinkJS 项目用 WebStorm 来设置断点与调试</a></p>
+</li>
+</ol>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><ol>
+<li><p>在windows下运行的好好的代码，放到linux下，模型方法会报错，怀疑是自己代码写法有问题，babel在两种环境下的编译也会略有差异。</p>
+</li>
+<li><p>使用pm2 启动时，配置了<code>www/production.js</code>为入口文件，但是每次启动还是在寻找<code>www/index.js</code>。<br>最后是建了个软链<code>ln -s production.js index.js</code></p>
+</li>
+<li><p>出现文件路径过长，不能成功clone的问题，主要是bable依赖<br>在线上机器和本地开发机，分别先npm install；<br>因为这个项目中，用到一些不能直接install的依赖，就先将本地的node_moudles/xx依赖提前push到仓库中。</p>
+</li>
+<li><p>删除git仓库中的文件</p>
+</li>
+</ol>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">git <span class="keyword">rm</span> -rf 文件夹名/</div><div class="line">git commit -<span class="keyword">m</span> <span class="string">"remove 文件夹名"</span></div><div class="line">git push</div><div class="line"></div><div class="line"><span class="comment">// 有时，还需要物理删除文件夹</span></div><div class="line"><span class="keyword">rm</span> -rf 文件夹名/</div></pre></td></tr></table></figure>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><ol>
+<li>升级是个体力活，但是如果不追求用es6/7，只是替换一些函数用法，其实也就controller需要改的多一些。</li>
+<li>es7的await，async很好用，逻辑看起来清晰很多了。</li>
+<li>字符串模板很好用，再也可以不用+连接了，尤其是里面有引号的时候，根本写不清楚。</li>
+<li>object.assign()也好用。</li>
+<li>箭头函数也好用，函数简洁。</li>
+<li>let在循环中帮助很大，再也不用担心闭包中写for循环的变量引用问题了。</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;花了4天时间把之前mohe平台用thinkjs2升级了下，3天改代码，1天部署。在thinkjs2.X版本中还是遇到了些大大小小的问题，这里记录下。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="总结" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/%E6%80%BB%E7%BB%93/"/>
+    
+    
+      <category term="Dec" scheme="http://jiaolongHuang.github.io/tags/Dec/"/>
+    
+      <category term="thinkJs" scheme="http://jiaolongHuang.github.io/tags/thinkJs/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>关于canvas的几个XX像素</title>
+    <link href="http://jiaolongHuang.github.io/2015/11/19/canvas-devicePixelRatio/"/>
+    <id>http://jiaolongHuang.github.io/2015/11/19/canvas-devicePixelRatio/</id>
+    <published>2015-11-19T10:27:25.000Z</published>
+    <updated>2016-01-15T03:50:10.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这几个概念实在是太绕了，光想理顺它，就拖了好久才下笔整理下来<a id="more"></a></p>
+<h2 id="设备像素"><a href="#设备像素" class="headerlink" title="设备像素"></a>设备像素</h2><ul>
+<li>真实像素</li>
+<li>物理像素</li>
+<li>设备会有几个物理像素来表示一个css像素</li>
+<li>canvas.width/height</li>
+</ul>
+<h2 id="设备独立像素-dip"><a href="#设备独立像素-dip" class="headerlink" title="设备独立像素(dip)"></a>设备独立像素(dip)</h2><ul>
+<li>与屏幕密度相关，与设备无关</li>
+<li>是计算机坐标系中的一点，是程序可用的虚拟像素</li>
+<li>逻辑像素</li>
+<li>比如CSS像素</li>
+<li><code>canvas.style.width</code>以及<code>screen.width</code></li>
+</ul>
+<h2 id="设备像素比-devicePixelRatio"><a href="#设备像素比-devicePixelRatio" class="headerlink" title="设备像素比(devicePixelRatio)"></a>设备像素比(devicePixelRatio)</h2><ul>
+<li><code>设备像素比 ＝ 物理像素 / 设备独立像素</code></li>
+<li><code>设备像素比 ＝ 设备像素 / CSS像素</code></li>
+<li>在非retina屏幕上，屏幕物理像素是320，独立像素也是320;在retina上，屏幕物理像素640，独立像素还是320，因此设备像素比为2</li>
+<li>可通过<code>window.devicePixelRatio</code>查看</li>
+<li>当它不等于1时，说明会用大于1个的物理像素以填充的方式来渲染1个逻辑像素，这样就出现了图片模糊的情况。</li>
+<li><code>&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;</code>的时候，其视区宽度并不是640像素，而是320像素，是独立像素值。</li>
+<li><p>并不是所有看上去清晰的手机屏幕都是2被devicePixelRatio的。有些不清晰的屏幕，还有可能是3倍的，比如酷派8675.<br>0中的webkitBackingStorePixelRatio是2.<br><img src="/img/canvas/devicePixelRatio.png"><br><img src="/img/canvas/img-retina.png"></p>
+</li>
+<li><p>webkitBackingStorePixelRatio<br>它只有在safari和chrome中才有的属性。它决定了浏览器在渲染一个图片的时候用几个像素来存储画布信息。比如，safari 6.0中，它的值为2，当要渲染<code>100px*100px</code>的图片时，它首先在内存中生成一个<code>200*200</code>的图片，当在retina屏下，devicePixelRatio=2时，屏幕本身会按照<code>200*200</code>来渲染图片，这时<strong>所需</strong>的大小正好与内存中<strong>一致</strong>，直接拿出来用就好，此时显示出来的图片就不会失真。否则若devicePixelRatio=1，那么图片就会被放大1倍来显示，就会变模糊了。</p>
+</li>
+</ul>
+<p><strong>(小图变大会模糊，大图变小会更清晰)</strong></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://jeffdeng.me/js/2015/07/06/canvas-resolution/" target="_blank" rel="external">canvas分辨率问题</a></li>
+<li><a href="https://github.com/amfe/article/issues/17" target="_blank" rel="external">使用Flexible实现手淘H5页面的终端适配</a></li>
+<li><a href="设备像素比devicePixelRatio简单介绍">设备像素比devicePixelRatio简单介绍</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这几个概念实在是太绕了，光想理顺它，就拖了好久才下笔整理下来
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="canvas" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/canvas/"/>
+    
+    
+      <category term="css" scheme="http://jiaolongHuang.github.io/tags/css/"/>
+    
+      <category term="Nov" scheme="http://jiaolongHuang.github.io/tags/Nov/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>一次关于canvas hidpi的2个bug解决过程</title>
+    <link href="http://jiaolongHuang.github.io/2015/11/16/bug-canvas/"/>
+    <id>http://jiaolongHuang.github.io/2015/11/16/bug-canvas/</id>
+    <published>2015-11-16T10:36:13.000Z</published>
+    <updated>2016-01-15T03:50:10.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文记录了2个为了解决hidpi下canvas呈现而引发的不同bug定位和最终解决过程。<a id="more"></a>越来越多的设备屏幕趋于高分辨率，我们称之为hidpi设备，与此同时人们对用户体验的要求也越来越高，然而canvas是一个画布，屏幕上的每个像素块是其绘制的最小单位。这也就决定了凡是能影响其绘制的因素，都会影响最终canvas呈现的效果。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
+<li>canvas的width和style.width的关系</li>
+<li>hidpi-canvas-polyfill的简单介绍</li>
+</ul>
+<h4 id="canvas的width和style-width的关系"><a href="#canvas的width和style-width的关系" class="headerlink" title="canvas的width和style.width的关系"></a>canvas的width和style.width的关系</h4><p>简单来说是这样的</p>
+<ul>
+<li>canvas的width是这个画布的宽，就是要在多大的布上画图。我们后来在canvas上画线，矩形啥的那个单位也是相对于这个画布来看的。它可以理解为把canvas的宽高均分成了多少份。</li>
+<li>canvas的style.width是canvas的物理宽度，也就是相当于画框的宽。</li>
+</ul>
+<p><code>&lt;canvas width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;</code>，这里的width和height不能带有单位。如果省略不写，那么canvas默认<code>width=300, height=150</code><br>如果canvas的<code>width/height</code>和其<code>style.width/style.height</code>不相等，那么会出现图形比例失真的情况。比如：我们想在<code>400*400</code>的画框里得到一个<code>100*100</code>的正方形块<br><img src="/img/canvas/canvas-1.png" width="250px"></p>
+<p>如果仅仅按照如下代码书写，那么得到的矩形块根本不是正方形，而是个长方形啊<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></div><div class="line">	<span class="selector-id">#myCanvas</span>&#123;</div><div class="line">		<span class="attribute">width</span>: <span class="number">400px</span>;</div><div class="line">		<span class="attribute">height</span>: <span class="number">400px</span>;</div><div class="line">		<span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#000</span>;</div><div class="line">	&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">"myCanvas"</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">	<span class="keyword">var</span> canvas = <span class="built_in">document</span>.getElementById(<span class="string">'myCanvas'</span>);</div><div class="line">	<span class="keyword">var</span> ctx = canvas.getContext(<span class="string">'2d'</span>);</div><div class="line">	ctx.fillStyle = <span class="string">'red'</span>;</div><div class="line">	ctx.fillRect(<span class="number">0</span>,<span class="number">0</span>,<span class="number">100</span>,<span class="number">100</span>);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p><img src="/img/canvas/canvas-2.png" width="250px"></p>
+<p><strong>为什么会这样呢？</strong><br>在canvas画布计算时，它是这样的一个过程：</p>
+<ul>
+<li>W看到的宽度 = W需要绘制的宽度 / W画布宽 * W画框宽</li>
+<li>这里我们没有设置画布的宽高，也就是取默认的300*150, 即W画布宽 = 300，W需要绘制的宽度 = 100，W画框宽取CSS或style中设定的宽， W画框宽 = 400px</li>
+<li>W看到的宽度 = 100 / 300 * 400 = 166px</li>
+<li>W看到的高度计算同理</li>
+</ul>
+<h4 id="hidpi对canvas的影响"><a href="#hidpi对canvas的影响" class="headerlink" title="hidpi对canvas的影响"></a>hidpi对canvas的影响</h4><p>之前提到canvas的最小单位是像素，通常我们是一个像素绘制一个点，但是当<code>devicePixel=2</code>时，设备会用2个像素来绘制一个canvas上的点，如果按照原始的画布大小，就会看上去线比较粗。</p>
+<p>所以通常当devicePixel不为1时，我们会将画布先放大devicePixel倍，并将canvas放大devicePixel倍。</p>
+<p>最后，受到canvas画框的限制，画的canvas就清楚了。</p>
+<p><strong>注： context.sacle(2, 2)需要在画图之前就设定</strong></p>
+<h4 id="hidpi-canvas-polyfill的简单介绍"><a href="#hidpi-canvas-polyfill的简单介绍" class="headerlink" title="hidpi-canvas-polyfill的简单介绍"></a>hidpi-canvas-polyfill的简单介绍</h4><p>这两个bug都是因引入插件<a href="https://github.com/jondavidjohn/hidpi-canvas-polyfill" target="_blank" rel="external">hidpi-canvas-polyfill</a>而引起的。如这个polyfill的介绍，它是为了帮助我们在不改变自身任何canvas代码的前提下，自动地在任意浏览器和设备上保持canvas的清晰度。</p>
+<p>它由两部分JS组成，<strong>CanvasRenderingContext2D.js</strong>和<strong>HTMLCanvasElement</strong></p>
+<ul>
+<li><code>ratio = devicePixelRatio \ backingStore</code></li>
+<li>前者是根据ratio, 将canvas的context的主要绘图接口重写</li>
+<li>后者是改变canvas的width和style.width</li>
+<li>然后两者综合起来，来达到维持canvas清晰度的目的</li>
+</ul>
+<h2 id="safari下的webkitBackingStorePixelRatio"><a href="#safari下的webkitBackingStorePixelRatio" class="headerlink" title="safari下的webkitBackingStorePixelRatio"></a>safari下的webkitBackingStorePixelRatio</h2><p>BUG复现：仅在safari下报错，但不影响程序的功能，即曲线和正常出，清晰度也符合预期。<br>报错信息：不赞成在非CanvasRenderingContext2D的对象上使用webkitBackingStorePixelRatio属性<br><img src="/img/canvas/bug.png"></p>
+<h4 id="定位问题"><a href="#定位问题" class="headerlink" title="定位问题"></a>定位问题</h4><p>因为时间比较紧，没有仔细研究插件代码的具体含义，只是简单定位问题，修复错误。</p>
+<ol>
+<li><p>猜测，首先想到的是捕获错误，定位确定是不是因为webkitBackingStorePixelRatio而引起的错误。<br>方法：尝试在出现webkitBackingStorePixelRatio的地方用try-catch捕获错误<br>结果：然并卵，居然没捕获到错误，依然会报相同的错误</p>
+</li>
+<li><p>进一步怀疑<br>方法：去除webkitBackingStorePixelRatio使用的地方<br>结果：报错消失</p>
+</li>
+<li><p>确认到底是不是webkitBackingStorePixelRatio而引起的错误<br>方法：使用webkitBackingStorePixelRatio的对象是CanvasRenderingContext2D.prototype，分别直接在safari和chorme控制台查找CanvasRenderingContext2D.prototype的属性，都没有找到这个属性；<br>接着直接输入<code>CanvasRenderingContext2D.prototype.webkitBackingStorePixelRatio</code><br>结果： safari中报相同的错误，chrome中没有报错。</p>
+</li>
+<li><p>再次验证<br>方法：在safari控制台输入<code>CanvasRenderingContext2D.webkitBackingStorePixelRatio</code>。<br>结果：虽然没有获得到值，但是也没有报错。可以肯定确实是CanvasRenderingContext2D.prototype.webkitBackingStorePixelRatio而引起的错误。</p>
+</li>
+<li><p>为什么没有捕获到错误，怀疑代码没有执行到try-catch的地方就报错了<br>方法：在try-catch的上下加console.log，并打印用webkitBackingStorePixelRatio的变量t最终结果<br>结果：输出不符合预期，t居然还有了最终值，报错依然存在。很是奇怪，按预期，报错了应该终止程序，t没有结果。<br><img src="/img/canvas/debug-after.png" alt=""></p>
+</li>
+</ol>
+<h4 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h4><p>确实是webkitBackingStorePixelRatio这个属性而引起的报错。但是既然不影响程序的正常运行，却又有这个错误，可以理解为是safari自身的问题，它的提示信息不够友好。</p>
+<h4 id="修复方法"><a href="#修复方法" class="headerlink" title="修复方法"></a>修复方法</h4><ol>
+<li><p>通过查阅资料发现webkitBackingStorePixelRatio这个属性也是为了解决canvas清晰度而存在的。<br>它决定了浏览器在渲染canvas之前会用几个像素来存储画布信息。不同浏览器的BackingStorePixelRatio可能不同，它和devicePixelRatio共同决定了canvas的清晰度。比如在devicePixelRatio=2的设备上，safari6的webkitBackingStorePixelRatio是2，也就是说一个canvas在safari6上不用做任何处理就是清晰的。而chrome的webkitBackingStorePixelRatio是1，需要对canvas进行缩放才能保证其清晰度。<a href="http://www.html5rocks.com/en/tutorials/canvas/hidpi/?redirect_from_locale=zh" target="_blank" rel="external">High DPI Canvas</a></p>
+</li>
+<li><p>但是在2013.8之后的<a href="https://code.google.com/p/chromium/issues/detail?id=277205" target="_blank" rel="external">chromium升级</a>中，去除了这一属性<br>因为此后webkitBackingStorePixelRatio的值始终保持为1，也就是说目前只有safari6.0中的webkitBackingStorePixelRatio是2.<br><img src="/img/canvas/chromium.png"></p>
+</li>
+<li><p>因此在插件中就直接写定为1就可以了。</p>
+</li>
+<li><p>之前提到过hidpi-canvas这个插件由两部分组成，一部分是改变画布和画框大小，一部分是重新画一遍图以适应改变大小后的画布<br>参考<a href="http://www.html5rocks.com/en/tutorials/canvas/hidpi/?redirect_from_locale=zh" target="_blank" rel="external">High DPI Canvas</a>文章后，去除了<strong>CanvasRenderingContext2D.js</strong>这部分，改用<code>context.scale(ratio, ratio);</code>，其中<code>ratio = devicePixelRatio / backingStoreRatio</code>。<br>因为<strong><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D" target="_blank" rel="external">CanvasRenderingContext2D</a></strong>是为绘制canvas提供各种接口。其本身也可以通过<code>context = canvas.getContext(&#39;2d&#39;)</code>得到。因此保留这个js意义不大。</p>
+</li>
+</ol>
+<h2 id="Coolpad8675中的好搜app下，canvas渲染不出来"><a href="#Coolpad8675中的好搜app下，canvas渲染不出来" class="headerlink" title="Coolpad8675中的好搜app下，canvas渲染不出来"></a>Coolpad8675中的好搜app下，canvas渲染不出来</h2><p>BUG复现：canvas处空白<br>报错信息：没有脚本报错</p>
+<h4 id="定位问题-1"><a href="#定位问题-1" class="headerlink" title="定位问题"></a>定位问题</h4><p>猜测有可能引起问题的原因</p>
+<ul>
+<li>浏览器对canvas的渲染，可是别人家的canvas渲染一点问题都没有呀</li>
+<li>可能是canvas的大小没在可显示的范围里，因为之前有遇到canvas的width特别大，style.width正常的,导致canvas显示不正常</li>
+<li>可能canvas的父元素没显示出来</li>
+<li>可能是层级问题</li>
+<li>页面里的其他dom或插件影响了它</li>
+</ul>
+<p>综合以上可能的原因，做了如下的验证：</p>
+<ol>
+<li><p>在最外层js最开始的地方加try-catch，试图捕获错误信息，打印不出来任何错误</p>
+</li>
+<li><p>因为canvas为绝对定位，而其父元素又没有设置高度，可能受到影响；为其父元素加高度，加背景色，背景色显示，曲线还是没出来</p>
+</li>
+<li><p>给canvas加背景色，然并卵，毫无改变</p>
+</li>
+<li><p>打印canvas的宽高，offset().width等信息，可以正常打印，说明canvas这个元素是存在的</p>
+</li>
+<li><p>为canvas加较高层级，然并卵</p>
+</li>
+<li><p>在body中新追加简单的canvas，同样没显示出来</p>
+</li>
+</ol>
+<p>由此可以确认，不是由于绘制canvas出错，和画曲线无关系。接下来进一步验证</p>
+<ol>
+<li><p>在纯净的页面中简单画最最简单的canvas，不做任何变换等等，结果出来了。<br>由此说明，是其他dom或插件影响了之前canvas的正常绘制。</p>
+</li>
+<li><p>去除hidpi-canvas插件，曲线出现了<br>因为在页面中，影响最大的，最有可能的就是hidpi-canvas这个插件。只有它有对后来的canvas做处理。做的主要处理就是改变canvas的width和style.width</p>
+</li>
+</ol>
+<p>进一步验证改变canvas的width和style.width是如何影响canvas绘制的</p>
+<ul>
+<li>在纯净的页面中，将canvas的width和style.width设置成不同的值，发现在某些值时，canvas是会正常出现的，在另一些值是不出现的。</li>
+<li>怀疑在当二者比例在某个范围中，是可正常显示，反之不可。通过<strong>二分法</strong>验证，不断测试最终确定当<code>width / style.width &lt; 0.78</code>时，可正常显示。</li>
+<li>至此，已可以确定出现bug的原因了。</li>
+</ul>
+<h4 id="修复方法-1"><a href="#修复方法-1" class="headerlink" title="修复方法"></a>修复方法</h4><ol>
+<li><p>初步怀疑是chrome的某个版本内核通用的bug<br>通过打印两个2APP的<strong>window.navigator.userAgent</strong>(一个正常显示，一个非正常显示)，居然发现chrome内核版本居然一样，而且除了最后app的信息外，其他的一模一样。</p>
+</li>
+<li><p>所以只能是针对特定手机中的特定app做单独的case的处理</p>
+</li>
+<li><p>用正则匹配userAgent,<code>/(Coolpad\s8675).*(mso_app\s\(4.1.0.1001\))/i</code><br>如果符合这两个条件，那么就不调用hidpi-canvas插件</p>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><p>try-catch是个好方法<br>可以捕获错误，避免报错，打印错误信息</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>&#123;</div><div class="line">	可能会报错的代码</div><div class="line">&#125;<span class="keyword">catch</span>(error)&#123;</div><div class="line">	对错误的处理，比如打印错误信息</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>window.navigator.userAgent是个好东西<br>常常用来做hack…</p>
+</li>
+<li><p>另外还发现在safari下，没有external对象</p>
+</li>
+<li><p>最后附上解决hidpi下canvas清晰度的<a href="http://jiaolonghuang.github.io/code/hidpi-HTMLCanvasElement.js">代码</a></p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文记录了2个为了解决hidpi下canvas呈现而引发的不同bug定位和最终解决过程。
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="bug解决" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/bug%E8%A7%A3%E5%86%B3/"/>
+    
+      <category term="canvas" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/bug%E8%A7%A3%E5%86%B3/canvas/"/>
+    
+    
+      <category term="css" scheme="http://jiaolongHuang.github.io/tags/css/"/>
+    
+      <category term="Nov" scheme="http://jiaolongHuang.github.io/tags/Nov/"/>
+    
+  </entry>
+  
+</feed>

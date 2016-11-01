@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> HTTP2学习(七)—关于HTTP2的Q&A · 小路口</title><meta name="description" content="HTTP2学习(七)—关于HTTP2的Q&amp;A - jiaolongHuang"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://jiaolongHuang.github.io/atom.xml" title="小路口"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/minel" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/jiaolonghuang" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">HTTP2学习(七)—关于HTTP2的Q&A</h1><div class="post-info">Aug 21, 2015</div><div class="post-content"><p>关于<strong>HTTP2的Q&amp;A</strong>，其中在各专门的篇幅中也有插入解释，这里再次集中下。<br><a id="more"></a></p>
+<ol>
+<li><p>“HTTP1.x的设计的初衷是实现要简单。但是这也是以牺牲性能为代价的”<br>比如没有处理并行连接和请求的快捷方法，没有为了减少不必要的请求开销而做优化（首部压缩）等等，这些以至于在页面资源极其丰富的今天，即便我们针对HTTP1.1做了很多HACK优化，然而性能还是没有得到很大的提升。而这些点在HTTP2中都得到了改进。</p>
+</li>
+<li><p>HTTP管道<br>这个完全是我翻译水平的问题。哈哈</p>
+<ul>
+<li><p><strong>套接字</strong>：是支持TCP/IP网络通信的基本操作单元，可以看成是不同主机之间的进程进行双向通信的端点。是应用进程与tcp连接之间的门，通过套接字口来发送或获得报文。（HTTP2学习4的注释1也有写）。</p>
+</li>
+<li><p>其实HTTP管道化就是将客户端的FIFO队列移到了服务端。在客户端可以依次发送所有要发送的请求（当然这些请求是在同一个域下的），一个请求发送完之后，不必等待这个请求的响应被接受到，下一个请求就可以被再次发出。在服务器端维持的FIFO队列，这个队列是按照资源的重要程度排列的。比如HTML比CSS要先返回，JS,CSS比图片先返回。</p>
+</li>
+<li><p>在服务器端会有一个缓冲区，来存放那些已经被处理好了但是还没轮到被发送的响应。比如服务器先后收到了A,B两个请求，A资源比B资源优先级要高，处理A需要10ms，处理B需要1ms，假设服务器可以并行处理请求，那么B的响应肯定是最先处理好了的，但是B响应不能先发出去，必须待在缓冲区里，等待A响应处理好了之后，先把A的响应发出去，B的响应才能够被发出去。因为服务端必须要遵循FIFO这个原则。</p>
+</li>
+<li><p>HTTP管道化不是HTTP2的内容，是对HTTP1.1协议下，服务器不能很好处理并行请求的一个改进。</p>
+</li>
+<li><p>管道化的有序和TCP的有序是本质上的不同，管道化的有序，是消息与消息之间的有序。TCP中的有序，组成一个消息的多个报文段之间的有序。打个不太恰当的比方，就好比是A同学吃午餐和B同学吃午餐哪个先吃完饭可以去玩电脑一样，假设是A同学先进食堂，B同学再进食堂，他俩的吃饭速度相同，那么按照FIFO原则，不论是A同学是吃了苹果，梨，米饭，菜，还是B同学只吃了苹果和米饭。虽然B同学是先吃完，他吃的少，但是在管道化中，也还一定是A同学先去玩电脑，B同学跟着。而在TCP中，就好像是在形容，这顿饭，A同学是先吃了苹果，梨，米饭，菜还是先吃了菜，米饭，梨，这样的内部顺序。</p>
+</li>
+<li><p>幂等性的请求，实际上就是多次操作都不会改变结果的请求，比如GET，我可以多次从同一个地方获取资源，但是对于资源本身来说并不会发生什么变化，我GET10次和GET100次，资源都没有发生任何变化。而post则不同了，我提交表单10次，和100次，造成的结果是不同的，至少数据库里新增的数据有不同。</p>
+</li>
+<li><p>管道做了哪些事，我的理解是创造了一个可以不用等待前一个请求的响应即可发送下一个请求的场所。至于注意些什么，除了知道有些设备不支持，其他的我也没实际经验（毕竟没用过，囧）</p>
+</li>
+</ul>
+</li>
+<li><p>多路复用 - 并行（减少因为3次握手而产生的延迟）【和那个keep-】<br>keep-alive，也是可以不进行3次握手就可以发送多个在同一个域下的请求。但是必须发送下一个请求B，等待前一个请求A的响应收到后才可以发送。多路复用和管道优化差不多，只是管道优化由于兼容性的问题，而没有被普遍使用</p>
+</li>
+<li><p>压缩HTTP首部（降低协议开销）…【哪些被压了？】<br>使用了HPACK算法，一方面如果下一次请求头部和上一次请求头部中有相同的字段，那么相同的字段不会被发送，只会被发送差异性的字段。另一方面，会有一张首部表，里面会有常用的首部字段极其对应的序号，会有序号来代替这个具体的字段字符串。同时，整个首部帧还会用哈夫曼编码来进行压缩。</p>
+</li>
+<li><p>？请求优先级….感觉需要服务器也要支持的节奏（那确实变复杂了）<br>是的。也就是说服务器和客户端对这个优先级的理解是一样的，或是达成一致的。</p>
+</li>
+<li><p>？服务器推送（是双方的么）<br>这个双方的是指？？？？<br>服务器主动推送一个资源，客户端有权来选择是接收还是不接收，不能‘来者不拒’嘛，是吧。</p>
+</li>
+<li><p>？相同域名，是值源和目的的域名都必须一样【这样是有原因的：网站本身的特性决定。嗯，能理解】<br>可以这么理解。源域名，同一个网站下发出的请求，肯定都是同一个域下的。而这里的相同域名，更多强调的是针对于请求资源所在的地址是在同一个域下的。</p>
+</li>
+<li><p>但是什么时候断？如果太多的保持连接，会不会反而不好呢<br>和一般TCP连接释放一样，如果客户端没有数据要请求，或服务端数据发送完毕后，会主动发送关闭连接的报文。或者是服务端连续发送10个探测报文，客户端无响应，服务端就关闭了这个连接。</p>
+</li>
+<li><p>相当于在两头：拆分和组装…..疑问是这里的原因是？？为什么要这么折腾呢，原因是？<br>“将消息拆成多个数据帧之后，会大大缓解HTTP队首阻塞[注2]的情况。同时，改以帧为传输单位后，使得对报文无论是解析和差错检测方面都变得更加容易，因为对纯文本的解析还需要考虑到空格，空行，换行等问题。另外，也还消除了并行处理和发送请求及响应时对多个连接的依赖。”<br>我个人认为第一个原因是最主要的。也有更小更灵活的感觉。</p>
+</li>
+<li><p>流是双向的…..【那服务器和浏览器间通信的接口们又是什么？】<br>这个双向是指，服务器可以给浏览器发消息（server push），浏览器也可以给服务器发东西（这就不用说啦）</p>
+</li>
+<li><p>多路复用：用一个tcp连接，并行发好多。【…keep_alive 很像啊】<br>—分组数？？表示是底层的，都没有概念…按道理说是分帧了后，分组数会变多啊？？？<br>和keep_alive 不像，是和管道化很像哈。<br>实际上是这样的，首先肯定的是多使用同一个tcp连接，比起以前的多个tcp连接，会至少每次少了3个建立连接的tcp报文段，还不包括重传的。同时因为分帧之后出错的概率变小，间接的需要重传的包变少。从这两方面来说整个网络中的包中的总数是变少的。<br>另外呢，tcp报文段的长度其实还是保持不变的，不同流中的帧其实是混在一个tcp报文段中一起被发送，而在接收方那边接受到这个报文段后再进行拆分重新组装成新的http报文。</p>
+</li>
+<li><p>其他<br>就是讲每层的报文的那段，可以：以实例为实例，发送个包：最原始的数据+用户最关心的数据+每层为了额外加的（为了传送、校验等等，以及数据从哪来的-怎么补充进去的）<br>讲报文其实主要是为了讲一个大概过程哈，给自己的一个备忘。里面每一层的封装和拆解以及里面的校验都内容都比较多，全讲了，可以讲一个本书了哈哈。这个可以另开专题。</p>
+</li>
+</ol>
+<p>(<strong>最后最后，灰常感谢++滴反馈，让我也思考了下之前没太明白或遗漏的问题。么么哒。</strong>)</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2015/10/28/htmltomd/" class="prev">PREV</a><a href="/2015/08/17/http2vshttp1.1/" class="next">NEXT</a></div><div data-thread-key="2015/08/21/http2-qa/" data-title="HTTP2学习(七)—关于HTTP2的Q&amp;A" data-url="http://jiaolongHuang.github.io/2015/08/21/http2-qa/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+
+</script><div class="copyright"><p>友情链接：<a href="https://imququ.com" class="links-item">QuQu</a><a href="http://anjia.github.io" class="links-item">跑跑佳</a><a href="http://www.imwineki.cn/" class="links-item">Wineki</a><a href="http://westpsk.com/" class="links-item">ivan</a></p><p>© 2015 - 2016 <a href="http://jiaolongHuang.github.io">jiaolongHuang</a>. Love this theme <a href="https://github.com/pinggod/hexo-theme-apollo">apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65933410-1",'auto');ga('send','pageview');</script></body></html>
