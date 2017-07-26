@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://jiaolongHuang.github.io/"/>
-  <updated>2016-10-31T09:48:00.000Z</updated>
+  <updated>2017-07-26T04:18:34.000Z</updated>
   <id>http://jiaolongHuang.github.io/</id>
   
   <author>
@@ -14,6 +14,63 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用Webpack打包兼容低版本IE8-</title>
+    <link href="http://jiaolongHuang.github.io/2017/07/26/webpack-IE/"/>
+    <id>http://jiaolongHuang.github.io/2017/07/26/webpack-IE/</id>
+    <published>2017-07-26T04:17:21.000Z</published>
+    <updated>2017-07-26T04:18:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>先占个坑2。。</p>
+<a id="more"></a>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;先占个坑2。。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="总结" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/%E6%80%BB%E7%BB%93/"/>
+    
+    
+      <category term="July" scheme="http://jiaolongHuang.github.io/tags/July/"/>
+    
+      <category term="Webpack2" scheme="http://jiaolongHuang.github.io/tags/Webpack2/"/>
+    
+      <category term="IE" scheme="http://jiaolongHuang.github.io/tags/IE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>常用Webpack2优化要点</title>
+    <link href="http://jiaolongHuang.github.io/2017/07/26/webpack2/"/>
+    <id>http://jiaolongHuang.github.io/2017/07/26/webpack2/</id>
+    <published>2017-07-26T04:15:11.000Z</published>
+    <updated>2017-07-26T04:18:24.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>先占个坑。。</p>
+<a id="more"></a>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;先占个坑。。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="总结" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/%E6%80%BB%E7%BB%93/"/>
+    
+    
+      <category term="July" scheme="http://jiaolongHuang.github.io/tags/July/"/>
+    
+      <category term="Webpack2" scheme="http://jiaolongHuang.github.io/tags/Webpack2/"/>
+    
+  </entry>
   
   <entry>
     <title>选中文本换背景色的实现</title>
@@ -695,205 +752,6 @@
       <category term="Dec" scheme="http://jiaolongHuang.github.io/tags/Dec/"/>
     
       <category term="thinkJs" scheme="http://jiaolongHuang.github.io/tags/thinkJs/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>关于canvas的几个XX像素</title>
-    <link href="http://jiaolongHuang.github.io/2015/11/19/canvas-devicePixelRatio/"/>
-    <id>http://jiaolongHuang.github.io/2015/11/19/canvas-devicePixelRatio/</id>
-    <published>2015-11-19T10:27:25.000Z</published>
-    <updated>2016-01-15T03:50:10.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>这几个概念实在是太绕了，光想理顺它，就拖了好久才下笔整理下来<a id="more"></a></p>
-<h2 id="设备像素"><a href="#设备像素" class="headerlink" title="设备像素"></a>设备像素</h2><ul>
-<li>真实像素</li>
-<li>物理像素</li>
-<li>设备会有几个物理像素来表示一个css像素</li>
-<li>canvas.width/height</li>
-</ul>
-<h2 id="设备独立像素-dip"><a href="#设备独立像素-dip" class="headerlink" title="设备独立像素(dip)"></a>设备独立像素(dip)</h2><ul>
-<li>与屏幕密度相关，与设备无关</li>
-<li>是计算机坐标系中的一点，是程序可用的虚拟像素</li>
-<li>逻辑像素</li>
-<li>比如CSS像素</li>
-<li><code>canvas.style.width</code>以及<code>screen.width</code></li>
-</ul>
-<h2 id="设备像素比-devicePixelRatio"><a href="#设备像素比-devicePixelRatio" class="headerlink" title="设备像素比(devicePixelRatio)"></a>设备像素比(devicePixelRatio)</h2><ul>
-<li><code>设备像素比 ＝ 物理像素 / 设备独立像素</code></li>
-<li><code>设备像素比 ＝ 设备像素 / CSS像素</code></li>
-<li>在非retina屏幕上，屏幕物理像素是320，独立像素也是320;在retina上，屏幕物理像素640，独立像素还是320，因此设备像素比为2</li>
-<li>可通过<code>window.devicePixelRatio</code>查看</li>
-<li>当它不等于1时，说明会用大于1个的物理像素以填充的方式来渲染1个逻辑像素，这样就出现了图片模糊的情况。</li>
-<li><code>&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;</code>的时候，其视区宽度并不是640像素，而是320像素，是独立像素值。</li>
-<li><p>并不是所有看上去清晰的手机屏幕都是2被devicePixelRatio的。有些不清晰的屏幕，还有可能是3倍的，比如酷派8675.<br>0中的webkitBackingStorePixelRatio是2.<br><img src="/img/canvas/devicePixelRatio.png"><br><img src="/img/canvas/img-retina.png"></p>
-</li>
-<li><p>webkitBackingStorePixelRatio<br>它只有在safari和chrome中才有的属性。它决定了浏览器在渲染一个图片的时候用几个像素来存储画布信息。比如，safari 6.0中，它的值为2，当要渲染<code>100px*100px</code>的图片时，它首先在内存中生成一个<code>200*200</code>的图片，当在retina屏下，devicePixelRatio=2时，屏幕本身会按照<code>200*200</code>来渲染图片，这时<strong>所需</strong>的大小正好与内存中<strong>一致</strong>，直接拿出来用就好，此时显示出来的图片就不会失真。否则若devicePixelRatio=1，那么图片就会被放大1倍来显示，就会变模糊了。</p>
-</li>
-</ul>
-<p><strong>(小图变大会模糊，大图变小会更清晰)</strong></p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a href="http://jeffdeng.me/js/2015/07/06/canvas-resolution/" target="_blank" rel="external">canvas分辨率问题</a></li>
-<li><a href="https://github.com/amfe/article/issues/17" target="_blank" rel="external">使用Flexible实现手淘H5页面的终端适配</a></li>
-<li><a href="设备像素比devicePixelRatio简单介绍">设备像素比devicePixelRatio简单介绍</a></li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;这几个概念实在是太绕了，光想理顺它，就拖了好久才下笔整理下来
-    
-    </summary>
-    
-      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
-    
-      <category term="canvas" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/canvas/"/>
-    
-    
-      <category term="css" scheme="http://jiaolongHuang.github.io/tags/css/"/>
-    
-      <category term="Nov" scheme="http://jiaolongHuang.github.io/tags/Nov/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>一次关于canvas hidpi的2个bug解决过程</title>
-    <link href="http://jiaolongHuang.github.io/2015/11/16/bug-canvas/"/>
-    <id>http://jiaolongHuang.github.io/2015/11/16/bug-canvas/</id>
-    <published>2015-11-16T10:36:13.000Z</published>
-    <updated>2016-01-15T03:50:10.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>本文记录了2个为了解决hidpi下canvas呈现而引发的不同bug定位和最终解决过程。<a id="more"></a>越来越多的设备屏幕趋于高分辨率，我们称之为hidpi设备，与此同时人们对用户体验的要求也越来越高，然而canvas是一个画布，屏幕上的每个像素块是其绘制的最小单位。这也就决定了凡是能影响其绘制的因素，都会影响最终canvas呈现的效果。</p>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
-<li>canvas的width和style.width的关系</li>
-<li>hidpi-canvas-polyfill的简单介绍</li>
-</ul>
-<h4 id="canvas的width和style-width的关系"><a href="#canvas的width和style-width的关系" class="headerlink" title="canvas的width和style.width的关系"></a>canvas的width和style.width的关系</h4><p>简单来说是这样的</p>
-<ul>
-<li>canvas的width是这个画布的宽，就是要在多大的布上画图。我们后来在canvas上画线，矩形啥的那个单位也是相对于这个画布来看的。它可以理解为把canvas的宽高均分成了多少份。</li>
-<li>canvas的style.width是canvas的物理宽度，也就是相当于画框的宽。</li>
-</ul>
-<p><code>&lt;canvas width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;</code>，这里的width和height不能带有单位。如果省略不写，那么canvas默认<code>width=300, height=150</code><br>如果canvas的<code>width/height</code>和其<code>style.width/style.height</code>不相等，那么会出现图形比例失真的情况。比如：我们想在<code>400*400</code>的画框里得到一个<code>100*100</code>的正方形块<br><img src="/img/canvas/canvas-1.png" width="250px"></p>
-<p>如果仅仅按照如下代码书写，那么得到的矩形块根本不是正方形，而是个长方形啊<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></div><div class="line">	<span class="selector-id">#myCanvas</span>&#123;</div><div class="line">		<span class="attribute">width</span>: <span class="number">400px</span>;</div><div class="line">		<span class="attribute">height</span>: <span class="number">400px</span>;</div><div class="line">		<span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#000</span>;</div><div class="line">	&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">"myCanvas"</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">	<span class="keyword">var</span> canvas = <span class="built_in">document</span>.getElementById(<span class="string">'myCanvas'</span>);</div><div class="line">	<span class="keyword">var</span> ctx = canvas.getContext(<span class="string">'2d'</span>);</div><div class="line">	ctx.fillStyle = <span class="string">'red'</span>;</div><div class="line">	ctx.fillRect(<span class="number">0</span>,<span class="number">0</span>,<span class="number">100</span>,<span class="number">100</span>);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p><img src="/img/canvas/canvas-2.png" width="250px"></p>
-<p><strong>为什么会这样呢？</strong><br>在canvas画布计算时，它是这样的一个过程：</p>
-<ul>
-<li>W看到的宽度 = W需要绘制的宽度 / W画布宽 * W画框宽</li>
-<li>这里我们没有设置画布的宽高，也就是取默认的300*150, 即W画布宽 = 300，W需要绘制的宽度 = 100，W画框宽取CSS或style中设定的宽， W画框宽 = 400px</li>
-<li>W看到的宽度 = 100 / 300 * 400 = 166px</li>
-<li>W看到的高度计算同理</li>
-</ul>
-<h4 id="hidpi对canvas的影响"><a href="#hidpi对canvas的影响" class="headerlink" title="hidpi对canvas的影响"></a>hidpi对canvas的影响</h4><p>之前提到canvas的最小单位是像素，通常我们是一个像素绘制一个点，但是当<code>devicePixel=2</code>时，设备会用2个像素来绘制一个canvas上的点，如果按照原始的画布大小，就会看上去线比较粗。</p>
-<p>所以通常当devicePixel不为1时，我们会将画布先放大devicePixel倍，并将canvas放大devicePixel倍。</p>
-<p>最后，受到canvas画框的限制，画的canvas就清楚了。</p>
-<p><strong>注： context.sacle(2, 2)需要在画图之前就设定</strong></p>
-<h4 id="hidpi-canvas-polyfill的简单介绍"><a href="#hidpi-canvas-polyfill的简单介绍" class="headerlink" title="hidpi-canvas-polyfill的简单介绍"></a>hidpi-canvas-polyfill的简单介绍</h4><p>这两个bug都是因引入插件<a href="https://github.com/jondavidjohn/hidpi-canvas-polyfill" target="_blank" rel="external">hidpi-canvas-polyfill</a>而引起的。如这个polyfill的介绍，它是为了帮助我们在不改变自身任何canvas代码的前提下，自动地在任意浏览器和设备上保持canvas的清晰度。</p>
-<p>它由两部分JS组成，<strong>CanvasRenderingContext2D.js</strong>和<strong>HTMLCanvasElement</strong></p>
-<ul>
-<li><code>ratio = devicePixelRatio \ backingStore</code></li>
-<li>前者是根据ratio, 将canvas的context的主要绘图接口重写</li>
-<li>后者是改变canvas的width和style.width</li>
-<li>然后两者综合起来，来达到维持canvas清晰度的目的</li>
-</ul>
-<h2 id="safari下的webkitBackingStorePixelRatio"><a href="#safari下的webkitBackingStorePixelRatio" class="headerlink" title="safari下的webkitBackingStorePixelRatio"></a>safari下的webkitBackingStorePixelRatio</h2><p>BUG复现：仅在safari下报错，但不影响程序的功能，即曲线和正常出，清晰度也符合预期。<br>报错信息：不赞成在非CanvasRenderingContext2D的对象上使用webkitBackingStorePixelRatio属性<br><img src="/img/canvas/bug.png"></p>
-<h4 id="定位问题"><a href="#定位问题" class="headerlink" title="定位问题"></a>定位问题</h4><p>因为时间比较紧，没有仔细研究插件代码的具体含义，只是简单定位问题，修复错误。</p>
-<ol>
-<li><p>猜测，首先想到的是捕获错误，定位确定是不是因为webkitBackingStorePixelRatio而引起的错误。<br>方法：尝试在出现webkitBackingStorePixelRatio的地方用try-catch捕获错误<br>结果：然并卵，居然没捕获到错误，依然会报相同的错误</p>
-</li>
-<li><p>进一步怀疑<br>方法：去除webkitBackingStorePixelRatio使用的地方<br>结果：报错消失</p>
-</li>
-<li><p>确认到底是不是webkitBackingStorePixelRatio而引起的错误<br>方法：使用webkitBackingStorePixelRatio的对象是CanvasRenderingContext2D.prototype，分别直接在safari和chorme控制台查找CanvasRenderingContext2D.prototype的属性，都没有找到这个属性；<br>接着直接输入<code>CanvasRenderingContext2D.prototype.webkitBackingStorePixelRatio</code><br>结果： safari中报相同的错误，chrome中没有报错。</p>
-</li>
-<li><p>再次验证<br>方法：在safari控制台输入<code>CanvasRenderingContext2D.webkitBackingStorePixelRatio</code>。<br>结果：虽然没有获得到值，但是也没有报错。可以肯定确实是CanvasRenderingContext2D.prototype.webkitBackingStorePixelRatio而引起的错误。</p>
-</li>
-<li><p>为什么没有捕获到错误，怀疑代码没有执行到try-catch的地方就报错了<br>方法：在try-catch的上下加console.log，并打印用webkitBackingStorePixelRatio的变量t最终结果<br>结果：输出不符合预期，t居然还有了最终值，报错依然存在。很是奇怪，按预期，报错了应该终止程序，t没有结果。<br><img src="/img/canvas/debug-after.png" alt=""></p>
-</li>
-</ol>
-<h4 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h4><p>确实是webkitBackingStorePixelRatio这个属性而引起的报错。但是既然不影响程序的正常运行，却又有这个错误，可以理解为是safari自身的问题，它的提示信息不够友好。</p>
-<h4 id="修复方法"><a href="#修复方法" class="headerlink" title="修复方法"></a>修复方法</h4><ol>
-<li><p>通过查阅资料发现webkitBackingStorePixelRatio这个属性也是为了解决canvas清晰度而存在的。<br>它决定了浏览器在渲染canvas之前会用几个像素来存储画布信息。不同浏览器的BackingStorePixelRatio可能不同，它和devicePixelRatio共同决定了canvas的清晰度。比如在devicePixelRatio=2的设备上，safari6的webkitBackingStorePixelRatio是2，也就是说一个canvas在safari6上不用做任何处理就是清晰的。而chrome的webkitBackingStorePixelRatio是1，需要对canvas进行缩放才能保证其清晰度。<a href="http://www.html5rocks.com/en/tutorials/canvas/hidpi/?redirect_from_locale=zh" target="_blank" rel="external">High DPI Canvas</a></p>
-</li>
-<li><p>但是在2013.8之后的<a href="https://code.google.com/p/chromium/issues/detail?id=277205" target="_blank" rel="external">chromium升级</a>中，去除了这一属性<br>因为此后webkitBackingStorePixelRatio的值始终保持为1，也就是说目前只有safari6.0中的webkitBackingStorePixelRatio是2.<br><img src="/img/canvas/chromium.png"></p>
-</li>
-<li><p>因此在插件中就直接写定为1就可以了。</p>
-</li>
-<li><p>之前提到过hidpi-canvas这个插件由两部分组成，一部分是改变画布和画框大小，一部分是重新画一遍图以适应改变大小后的画布<br>参考<a href="http://www.html5rocks.com/en/tutorials/canvas/hidpi/?redirect_from_locale=zh" target="_blank" rel="external">High DPI Canvas</a>文章后，去除了<strong>CanvasRenderingContext2D.js</strong>这部分，改用<code>context.scale(ratio, ratio);</code>，其中<code>ratio = devicePixelRatio / backingStoreRatio</code>。<br>因为<strong><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D" target="_blank" rel="external">CanvasRenderingContext2D</a></strong>是为绘制canvas提供各种接口。其本身也可以通过<code>context = canvas.getContext(&#39;2d&#39;)</code>得到。因此保留这个js意义不大。</p>
-</li>
-</ol>
-<h2 id="Coolpad8675中的好搜app下，canvas渲染不出来"><a href="#Coolpad8675中的好搜app下，canvas渲染不出来" class="headerlink" title="Coolpad8675中的好搜app下，canvas渲染不出来"></a>Coolpad8675中的好搜app下，canvas渲染不出来</h2><p>BUG复现：canvas处空白<br>报错信息：没有脚本报错</p>
-<h4 id="定位问题-1"><a href="#定位问题-1" class="headerlink" title="定位问题"></a>定位问题</h4><p>猜测有可能引起问题的原因</p>
-<ul>
-<li>浏览器对canvas的渲染，可是别人家的canvas渲染一点问题都没有呀</li>
-<li>可能是canvas的大小没在可显示的范围里，因为之前有遇到canvas的width特别大，style.width正常的,导致canvas显示不正常</li>
-<li>可能canvas的父元素没显示出来</li>
-<li>可能是层级问题</li>
-<li>页面里的其他dom或插件影响了它</li>
-</ul>
-<p>综合以上可能的原因，做了如下的验证：</p>
-<ol>
-<li><p>在最外层js最开始的地方加try-catch，试图捕获错误信息，打印不出来任何错误</p>
-</li>
-<li><p>因为canvas为绝对定位，而其父元素又没有设置高度，可能受到影响；为其父元素加高度，加背景色，背景色显示，曲线还是没出来</p>
-</li>
-<li><p>给canvas加背景色，然并卵，毫无改变</p>
-</li>
-<li><p>打印canvas的宽高，offset().width等信息，可以正常打印，说明canvas这个元素是存在的</p>
-</li>
-<li><p>为canvas加较高层级，然并卵</p>
-</li>
-<li><p>在body中新追加简单的canvas，同样没显示出来</p>
-</li>
-</ol>
-<p>由此可以确认，不是由于绘制canvas出错，和画曲线无关系。接下来进一步验证</p>
-<ol>
-<li><p>在纯净的页面中简单画最最简单的canvas，不做任何变换等等，结果出来了。<br>由此说明，是其他dom或插件影响了之前canvas的正常绘制。</p>
-</li>
-<li><p>去除hidpi-canvas插件，曲线出现了<br>因为在页面中，影响最大的，最有可能的就是hidpi-canvas这个插件。只有它有对后来的canvas做处理。做的主要处理就是改变canvas的width和style.width</p>
-</li>
-</ol>
-<p>进一步验证改变canvas的width和style.width是如何影响canvas绘制的</p>
-<ul>
-<li>在纯净的页面中，将canvas的width和style.width设置成不同的值，发现在某些值时，canvas是会正常出现的，在另一些值是不出现的。</li>
-<li>怀疑在当二者比例在某个范围中，是可正常显示，反之不可。通过<strong>二分法</strong>验证，不断测试最终确定当<code>width / style.width &lt; 0.78</code>时，可正常显示。</li>
-<li>至此，已可以确定出现bug的原因了。</li>
-</ul>
-<h4 id="修复方法-1"><a href="#修复方法-1" class="headerlink" title="修复方法"></a>修复方法</h4><ol>
-<li><p>初步怀疑是chrome的某个版本内核通用的bug<br>通过打印两个2APP的<strong>window.navigator.userAgent</strong>(一个正常显示，一个非正常显示)，居然发现chrome内核版本居然一样，而且除了最后app的信息外，其他的一模一样。</p>
-</li>
-<li><p>所以只能是针对特定手机中的特定app做单独的case的处理</p>
-</li>
-<li><p>用正则匹配userAgent,<code>/(Coolpad\s8675).*(mso_app\s\(4.1.0.1001\))/i</code><br>如果符合这两个条件，那么就不调用hidpi-canvas插件</p>
-</li>
-</ol>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li><p>try-catch是个好方法<br>可以捕获错误，避免报错，打印错误信息</p>
-<figure class="highlight xquery"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>&#123;</div><div class="line">	可能会报错的代码</div><div class="line">&#125;<span class="keyword">catch</span>(error)&#123;</div><div class="line">	对错误的处理，比如打印错误信息</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>window.navigator.userAgent是个好东西<br>常常用来做hack…</p>
-</li>
-<li><p>另外还发现在safari下，没有external对象</p>
-</li>
-<li><p>最后附上解决hidpi下canvas清晰度的<a href="http://jiaolonghuang.github.io/code/hidpi-HTMLCanvasElement.js">代码</a></p>
-</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;本文记录了2个为了解决hidpi下canvas呈现而引发的不同bug定位和最终解决过程。
-    
-    </summary>
-    
-      <category term="前端" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
-    
-      <category term="bug解决" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/bug%E8%A7%A3%E5%86%B3/"/>
-    
-      <category term="canvas" scheme="http://jiaolongHuang.github.io/categories/%E5%89%8D%E7%AB%AF/bug%E8%A7%A3%E5%86%B3/canvas/"/>
-    
-    
-      <category term="css" scheme="http://jiaolongHuang.github.io/tags/css/"/>
-    
-      <category term="Nov" scheme="http://jiaolongHuang.github.io/tags/Nov/"/>
     
   </entry>
   
