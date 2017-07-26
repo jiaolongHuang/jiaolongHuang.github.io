@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://jiaolongHuang.github.io/"/>
-  <updated>2017-07-26T09:53:10.000Z</updated>
+  <updated>2017-07-26T10:30:58.000Z</updated>
   <id>http://jiaolongHuang.github.io/</id>
   
   <author>
@@ -20,11 +20,11 @@
     <link href="http://jiaolongHuang.github.io/2017/07/26/webpack-IE/"/>
     <id>http://jiaolongHuang.github.io/2017/07/26/webpack-IE/</id>
     <published>2017-07-26T04:17:21.000Z</published>
-    <updated>2017-07-26T09:53:10.000Z</updated>
+    <updated>2017-07-26T10:30:58.000Z</updated>
     
     <content type="html"><![CDATA[<p>对Webpack打包兼容低版本IE&lt;9时遇到问题的排查过程。</p>
 <a id="more"></a>
-<p>最近在使用webpack打包时，遇到一个问题:<br>已经添加了polyfill，转成es3语法的前提下，新增uglify之后IE&lt;9浏览器报错。故，怀疑是uglify做了坏事，一步步追踪下去，发现原来是不太规范的一个写法引起的IE老版本下自身bug。</p>
+<p>最近在使用webpack打包时，遇到一个问题:<br>已经添加了polyfill，且转成es3语法的前提下，新增uglify之后IE&lt;9浏览器报错。故，怀疑是uglify做了坏事，一步步追踪下去，发现原来是不太规范的一个写法引起的IE老版本下自身bug。</p>
 <h2 id="关于版本"><a href="#关于版本" class="headerlink" title="关于版本"></a>关于版本</h2><p>使用不同版本的webpack2,错误依旧复现。<br>以下讨论的是webpack2.5.1，内置uglify-js2.8.5。</p>
 <h2 id="错误1，缺少标识符"><a href="#错误1，缺少标识符" class="headerlink" title="错误1，缺少标识符"></a>错误1，缺少标识符</h2><p>这种错误大多是压缩后，对象的属性没有了引号，或是以一些保留字作为了对象的属性，比如”default”。<br>这种通过对uglify的配置即可解决。这篇文章总结的很好<a href="http://www.zuojj.com/archives/2157.html" target="_blank" rel="external">煦涵说Webpack-IE低版本兼容指南</a>。<br>具体配置可以参考本博客上一篇文章中关于的uglifyJS的配置。</p>
 <h2 id="错误2，没有找到某个对象的方法、属性（重点来了！！！）"><a href="#错误2，没有找到某个对象的方法、属性（重点来了！！！）" class="headerlink" title="错误2，没有找到某个对象的方法、属性（重点来了！！！）"></a>错误2，没有找到某个对象的方法、属性（重点来了！！！）</h2><p>这个就比较坑了。<br>表现是，初次访问，没有报错，只有执行某个操作时，才报错。可以推测，仅是进入到某个代码内才报错，也就是说是局部报错。<br>首先我们通过定位报错的那段代码，发现是个命名函数表达式。类似这样：<br><figure class="highlight scilab"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">A:</div><div class="line">var a = <span class="function"><span class="keyword">function</span> <span class="title">b</span><span class="params">()</span> &#123;</span></div><div class="line">  console.<span class="built_in">log</span>(b.<span class="built_in">list</span>[<span class="string">'name'</span>]);</div><div class="line">  b.<span class="built_in">log</span>();</div><div class="line">&#125;;</div><div class="line"></div><div class="line">a.<span class="built_in">list</span> = &#123;&#125;;</div><div class="line">a.<span class="built_in">list</span>[<span class="string">'name'</span>] = <span class="string">'jack'</span>;</div><div class="line">a.<span class="built_in">log</span> = <span class="function"><span class="keyword">function</span><span class="params">()</span>&#123;</span></div><div class="line">  console.<span class="built_in">log</span>(<span class="string">'log'</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
