@@ -49,7 +49,7 @@
     <link href="http://jiaolongHuang.github.io/2017/07/26/webpack2/"/>
     <id>http://jiaolongHuang.github.io/2017/07/26/webpack2/</id>
     <published>2017-07-26T04:15:11.000Z</published>
-    <updated>2017-07-26T07:00:32.000Z</updated>
+    <updated>2017-07-26T07:01:47.000Z</updated>
     
     <content type="html"><![CDATA[<p>基于webpack自身配置的优化，不涉及到happypack和DLL.</p>
 <a id="more"></a>
