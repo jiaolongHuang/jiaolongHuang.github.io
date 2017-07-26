@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://jiaolongHuang.github.io/"/>
-  <updated>2017-07-26T09:21:25.000Z</updated>
+  <updated>2017-07-26T09:24:31.000Z</updated>
   <id>http://jiaolongHuang.github.io/</id>
   
   <author>
@@ -20,9 +20,10 @@
     <link href="http://jiaolongHuang.github.io/2017/07/26/webpack-IE/"/>
     <id>http://jiaolongHuang.github.io/2017/07/26/webpack-IE/</id>
     <published>2017-07-26T04:17:21.000Z</published>
-    <updated>2017-07-26T09:21:25.000Z</updated>
+    <updated>2017-07-26T09:24:31.000Z</updated>
     
-    <content type="html"><![CDATA[<a id="more"></a>
+    <content type="html"><![CDATA[<p>对Webpack打包兼容低版本IE&lt;9时遇到问题的排查过程。</p>
+<a id="more"></a>
 <p>最近在使用webpack打包时，遇到一个问题:<br>已经添加了polyfill，转成es3语法的前提下，新增uglify之后IE&lt;9浏览器报错。故，怀疑是uglify做了坏事，一步步追踪下去，发现原来是不太规范的一个写法引起的IE老版本下自身bug。</p>
 <h2 id="关于版本"><a href="#关于版本" class="headerlink" title="关于版本"></a>关于版本</h2><p>使用不同版本的webpack2,错误依旧复现。<br>以下讨论的是webpack2.5.1，内置uglify-js2.8.5。</p>
 <h2 id="错误1，缺少标识符"><a href="#错误1，缺少标识符" class="headerlink" title="错误1，缺少标识符"></a>错误1，缺少标识符</h2><p>这种错误大多是压缩后，对象的属性没有了引号，或是以一些保留字作为了对象的属性，比如”default”。<br>这种通过对uglify的配置即可解决。这篇文章总结的很好<a href="http://www.zuojj.com/archives/2157.html" target="_blank" rel="external">煦涵说Webpack-IE低版本兼容指南</a>。<br>具体配置可以参考本博客上一篇文章中关于的uglifyJS的配置。</p>
@@ -61,8 +62,7 @@
     
     <summary type="html">
     
-      &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-&lt;p&gt;最近在使用webpack打包时，遇到一个问题:&lt;br&gt;已经添加了polyfill，转成es3语法的前提下，新增uglify之后IE&amp;lt;9浏览器报错。故，怀疑是uglify做了坏事，一步步追踪下去，发现原来是不太规范的一个写法引起的IE
+      &lt;p&gt;对Webpack打包兼容低版本IE&amp;lt;9时遇到问题的排查过程。&lt;/p&gt;
     
     </summary>
     
@@ -254,69 +254,6 @@
   </entry>
   
   <entry>
-    <title>我常用的Linux命令(ing)</title>
-    <link href="http://jiaolongHuang.github.io/2016/09/09/linux-cmd/"/>
-    <id>http://jiaolongHuang.github.io/2016/09/09/linux-cmd/</id>
-    <published>2016-09-09T06:03:08.000Z</published>
-    <updated>2016-09-09T07:44:10.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>自己常用Linux命令记录。<a id="more"></a>其实自己并不特别熟悉Linux的命令，得益于最近做一些项目的部署，常常用到一些Linux命令，这里记录下。</p>
-<ul>
-<li><p>su aa<br>切换身份为aa。常用<code>sudo su aa</code></p>
-</li>
-<li><p>scp<br>scp是有Security的文件copy，基于ssh登录</p>
-</li>
-<li><p>scp /home/daisy/full.tar.gz 自己的名字@要同步的开发机的ip:/home/root<br>要把本地的文件/home/daisy/full.tar.gz copy到远程另外一台主机上</p>
-</li>
-<li><p>scp 自己的名字@要同步的开发机的ip:/home/root/1.txt ./<br>把远程开发机上的1.txt文件copy到当前目录下</p>
-</li>
-<li><p>scp -r 自己的名字@要同步的开发机的ip:/home/root/ ./<br>把远程开发机上的整个root目录copy到当前目录下</p>
-</li>
-<li><p>lsb_release -a<br>查看linux版本</p>
-</li>
-<li><p>which mysql<br>mysql的启动文件是在哪儿</p>
-</li>
-<li><p>mysql -h aa.aa.aa.aa  -P bbb -u username -ppwd<br>以<strong>bbb</strong>的用户名，<strong>pwd</strong>的密码，登录地址为<strong>aa.aa.aa.aa</strong>，端口号为<strong>bbb</strong>的mysql数据库。注意密码与<strong>-p</strong>之间没有空格。</p>
-</li>
-<li><p>top<br>进行性能监控的。比如当前cup，内存占用率，哪个进程占用的最多</p>
-</li>
-<li><p>chown -R -v jack: file<br>改变指定目录以及其子目录下的所有文件的拥有者(jack)和群组(空缺)</p>
-</li>
-<li><p>chomd 777 file<br>更改文件file，任何人都有读、写、运行三项权限</p>
-</li>
-<li><p>不同身份用户所能操作的文件不同。比如a文件是属于jack的，那么当以mark身份登录时，就不能使用这个文件</p>
-</li>
-<li><p>find / -name my.cnf<br>所有路径下查找名字是my.cnf的文件</p>
-</li>
-<li><p>find . -name .DS_Store | xargs rm -f<br>当前路径下查找文件名为.DS_Store的文件，并强制删除它们</p>
-</li>
-<li><p>find . -name “*.txt”<br>当前目录下搜索所有txt文件</p>
-</li>
-<li><p>netstat -tunlp|grep 5893<br>查看端口号5893占用情况</p>
-</li>
-<li><p>jobs<br>查看当前后台运行了哪些进程</p>
-</li>
-<li><p>ln –s 源文件 目标文件<br>创建软链, 类似windows的快捷方式</p>
-</li>
-<li><p>mv shop school<br>重命名文件夹， shop-&gt;school</p>
-</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;自己常用Linux命令记录。
-    
-    </summary>
-    
-    
-      <category term="Linux" scheme="http://jiaolongHuang.github.io/tags/Linux/"/>
-    
-      <category term="命令" scheme="http://jiaolongHuang.github.io/tags/%E5%91%BD%E4%BB%A4/"/>
-    
-  </entry>
-  
-  <entry>
     <title>React系列之-开始使用React+Redux</title>
     <link href="http://jiaolongHuang.github.io/2016/09/09/react/"/>
     <id>http://jiaolongHuang.github.io/2016/09/09/react/</id>
@@ -389,6 +326,69 @@
       <category term="react" scheme="http://jiaolongHuang.github.io/tags/react/"/>
     
       <category term="redux" scheme="http://jiaolongHuang.github.io/tags/redux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我常用的Linux命令(ing)</title>
+    <link href="http://jiaolongHuang.github.io/2016/09/09/linux-cmd/"/>
+    <id>http://jiaolongHuang.github.io/2016/09/09/linux-cmd/</id>
+    <published>2016-09-09T06:03:08.000Z</published>
+    <updated>2016-09-09T07:44:10.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>自己常用Linux命令记录。<a id="more"></a>其实自己并不特别熟悉Linux的命令，得益于最近做一些项目的部署，常常用到一些Linux命令，这里记录下。</p>
+<ul>
+<li><p>su aa<br>切换身份为aa。常用<code>sudo su aa</code></p>
+</li>
+<li><p>scp<br>scp是有Security的文件copy，基于ssh登录</p>
+</li>
+<li><p>scp /home/daisy/full.tar.gz 自己的名字@要同步的开发机的ip:/home/root<br>要把本地的文件/home/daisy/full.tar.gz copy到远程另外一台主机上</p>
+</li>
+<li><p>scp 自己的名字@要同步的开发机的ip:/home/root/1.txt ./<br>把远程开发机上的1.txt文件copy到当前目录下</p>
+</li>
+<li><p>scp -r 自己的名字@要同步的开发机的ip:/home/root/ ./<br>把远程开发机上的整个root目录copy到当前目录下</p>
+</li>
+<li><p>lsb_release -a<br>查看linux版本</p>
+</li>
+<li><p>which mysql<br>mysql的启动文件是在哪儿</p>
+</li>
+<li><p>mysql -h aa.aa.aa.aa  -P bbb -u username -ppwd<br>以<strong>bbb</strong>的用户名，<strong>pwd</strong>的密码，登录地址为<strong>aa.aa.aa.aa</strong>，端口号为<strong>bbb</strong>的mysql数据库。注意密码与<strong>-p</strong>之间没有空格。</p>
+</li>
+<li><p>top<br>进行性能监控的。比如当前cup，内存占用率，哪个进程占用的最多</p>
+</li>
+<li><p>chown -R -v jack: file<br>改变指定目录以及其子目录下的所有文件的拥有者(jack)和群组(空缺)</p>
+</li>
+<li><p>chomd 777 file<br>更改文件file，任何人都有读、写、运行三项权限</p>
+</li>
+<li><p>不同身份用户所能操作的文件不同。比如a文件是属于jack的，那么当以mark身份登录时，就不能使用这个文件</p>
+</li>
+<li><p>find / -name my.cnf<br>所有路径下查找名字是my.cnf的文件</p>
+</li>
+<li><p>find . -name .DS_Store | xargs rm -f<br>当前路径下查找文件名为.DS_Store的文件，并强制删除它们</p>
+</li>
+<li><p>find . -name “*.txt”<br>当前目录下搜索所有txt文件</p>
+</li>
+<li><p>netstat -tunlp|grep 5893<br>查看端口号5893占用情况</p>
+</li>
+<li><p>jobs<br>查看当前后台运行了哪些进程</p>
+</li>
+<li><p>ln –s 源文件 目标文件<br>创建软链, 类似windows的快捷方式</p>
+</li>
+<li><p>mv shop school<br>重命名文件夹， shop-&gt;school</p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;自己常用Linux命令记录。
+    
+    </summary>
+    
+    
+      <category term="Linux" scheme="http://jiaolongHuang.github.io/tags/Linux/"/>
+    
+      <category term="命令" scheme="http://jiaolongHuang.github.io/tags/%E5%91%BD%E4%BB%A4/"/>
     
   </entry>
   
