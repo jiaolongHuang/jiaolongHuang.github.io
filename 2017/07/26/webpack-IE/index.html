@@ -34,7 +34,11 @@
 </a></li>
 <li><a href="https://github.com/SamHwang1990/blog/issues/6" target="_blank" rel="external">IE8 下访问webpack.UglifyJsPlugin 压缩的代码出错</a></li>
 </ul>
-</div></article></div></section><footer><div class="paginator"><a href="/2017/07/26/webpack2/" class="next">NEXT</a></div><div data-thread-key="2017/07/26/webpack-IE/" data-title="使用Webpack打包兼容低版本IE&lt;9" data-url="http://jiaolongHuang.github.io/2017/07/26/webpack-IE/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
+<h2 id="写在最最后"><a href="#写在最最后" class="headerlink" title="写在最最后"></a>写在最最后</h2><p>一开始怀疑是webpack版本问题，验证不是之后。</p>
+<p>进而怀疑是因为webpack默认为匿名函数添加函数名，认为是webpack做的这件事。这里遗漏了，webpack其实自身什么都不做，只是一个框架。其他的转换什么的是由各插件做的。</p>
+<p>后来在<a href="http://babeljs.cn/repl/" target="_blank" rel="external">babel在线实验</a>上验证通用会为匿名函数添加函数名。这时可以证实是babel做了这件事。</p>
+<p>接下来，怀疑是uglify的问题，但却忘了，只有在IE&lt;9才会报错，在Chrome下是正常的，这时应该怀疑是某种写法在IE下有兼容性问题。</p>
+</div></article></div></section><footer><div class="paginator"><a href="/2017/07/26/webpack2/" class="next">下一篇</a></div><div data-thread-key="2017/07/26/webpack-IE/" data-title="使用Webpack打包兼容低版本IE&lt;9" data-url="http://jiaolongHuang.github.io/2017/07/26/webpack-IE/" data-author-key="1" class="ds-thread"></div><script>var duoshuoQuery = {short_name:"minel"};
 (function() {
     var ds = document.createElement('script');
     ds.type = 'text/javascript';ds.async = true;
